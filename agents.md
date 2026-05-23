@@ -16,7 +16,7 @@
 ### **Passo 01 — Setup do Projeto e Infraestrutura Básica** *(M01)*
 | Ação | Detalhe |
 |------|--------|
-| 0.1 | Iniciar repos (Git) | `git init`, `.gitignore` (`.next/`, `node_modules/`, `*.sqlite`, `data.db*`) |
+| 0.1 | Iniciar repos (Git) | `git init`, `.gitignore` (`.next/`, `node_modules/`, `*.sqlite`, `db.sqlite*`) |
 | 0.2 | Configurar Next.js + Tailwind + shadcn/ui | `npx create-next-app@latest . --app --tailwind --eslint --typescript`
 | 0.3 | Instalar SQLite via Drizzle ORM ou Prisma | `npm i drizzle-orm better-sqlite3` |
 
@@ -102,7 +102,7 @@ npm run test:e2e
 ```
 ---
 
-### **Passo 07 — Auditoria e Refatoração Períódica** *(M07)*
+### **Passo 07 — Auditoria e Refatoração Periódica** *(M07)*
 | Ação | Detalhe |
 |------|--------|
 | 6.1 | Criar checklist de auditoria (regras de reutilização, nomenclatura, arquitetura) | `docs/audit-checklist.md` |
@@ -120,7 +120,7 @@ npm run audit:checklist
 |------|--------|
 | 01 | Projeto rodável em `npm run dev`, UI mostrando post de exemplo (hardcoded) |
 | 02 | Usuário consegue criar post via form → aparece na lista após refresh |
-| 03 | Filtro por tag funciona: posts marcados aparecem, não-marcaos são ocultados |
+| 03 | Filtro por tag funciona: posts marcados aparecem, não-marcados são ocultados |
 | 04 | Workflow GitHub Actions executa build + deploy ao fazer push; HTML estático gerado |
 | 05 | UI visualmente agradável em dark/claro; responsivo para mobile; navegação fluida |
 | 06 | Cobertura mínima de 60–80% (segunda fase); nenhum teste quebrado na CI |
@@ -152,4 +152,4 @@ Recomendamos a **Opção A** para simplicidade e rastreamento. Se o projeto cres
 
 ---
 
-**Conclusão:** Com este plano, o projeto segue uma abordagem incremental, permitindo validação rápida em cada fase enquanto mantém rigor nas regras de qualidade e reutilização. O resultado final será um blog estático moderno, com dev mode funcional, tema dark/claro e pipeline CI/CD automatizado.
+**Conclusão:** Com este plano, o projeto segue uma abordagem incremental, permitindo validação rápida em cada fase enquanto mantém rigor nas regras de qualidade e reutilização. O resultado final é um blog técnico moderno, fácil de manutenção, e pronto para evolução contínua.
