@@ -41,18 +41,21 @@ Refer to `docs/architecture.md` for detailed design decisions and diagrammatic r
 
 ## 🚀 Development Plan (current state & next steps)
 1. **Setup (M01)** – Scaffolded a Next.js 13 app with Tailwind, shadcn/ui, SQLite & Drizzle used in `src/db/`. ✨
-2. **CRUD (M02)** – Data layer (`src/lib/posts.ts`) and SQLite schema (`src/db/schema.ts`) are in place. API endpoints are pending.
-3. **UI (pending)** – Pages for listing and creating posts are not yet implemented – only a hard‑coded prototype exists in `app/page.tsx`.
+2. **CRUD (M02)** – Data layer (`src/lib/posts.ts`) and SQLite schema (`src/db/schema.ts`) are in place, **API routes** (`src/app/api/posts/route.ts`) and **posts list page** (`src/app/posts/page.tsx`) are now implemented.
+3. **UI (M03)** – Posts list page (`/posts`) is functional. A create‑post form and post detail page are next.
 4. **Tags & Filters (M03)** – Not yet implemented.
 5. **Pipeline (M04)** – The repository contains a placeholder `.github/workflows/build-and-deploy.yml` but the process is not yet wired.
 6. **Testing (M06)** – No tests exist yet.
 7. **Audit & Refactor (M07)** – Pending.
 
-> **Next Steps** – Implement the REST API under `pages/api/posts/[slug].ts` (or app‑router `/app/api/...`), then build the UI pages to consume it. After that, wire up the CI workflow and write basic tests.
+> **Next Steps** – Implement the post detail page (`/posts/[slug]`), add a create‑post form, then wire the CI pipeline and add unit/E2E tests.
 
 ---
 
 ### Quick References
+
+* **Keep plan in sync** – After completing any development task, update the `AGENTS.md` milestones section to reflect the new state.
+
 * **Schema** – `src/db/schema.ts`
 * **API** – `pages/api/posts.ts`
 * **Workbench** – `scripts/seed.ts` for sample data.
