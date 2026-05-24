@@ -1,19 +1,1 @@
-# Dependencies
-node_modules/
-
-# Next.js build outputs
-.next/
-out/
-dist/
-
-# Database files (SQLite)
-*.sqlite
 data.db*
-
-# Environment files
-.env.local
-.env.*.local
-
-# Logs and temp files
-logs/
-tmp/
