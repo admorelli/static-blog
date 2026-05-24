@@ -4,6 +4,8 @@ Um blog de tecnologia moderno, profissional e pessoal, com modo de desenvolvimen
 
 ## 🚀 Getting Started
 
+The project now includes a full unit‑test suite (Vitest) and an end‑to‑end test (Playwright) that verifies the homepage loads correctly.
+
 ### Prerequisites
 
 - Node.js 18+
