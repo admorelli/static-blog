@@ -40,6 +40,8 @@ This file contains an up‑to‑date overview of the current project layout, arc
 Refer to `docs/architecture.md` for detailed design decisions and diagrammatic representation.
 
 ## 🚀 Development Plan (current state & next steps)
+
+All primary commands are now exposed through a `Makefile` for quick execution. Use `make <task>` (e.g., `make device`, `make test`) or the underlying npm scripts as shown in `README.md`.
 1. **Setup (M01)** – Scaffolded a Next.js 13 app with Tailwind, shadcn/ui, SQLite & Drizzle used in `src/db/`. ✨
 2. **CRUD (M02)** – Data layer (`src/lib/posts.ts`) and SQLite schema (`src/db/schema.ts`) are in place, **API routes** (`src/app/api/posts/route.ts`) and **posts list page** (`src/app/posts/page.tsx`) are now implemented.
 3. **UI (M03)** – Posts list page (`/posts`) is functional. A create‑post form and post detail page are next.

@@ -1,5 +1,5 @@
-import db from '@/db/db';
-import { posts } from '@/db/schema';
+import db from '../db/db';
+import { posts } from '../db/schema';
 import { eq, desc } from 'drizzle-orm';
 
 export type Post = {

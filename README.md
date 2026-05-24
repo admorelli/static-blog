@@ -19,6 +19,16 @@ npm install
 
 ### Development
 
+Most common tasks are now available via the top‑level `Makefile`. For example:
+
+```bash
+make device   # start the dev server (runs `npm run dev`)
+make build    # build production files (`npm run build`)
+make test     # run both unit and e2e tests (`npm run test:unit && npm run test:e2e`)
+```
+
+You can also still use the npm scripts directly:
+
 ```bash
 npm run dev
 ```
