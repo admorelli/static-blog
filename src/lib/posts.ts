@@ -37,6 +37,7 @@ export async function createPost(data: {
     title: data.title,
     slug: data.slug,
     content: data.content,
+    created_at: Math.floor(Date.now() / 1000),
   });
 }
 

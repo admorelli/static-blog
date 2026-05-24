@@ -5,5 +5,5 @@ export const posts = sqliteTable('posts', {
   title: text('title').notNull(),
   slug: text('slug').unique().notNull(),
   content: text('content').notNull(),
-  created_at: integer('created_at'),
+  created_at: integer('created_at').default(0).notNull(),
 });
