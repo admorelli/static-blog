@@ -44,7 +44,14 @@ Refer to `docs/architecture.md` for detailed design decisions and diagrammatic r
 All primary commands are now exposed through a `Makefile` for quick execution. Use `make <task>` (e.g., `make device`, `make test`) or the underlying npm scripts as shown in `README.md`.
 1. **Setup (M01)** – Scaffolded a Next.js 13 app with Tailwind, shadcn/ui, SQLite & Drizzle used in `src/db/`. ✨
 2. **CRUD (M02)** – Data layer (`src/lib/posts.ts`) and SQLite schema (`src/db/schema.ts`) are in place, **API routes** (`src/app/api/posts/route.ts`) and **posts list page** (`src/app/posts/page.tsx`) are now implemented.
-3. **UI (M03)** – Posts list page (`/posts`) is functional. A create‑post form and post detail page are next.
+3. **UI (M03)** – New homepage (`/`) now includes:
+   * Search field for title/content.
+   * Tag selector with toggles; navigating unmarked tags filters posts.
+   * Infinite scroll that loads 10‑post batches respecting the current search/query.
+     /api/posts/search provides paginated results.
+   * Tag list fetched from `/api/tags`.
+   * The posts list component is reused on the `/posts` page.
+   Next steps: post‑detail page and create form.
 4. **Tags & Filters (M03)** – Not yet implemented.
 5. **Pipeline (M04)** – The repository contains a placeholder `.github/workflows/build-and-deploy.yml` but the process is not yet wired.
 6. **Testing (M06)** – No tests exist yet.
