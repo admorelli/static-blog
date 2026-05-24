@@ -1,65 +1,104 @@
-import Image from "next/image";
+'use client';
+import { useEffect, useState, useRef } from 'react';
+// Debounce hook implementation (replaces missing external library)
+function useDebounce<T>(value: T, delay: number): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  return debounced;
+}
+import { Tag } from '../../src/lib/tags';
+import { Post } from '../../src/lib/posts';
+
+const PAGE_LIMIT = 10;
 
 export default function Home() {
+  const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 300);
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [selectedTags, setSelectedTags] = useState<Set<number>>(new Set());
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [offset, setOffset] = useState(0);
+  const loaderRef = useRef<HTMLDivElement | null>(null);
+
+  // Load tags once
+  useEffect(() => {
+    fetch('/api/tags')
+      .then((r) => r.json())
+      .then(setTags);
+  }, []);
+
+  const fetchPosts = async (reset = false) => {
+    const params = new URLSearchParams();
+    if (debouncedSearch) params.set('q', debouncedSearch);
+    selectedTags.forEach((id) => params.append('tag', String(id)));
+    params.set('offset', reset ? '0' : String(offset));
+    params.set('limit', String(PAGE_LIMIT));
+    const res = await fetch(`/api/posts/search?${params.toString()}`);
+    const data = await res.json();
+    if (reset) setPosts(data.posts);
+    else setPosts((p) => [...p, ...data.posts]);
+    setHasMore(data.total > (reset ? data.posts.length : posts.length + data.posts.length));
+    setOffset((s) => (reset ? PAGE_LIMIT : s + PAGE_LIMIT));
+  };
+
+  // Refetch when search or tags change
+  useEffect(() => {
+    setOffset(0);
+    fetchPosts(true);
+  }, [debouncedSearch, selectedTags]);
+
+  // Infinite scroll observer
+  useEffect(() => {
+    if (!loaderRef.current) return;
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasMore) fetchPosts();
+    });
+    observer.observe(loaderRef.current);
+    return () => observer.disconnect();
+  }, [loaderRef.current, hasMore]);
+
+  const toggleTag = (id: number) => {
+    setSelectedTags((s) => {
+      const newSet = new Set(s);
+      newSet.has(id) ? newSet.delete(id) : newSet.add(id);
+      return newSet;
+    });
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className="p-6 max-w-3xl mx-auto bg-transparent rounded-lg shadow-md mt-10" style={{width: '98vw', display:'flex', flexDirection:'column'}}>
+      <h1 className="text-2xl font-bold mb-4">Static Blog</h1>
+      <input
+        type="text"
+        placeholder="Search"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="w-full p-4 mb-4 rounded-full border border-gray-300 bg-transparent backdrop-filter backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <div className="flex flex-wrap gap-2 mb-4">
+        {tags.map((t) => (
+          <button
+            key={t.id}
+            onClick={() => toggleTag(t.id)}
+            className={`px-3 py-1 rounded ${selectedTags.has(t.id) ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+            {t.name}
+          </button>
+        ))}
+      </div>
+      <ul className="space-y-4">
+        {posts.map((p) => (
+          <li key={p.id} className="border rounded p-4">
+            <h2 className="text-xl font-semibold">{p.title}</h2>
+            <p className="text-sm text-gray-500">{new Date(p.created_at * 1000).toLocaleDateString()}</p>
+          </li>
+        ))}
+      </ul>
+      {hasMore && <div ref={loaderRef} className="h-4 flex items-center justify-center text-gray-500">Loading ({posts.length})...</div>}
+    </main>
   );
 }
