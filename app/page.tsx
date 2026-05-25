@@ -1,104 +1,68 @@
-'use client';
-import { useEffect, useState, useRef } from 'react';
-// Debounce hook implementation (replaces missing external library)
-function useDebounce<T>(value: T, delay: number): T {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const handler = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(handler);
-  }, [value, delay]);
-  return debounced;
-}
-import { Tag } from '../../src/lib/tags';
-import { Post } from '../../src/lib/posts';
+"use client";
+import React, { Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Tag } from '@/lib/tags';
+export const dynamic = 'force-dynamic';
 
-const PAGE_LIMIT = 10;
+function TagFilter() {
+  const [tags, setTags] = React.useState<Tag[]>([]);
+  const [selected, setSelected] = React.useState<Set<number>>(new Set());
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-export default function Home() {
-  const [search, setSearch] = useState('');
-  const debouncedSearch = useDebounce(search, 300);
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [selectedTags, setSelectedTags] = useState<Set<number>>(new Set());
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [hasMore, setHasMore] = useState(true);
-  const [offset, setOffset] = useState(0);
-  const loaderRef = useRef<HTMLDivElement | null>(null);
-
-  // Load tags once
-  useEffect(() => {
-    fetch('/api/tags')
-      .then((r) => r.json())
-      .then(setTags);
+  React.useEffect(() => {
+    fetch('/api/tags').then((res) => res.json()).then(setTags);
   }, []);
 
-  const fetchPosts = async (reset = false) => {
-    const params = new URLSearchParams();
-    if (debouncedSearch) params.set('q', debouncedSearch);
-    selectedTags.forEach((id) => params.append('tag', String(id)));
-    params.set('offset', reset ? '0' : String(offset));
-    params.set('limit', String(PAGE_LIMIT));
-    const res = await fetch(`/api/posts/search?${params.toString()}`);
-    const data = await res.json();
-    if (reset) setPosts(data.posts);
-    else setPosts((p) => [...p, ...data.posts]);
-    setHasMore(data.total > (reset ? data.posts.length : posts.length + data.posts.length));
-    setOffset((s) => (reset ? PAGE_LIMIT : s + PAGE_LIMIT));
-  };
-
-  // Refetch when search or tags change
-  useEffect(() => {
-    setOffset(0);
-    fetchPosts(true);
-  }, [debouncedSearch, selectedTags]);
-
-  // Infinite scroll observer
-  useEffect(() => {
-    if (!loaderRef.current) return;
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && hasMore) fetchPosts();
-    });
-    observer.observe(loaderRef.current);
-    return () => observer.disconnect();
-  }, [loaderRef.current, hasMore]);
-
   const toggleTag = (id: number) => {
-    setSelectedTags((s) => {
-      const newSet = new Set(s);
-      newSet.has(id) ? newSet.delete(id) : newSet.add(id);
-      return newSet;
-    });
+    const newSet = new Set(selected);
+    if (newSet.has(id)) newSet.delete(id); else newSet.add(id);
+    setSelected(newSet);
+    const params = new URLSearchParams();
+    newSet.forEach((i) => params.append('tag', i.toString()));
+    router.push(`?${params.toString()}`);
   };
 
   return (
-    <main className="p-6 max-w-3xl mx-auto bg-transparent rounded-lg shadow-md mt-10" style={{width: '98vw', display:'flex', flexDirection:'column'}}>
-      <h1 className="text-2xl font-bold mb-4">Static Blog</h1>
-      <input
-        type="text"
-        placeholder="Search"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="w-full p-4 mb-4 rounded-full border border-gray-300 bg-transparent backdrop-filter backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      <div className="flex flex-wrap gap-2 mb-4">
-        {tags.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => toggleTag(t.id)}
-            className={`px-3 py-1 rounded ${selectedTags.has(t.id) ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-          >
-            {t.name}
-          </button>
-        ))}
+    <div className="p-4 max-w-2xl mx-auto">
+      <h1 className="text-3xl font-bold mb-4">Home</h1>
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Search posts..."
+          className="w-full border rounded p-2"
+          onChange={(e) => {
+            const q = e.target.value;
+            const params = new URLSearchParams(searchParams);
+            if (q) params.set('q', q); else params.delete('q');
+            router.push(`?${params.toString()}`);
+          }}
+        />
       </div>
-      <ul className="space-y-4">
-        {posts.map((p) => (
-          <li key={p.id} className="border rounded p-4">
-            <h2 className="text-xl font-semibold">{p.title}</h2>
-            <p className="text-sm text-gray-500">{new Date(p.created_at * 1000).toLocaleDateString()}</p>
-          </li>
-        ))}
-      </ul>
-      {hasMore && <div ref={loaderRef} className="h-4 flex items-center justify-center text-gray-500">Loading ({posts.length})...</div>}
-    </main>
+      <div className="mb-4">
+        <strong>Filter by tags:</strong>
+        <div className="flex flex-wrap gap-2 mt-2">
+          {tags.map((t) => (
+            <label key={t.id} className="inline-flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={selected.has(t.id)}
+                onChange={() => toggleTag(t.id)}
+              />
+              <span>{t.name}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+      <p>Posts list will appear here (implementation pending).</p>
+    </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={null}>
+      <TagFilter />
+    </Suspense>
   );
 }
