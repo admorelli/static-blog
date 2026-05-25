@@ -9,11 +9,12 @@ Este diretório contém a documentação estruturada da implementação do blog 
 4. Após cada milestone, execute o teste mínimo indicado e avance ao próximo.
 
 ## Status atual
-- [ ] M01 — Setup do Projeto
-- [ ] M02 — CRUD via SQLite
-- [ ] M03 — Tags + Filtros
-- [ ] M04 — Pipeline de Build
-- [ ] M05 — UI Completa
-- [ ] M06 — Testes
-- [ ] M07 — Auditoria
+- [x] M01 — Setup do Projeto
+- [x] M02 — CRUD via SQLite
+- [x] M03 — Tags + Filtros (home tag UI implemented)
+- [x] M04 — Post Detail Page (API & UI)
+- [x] M05 — Create‑Post Form (API & UI)
+- [ ] M06 — Pipeline de Build (CI workflow wiring)
+- [ ] M07 — Testes (unit & e2e)
+- [ ] M08 — Auditoria & Refactor
 ---

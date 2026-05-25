@@ -55,7 +55,25 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - [Radix UI](https://radix-ui.com/)
 - [GitHub Actions](https://github.com/features/actions)
 
+## 📌 Milestones
+
+- **M01 – Setup** – Scaffolded Next.js 13 app with Tailwind, shadcn/ui, SQLite & Drizzle.
+- **M02 – CRUD** – Data layer, schema, API routes, posts list page.
+- **M03 – UI** – Home page with search, tag selector (functional), placeholder infinite scroll.
+- **M04 – Post Detail** – Implemented `/posts/[slug]` page and API fetching post + tags.
+- **M05 – Create Post** – Added `/create` page with form, handling tag creation/insertion.
+- **M06 – CI Pipeline** – Placeholder workflow present; not yet wired.
+- **M07 – Testing** – No tests yet (to be added).
+- **M08 – Audit & Refactor** – Pending.
+
 ## 📝 Roadmap
+
+- [ ] CLI TUI interface for post management
+- [ ] Post editor with markdown preview
+- [ ] RSS feed generation
+- [ ] SEO optimization (Open Graph, Twitter Cards)
+- [ ] Search functionality
+- [ ] Comments system
 
 - [ ] CLI TUI interface for post management
 - [ ] Post editor with markdown preview

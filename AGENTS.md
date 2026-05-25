@@ -43,21 +43,21 @@ Refer to `docs/architecture.md` for detailed design decisions and diagrammatic r
 
 All primary commands are now exposed through a `Makefile` for quick execution. Use `make <task>` (e.g., `make device`, `make test`) or the underlying npm scripts as shown in `README.md`.
 1. **Setup (M01)** – Scaffolded a Next.js 13 app with Tailwind, shadcn/ui, SQLite & Drizzle used in `src/db/`. ✨
-2. **CRUD (M02)** – Data layer (`src/lib/posts.ts`) and SQLite schema (`src/db/schema.ts`) are in place, **API routes** (`src/app/api/posts/route.ts`) and **posts list page** (`src/app/posts/page.tsx`) are now implemented.
+2. **CRUD (M02)** – Data layer (`src/lib/posts.ts`) and SQLite schema (`src/db/schema.ts`) are in place, **API routes** (`app/api/posts/route.ts`) and **posts list page** (`app/posts/page.tsx`) are implemented.
 3. **UI (M03)** – New homepage (`/`) now includes:
    * Search field for title/content.
    * Tag selector with toggles; navigating unmarked tags filters posts.
-   * Infinite scroll that loads 10‑post batches respecting the current search/query.
-     /api/posts/search provides paginated results.
+   * Infinite scroll (pending full implementation) that will load 10‑post batches respecting the current search/query.
    * Tag list fetched from `/api/tags`.
    * The posts list component is reused on the `/posts` page.
-   Next steps: post‑detail page and create form.
-4. **Tags & Filters (M03)** – Not yet implemented.
-5. **Pipeline (M04)** – The repository contains a placeholder `.github/workflows/build-and-deploy.yml` but the process is not yet wired.
-6. **Testing (M06)** – No tests exist yet.
-7. **Audit & Refactor (M07)** – Pending.
+4. **Post Detail (M04)** – Implemented `/posts/[slug]` page and API route (`app/api/posts/[slug]/route.ts`) that returns a post with its tags.
+5. **Create Post (M05)** – Added `/create` page with a form that posts to `app/api/posts/create/route.ts`, handling tag creation/insertion.
+6. **Tag UI (M03 – extended)** – Tag selector now functional on the home page (`app/page.tsx`).
+7. **Pipeline (M06)** – Placeholder CI workflow remains; not wired yet.
+8. **Testing (M07)** – No tests yet.
+9. **Audit & Refactor (M08)** – Pending.
 
-> **Next Steps** – Implement the post detail page (`/posts/[slug]`), add a create‑post form, then wire the CI pipeline and add unit/E2E tests.
+> **Next Steps** – Wire the CI pipeline, add unit & e2e tests, and finish the infinite‑scroll implementation for the homepage.
 
 ---
 
