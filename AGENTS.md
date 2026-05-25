@@ -5,7 +5,14 @@ This file contains an up‑to‑date overview of the current project layout, arc
 ---
 
 ## 📁 Current File Structure
-```bash
+```
+  ├── lib/          # Utilities & API helpers
+  ├── db/           # SQLite schema & migrations
+  ├── scripts/      # Support scripts (build, data fixtures)
+  ├── next.config.ts
+  ├── tsconfig.json
+  ├── package.json
+  └── ...bash
 /.github/
   ├── workflows/
 │   └── build-and-deploy.yml   # GitHub Actions pipeline
@@ -17,18 +24,7 @@ This file contains an up‑to‑date overview of the current project layout, arc
   │   ├── layout.tsx
   │   ├── page.tsx
   │   └── global.css
-  ├── lib/
-  │   └── db.ts   # Drizzle ORM setup
-  ├── src/
-  │   ├── db/       # SQLite schema & migrations
-  │   ├── lib/      # Utilities & API helpers
-  │   ├── scripts/  # Support scripts (build, data fixtures)
-  │   └── app/      # Next 13 app router pages & components
-  ├── next.config.ts
-  ├── tsconfig.json
-  ├── package.json
-  └── ...
-```
+
 
 ## ⚙️ Architecture Overview
 * **Next.js 13 app router** – Server‑first rendering with static generation.
@@ -42,8 +38,8 @@ Refer to `docs/architecture.md` for detailed design decisions and diagrammatic r
 ## 🚀 Development Plan (current state & next steps)
 
 All primary commands are now exposed through a `Makefile` for quick execution. Use `make <task>` (e.g., `make device`, `make test`) or the underlying npm scripts as shown in `README.md`.
-1. **Setup (M01)** – Scaffolded a Next.js 13 app with Tailwind, shadcn/ui, SQLite & Drizzle used in `src/db/`. ✨
-2. **CRUD (M02)** – Data layer (`src/lib/posts.ts`) and SQLite schema (`src/db/schema.ts`) are in place, **API routes** (`app/api/posts/route.ts`) and **posts list page** (`app/posts/page.tsx`) are implemented.
+1. **Setup (M01)** – Scaffolded a Next.js 13 app with Tailwind, shadcn/ui, SQLite & Drizzle used in `db/`. ✨
+2. **CRUD (M02)** – Data layer (`lib/posts.ts`) and SQLite schema (`db/schema.ts`) are in place, **API routes** (`app/api/posts/route.ts`) and **posts list page** (`app/posts/page.tsx`) are implemented.
 3. **UI (M03)** – New homepage (`/`) now includes:
    * Search field for title/content.
    * Tag selector with toggles; navigating unmarked tags filters posts.
@@ -65,8 +61,8 @@ All primary commands are now exposed through a `Makefile` for quick execution. U
 
 * **Keep plan in sync** – After completing any development task, update the `AGENTS.md` milestones section to reflect the new state.
 
-* **Schema** – `src/db/schema.ts`
-* **API** – `pages/api/posts.ts`
+* **Schema** – `db/schema.ts`
+* **API** – `app/api/posts/route.ts`
 * **Workbench** – `scripts/seed.ts` for sample data.
 * **Docs** – `docs/architecture.md`, `docs/audit-checklist.md`.
 }
