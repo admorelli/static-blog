@@ -1,7 +1,35 @@
 [
   {
+    "id": 38,
+    "name": "development"
+  },
+  {
     "id": 31,
     "name": "life"
+  },
+  {
+    "id": 33,
+    "name": "llm"
+  },
+  {
+    "id": 34,
+    "name": "local-llm"
+  },
+  {
+    "id": 37,
+    "name": "prompt-engineering"
+  },
+  {
+    "id": 36,
+    "name": "quantization"
+  },
+  {
+    "id": 35,
+    "name": "qwen"
+  },
+  {
+    "id": 39,
+    "name": "retrospective"
   },
   {
     "id": 30,

@@ -3,10 +3,15 @@
 // MCP Server for static_blog CLI tool
 // Allows AI models to interact with the blog CLI via MCP protocol
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { Server } = require("@modelcontextprotocol/sdk/server/index.js");
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { StdioServerTransport } = require("@modelcontextprotocol/sdk/server/stdio.js");
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { CallToolRequestSchema, ListToolsRequestSchema, ErrorCode, McpError } = require("@modelcontextprotocol/sdk/types.js");
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { spawn } = require("child_process");
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const path = require("path");
 
 const PROJECT_ROOT = "/home/allfa/git-projects/static_blog";
