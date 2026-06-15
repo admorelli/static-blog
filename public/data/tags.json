@@ -1,6 +1,10 @@
 [
   {
     "id": 38,
+    "name": "agent-comparison"
+  },
+  {
+    "id": 39,
     "name": "development"
   },
   {
@@ -16,20 +20,16 @@
     "name": "local-llm"
   },
   {
-    "id": 37,
-    "name": "prompt-engineering"
-  },
-  {
     "id": 36,
-    "name": "quantization"
+    "name": "opencode"
   },
   {
     "id": 35,
-    "name": "qwen"
+    "name": "pi-agent"
   },
   {
-    "id": 39,
-    "name": "retrospective"
+    "id": 37,
+    "name": "quantization"
   },
   {
     "id": 30,
