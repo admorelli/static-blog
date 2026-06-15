@@ -15,6 +15,8 @@ Este diretório contém a documentação estruturada da implementação do blog 
 - [x] M04 — Post Detail Page (API & UI)
 - [x] M05 — Create‑Post Form (API & UI)
 - [ ] M06 — Pipeline de Build (CI workflow wiring)
-- [ ] M07 — Testes (unit & e2e)
+- [ ] M07.1 — Test infrastructure (Done)
+- [ ] M07.2 — Unit tests (Pending)
+- [ ] M07.3 — E2E tests (Pending)
 - [ ] M08 — Auditoria & Refactor
 ---

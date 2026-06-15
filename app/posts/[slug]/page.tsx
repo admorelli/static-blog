@@ -1,6 +1,11 @@
 import { notFound } from 'next/navigation';
-import { getPostBySlug } from '@/lib/posts';
+import { getPostBySlug, listPosts } from '@/lib/posts';
 import { listTagsForPost } from '@/lib/tags';
+
+export async function generateStaticParams() {
+  const posts = await listPosts();
+  return posts.map((post) => ({ slug: post.slug }));
+}
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const post = await getPostBySlug(params.slug);

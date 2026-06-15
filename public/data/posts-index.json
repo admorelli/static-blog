@@ -1,0 +1,20 @@
+{
+  "posts": [
+    {
+      "id": 27,
+      "title": "Hello World",
+      "slug": "hello-world",
+      "content": "<p>Welcome to my blog built with Next.js, Tailwind and Drizzle ORM.</p>",
+      "created_at": 1781523641
+    },
+    {
+      "id": 28,
+      "title": "Second Post",
+      "slug": "second-post",
+      "content": "<p>This is another post.</p>",
+      "created_at": 1781523641
+    }
+  ],
+  "total": 2,
+  "generatedAt": "2026-06-15T11:40:41.399Z"
+}

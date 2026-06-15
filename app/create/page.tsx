@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function CreatePage() {
@@ -7,7 +7,15 @@ export default function CreatePage() {
   const [slug, setSlug] = useState('');
   const [content, setContent] = useState('');
   const [tags, setTags] = useState('');
+  const [tagSuggestions, setTagSuggestions] = useState<string[]>([]);
   const router = useRouter();
+
+  useEffect(() => {
+    fetch('/data/tags.json')
+      .then((res) => res.json())
+      .then((data) => setTagSuggestions(data.map((t: { name: string }) => t.name)))
+      .catch(() => setTagSuggestions([]));
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,13 +60,25 @@ export default function CreatePage() {
           required
           className="w-full border rounded p-2 h-32"
         />
-        <input
-          type="text"
-          placeholder="Tags (comma separated)"
-          value={tags}
-          onChange={(e) => setTags(e.target.value)}
-          className="w-full border rounded p-2"
-        />
+        <div>
+          <label className="block text-sm font-medium mb-1">Tags (comma separated)</label>
+          <input
+            type="text"
+            placeholder="Tags (comma separated)"
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
+            list="tag-suggestions"
+            className="w-full border rounded p-2"
+          />
+          <datalist id="tag-suggestions">
+            {tagSuggestions.map((tag) => (
+              <option key={tag} value={tag} />
+            ))}
+          </datalist>
+          <p className="text-xs text-gray-500 mt-1">
+            Start typing to see existing tags, or create new ones
+          </p>
+        </div>
         <button
           type="submit"
           className="px-6 py-2 bg-blue-500 text-white rounded"

@@ -1,8 +1,9 @@
-import React from 'react';
-import Link from 'next/link';
 import { listPosts } from '@/lib/posts';
 
-export const dynamic = 'force-dynamic'; // ensure runtime fetch
+export async function generateStaticParams() {
+  const posts = await listPosts();
+  return posts.map((post) => ({ slug: post.slug }));
+}
 
 export default async function PostsPage() {
   const posts = await listPosts();
@@ -12,9 +13,9 @@ export default async function PostsPage() {
       <ul className="space-y-3">
         {posts.map((post) => (
           <li key={post.id} className="border p-3 rounded">
-            <Link href={`/posts/${post.slug}`}> 
+            <a href={`/posts/${post.slug}`}>
               <h2 className="text-xl font-semibold">{post.title}</h2>
-            </Link>
+            </a>
             <p className="text-sm text-gray-500">{new Date(post.created_at * 1000).toLocaleDateString()}</p>
           </li>
         ))}

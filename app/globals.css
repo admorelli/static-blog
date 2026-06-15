@@ -24,3 +24,117 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Class-based dark mode (for manual toggle) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Prose dark mode */
+.prose {
+  @apply text-gray-900 dark:text-gray-100;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  @apply text-gray-900 dark:text-white;
+}
+
+.prose a {
+  @apply text-blue-600 dark:text-blue-400;
+}
+
+.prose code {
+  @apply bg-gray-100 dark:bg-gray-800 text-red-600 dark:text-red-400;
+}
+
+.prose pre {
+  @apply bg-gray-900 dark:bg-gray-950;
+}
+
+.prose pre code {
+  @apply bg-transparent text-inherit;
+}
+
+/* Form inputs dark mode */
+input, textarea, select {
+  @apply bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100;
+}
+
+input:focus, textarea:focus, select:focus {
+  @apply ring-2 ring-blue-500 border-transparent;
+}
+
+/* Card dark mode */
+.border {
+  @apply border-gray-200 dark:border-gray-700;
+}
+
+.bg-white {
+  @apply dark:bg-gray-800;
+}
+
+.text-gray-500 {
+  @apply dark:text-gray-400;
+}
+
+.text-gray-600 {
+  @apply dark:text-gray-300;
+}
+
+.text-gray-700 {
+  @apply dark:text-gray-200;
+}
+
+.text-gray-900 {
+  @apply dark:text-white;
+}
+
+.bg-gray-100 {
+  @apply dark:bg-gray-800;
+}
+
+.bg-gray-200 {
+  @apply dark:bg-gray-700;
+}
+
+.bg-gray-800 {
+  @apply dark:bg-gray-700;
+}
+
+.bg-gray-900 {
+  @apply dark:bg-gray-950;
+}
+
+.hover\:bg-gray-100:hover {
+  @apply dark:hover:bg-gray-800;
+}
+
+.hover\:bg-gray-200:hover {
+  @apply dark:hover:bg-gray-700;
+}
+
+.hover\:bg-gray-50:hover {
+  @apply dark:hover:bg-gray-800;
+}
+
+.hover\:text-gray-500:hover {
+  @apply dark:hover:text-gray-400;
+}
+
+.hover\:text-gray-700:hover {
+  @apply dark:hover:text-gray-200;
+}
+
+.hover\:text-gray-900:hover {
+  @apply dark:hover:text-white;
+}
+
+.hover\:bg-blue-600:hover {
+  @apply dark:hover:bg-blue-500;
+}
+
+.hover\:bg-gray-300:hover {
+  @apply dark:hover:bg-gray-600;
+}
+
+.hover\:text-gray-300:hover {
+  @apply dark:hover:text-gray-400;
+}
