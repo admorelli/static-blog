@@ -1,4 +1,6 @@
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const db = require('../db/db.ts').default;
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { posts, tags, postTags } = require('../db/schema.ts');
 
 async function main() {

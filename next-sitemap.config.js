@@ -25,9 +25,11 @@ module.exports = {
       alternateRefs: config.alternateRefs ?? [],
     };
   },
-  additionalPaths: async (config) => {
+  additionalPaths: async (_config) => {
     // Read posts from generated static data
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const fs = require('fs');
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const path = require('path');
     const dataPath = path.join(process.cwd(), 'public', 'data', 'posts-index.json');
     

@@ -1,9 +1,17 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as db from '../db/db';
 import * as posts from '../lib/posts';
 import { posts as postsSchema } from '../db/schema';
 
-// Mock the database module
+interface MockDb {
+  select: ReturnType<typeof vi.fn>;
+  insert: ReturnType<typeof vi.fn>;
+  update: ReturnType<typeof vi.fn>;
+  delete: ReturnType<typeof vi.fn>;
+}
+
+const mockedDb = vi.mocked(db.default);
+
 vi.mock('../db/db', () => ({
   default: {
     select: vi.fn().mockReturnValue({
@@ -32,8 +40,6 @@ vi.mock('../db/db', () => ({
   },
 }));
 
-const mockedDb = vi.mocked(db.default);
-
 describe('listPosts', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -49,7 +55,7 @@ describe('listPosts', () => {
       from: vi.fn().mockReturnValue({
         orderBy: vi.fn().mockResolvedValue(mockPosts),
       }),
-    } as any);
+    });
 
     const result = await posts.listPosts();
     expect(result).toEqual(mockPosts);
@@ -72,7 +78,7 @@ describe('getPostBySlug', () => {
           }),
         }),
       }),
-    } as any);
+    });
 
     const result = await posts.getPostBySlug('test');
     expect(result).toEqual(mockPost);
@@ -87,7 +93,7 @@ describe('getPostBySlug', () => {
           }),
         }),
       }),
-    } as any);
+    });
 
     const result = await posts.getPostBySlug('nonexistent');
     expect(result).toBeUndefined();
@@ -103,7 +109,6 @@ describe('createPost', () => {
     await posts.createPost({ title: 'My Post', slug: 'my-post', content: 'Content' });
 
     expect(mockedDb.insert).toHaveBeenCalledWith(postsSchema);
-    // values call is verified by the chain mock
   });
 });
 
@@ -117,7 +122,7 @@ describe('updatePost', () => {
       set: vi.fn().mockReturnValue({
         where: vi.fn().mockResolvedValue(undefined),
       }),
-    } as any);
+    });
 
     await posts.updatePost(1, { title: 'Updated' });
 
@@ -133,7 +138,7 @@ describe('deletePost', () => {
   it('deletes post by id', async () => {
     mockedDb.delete.mockReturnValue({
       where: vi.fn().mockResolvedValue(undefined),
-    } as any);
+    });
 
     await posts.deletePost(1);
 

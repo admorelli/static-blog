@@ -1,11 +1,16 @@
-#!/usr/bin/env node
-
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const db = require('../db/db.ts').default;
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { posts, tags, postTags } = require('../db/schema.ts');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { eq, desc, like, or, inArray, and } = require('drizzle-orm');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const inquirer = require('inquirer').default;
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const fs = require('fs');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const path = require('path');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { execSync } = require('child_process');
 
 const DB_PATH = path.join(__dirname, '..', 'db.sqlite');
@@ -78,7 +83,6 @@ async function createPostCmd(args) {
 
   let { title, slug, content, tags: tagNames } = args;
 
-  // Interactive prompts for missing fields
   if (!title) {
     const answers = await inquirer.prompt([
       { type: 'input', name: 'title', message: 'Post title:', validate: v => v.length > 0 || 'Title required' },
@@ -96,7 +100,6 @@ async function createPostCmd(args) {
 
   const now = Math.floor(Date.now() / 1000);
 
-  // Get or create tags
   let tagIds = [];
   if (tagNames) {
     const tagList = tagNames.split(',').map(t => t.trim()).filter(Boolean);
@@ -127,10 +130,9 @@ async function createPostCmd(args) {
   if (tagIds.length) console.log(`   Tags: ${tagNames}`);
 }
 
-async function deletePostCmd(args, flags) {
+async function deletePostCmd(args) {
   await ensureTables();
   const { id, slug } = args;
-  const force = flags.yes || flags.y || flags.force;
 
   let postId = id;
   if (!postId && slug) {
@@ -160,17 +162,15 @@ async function deletePostCmd(args, flags) {
     return;
   }
 
-  if (!force) {
-    const { confirm } = await inquirer.prompt([
-      { type: 'confirm', name: 'confirm', message: `Delete "${post[0].title}" (ID: ${postId})?`, default: false }
-    ]);
-    if (!confirm) {
-      console.log('Cancelled.');
-      return;
-    }
+  const { confirm } = await inquirer.prompt([
+    { type: 'confirm', name: 'confirm', message: `Delete "${post[0].title}" (ID: ${postId})?`, default: false }
+  ]);
+
+  if (!confirm) {
+    console.log('Cancelled.');
+    return;
   }
 
-  // Delete post_tags first (FK), then post
   await db.delete(postTags).where(eq(postTags.postId, postId));
   await db.delete(posts).where(eq(posts.id, postId));
 
@@ -220,10 +220,9 @@ async function createTagCmd(args) {
   }
 }
 
-async function deleteTagCmd(args, flags) {
+async function deleteTagCmd(args) {
   await ensureTables();
   const { name } = args;
-  const force = flags.yes || flags.y || flags.force;
 
   let tagName = name;
   if (!tagName) {
@@ -239,14 +238,13 @@ async function deleteTagCmd(args, flags) {
     return;
   }
 
-  if (!force) {
-    const { confirm } = await inquirer.prompt([
-      { type: 'confirm', name: 'confirm', message: `Delete tag "${tagName}" and all associations?`, default: false }
-    ]);
-    if (!confirm) {
-      console.log('Cancelled.');
-      return;
-    }
+  const { confirm } = await inquirer.prompt([
+    { type: 'confirm', name: 'confirm', message: `Delete tag "${tagName}" and all associations?`, default: false }
+  ]);
+
+  if (!confirm) {
+    console.log('Cancelled.');
+    return;
   }
 
   await db.delete(postTags).where(eq(postTags.tagId, tagRow[0].id));
@@ -331,17 +329,17 @@ async function generateStaticCmd() {
   if (existing.length === 0) {
     console.log('Database empty, seeding...');
     const now = Math.floor(Date.now() / 1000);
-
+    
     const tagRows = await db
       .insert(tags)
       .values([{ name: 'tech' }, { name: 'life' }, { name: 'tutorial' }])
       .returning({ id: tags.id, name: tags.name })
       .execute();
-
+      
     const techTag = tagRows.find(t => t.name === 'tech');
     const lifeTag = tagRows.find(t => t.name === 'life');
     const tutorialTag = tagRows.find(t => t.name === 'tutorial');
-
+    
     const postRows = await db
       .insert(posts)
       .values([
@@ -350,21 +348,33 @@ async function generateStaticCmd() {
       ])
       .returning({ id: posts.id, slug: posts.slug })
       .execute();
-
+      
     const helloPost = postRows.find(p => p.slug === 'hello-world');
     const secondPost = postRows.find(p => p.slug === 'second-post');
-
+    
     if (helloPost && techTag) await db.insert(postTags).values([{ postId: helloPost.id, tagId: techTag.id }]).execute();
     if (secondPost && lifeTag) await db.insert(postTags).values([{ postId: secondPost.id, tagId: lifeTag.id }]).execute();
     if (secondPost && tutorialTag) await db.insert(postTags).values([{ postId: secondPost.id, tagId: tutorialTag.id }]).execute();
-
+    
     console.log('Seeded posts with tags');
   }
 
-  // Generate all posts
-  const allPosts = await db.select().from(posts).orderBy(desc(posts.created_at)).execute();
-  const allPostTags = await db.select({ postId: postTags.postId, tagId: postTags.tagId }).from(postTags).execute();
-  const allTags = await db.select({ id: tags.id, name: tags.name }).from(tags).orderBy(tags.name).execute();
+  const allPosts = await db
+    .select()
+    .from(posts)
+    .orderBy(desc(posts.created_at))
+    .execute();
+
+  const allPostTags = await db
+    .select({ postId: postTags.postId, tagId: postTags.tagId })
+    .from(postTags)
+    .execute();
+
+  const allTags = await db
+    .select({ id: tags.id, name: tags.name })
+    .from(tags)
+    .orderBy(tags.name)
+    .execute();
 
   const indexData = { posts: allPosts, total: allPosts.length, generatedAt: new Date().toISOString() };
 
@@ -374,9 +384,9 @@ async function generateStaticCmd() {
   fs.writeFileSync(path.join(outDir, 'tags.json'), JSON.stringify(allTags, null, 2));
   fs.writeFileSync(path.join(outDir, 'post-tags.json'), JSON.stringify(allPostTags, null, 2));
 
-  console.log(`✅ Generated posts-index.json (${allPosts.length} posts)`);
-  console.log(`✅ Generated tags.json (${allTags.length} tags)`);
-  console.log(`✅ Generated post-tags.json (${allPostTags.length} relationships)`);
+  console.log(`✅ Generated posts-index.json with ${allPosts.length} posts`);
+  console.log(`✅ Generated tags.json with ${allTags.length} tags`);
+  console.log(`✅ Generated post-tags.json with ${allPostTags.length} relationships`);
 }
 
 async function buildCmd() {
@@ -392,7 +402,7 @@ async function buildCmd() {
 
 async function devCmd() {
   console.log('Starting dev server...');
-  execSync('npx npm run dev', { stdio: 'inherit', cwd: path.join(__dirname, '..') });
+  execSync('npx npm run dev', { stddio: 'inherit', cwd: path.join(__dirname, '..') });
 }
 
 function showHelp() {
@@ -416,7 +426,6 @@ Commands:
   delete                   Delete a post
     --id <number>          Post ID
     --slug <text>          Post slug
-    --yes, -y              Skip confirmation prompt
 
   tags                     List all tags
 
@@ -455,23 +464,23 @@ Examples:
 async function main() {
   const cmd = process.argv[2];
   const args = {};
-const flags = {};
-for (let i = 3; i < process.argv.length; i++) {
-  const arg = process.argv[i];
-  if (arg.startsWith('--')) {
-    const key = arg.replace(/^--/, '');
-    const nextArg = process.argv[i + 1];
-    if (nextArg && !nextArg.startsWith('-')) {
-      args[key] = nextArg;
-      i++; // skip next arg
-    } else {
+  const flags = {};
+  for (let i = 3; i < process.argv.length; i++) {
+    const arg = process.argv[i];
+    if (arg.startsWith('--')) {
+      const key = arg.replace(/^--/, '');
+      const nextArg = process.argv[i + 1];
+      if (nextArg && !nextArg.startsWith('-')) {
+        args[key] = nextArg;
+        i++;
+      } else {
+        flags[key] = true;
+      }
+    } else if (arg.startsWith('-')) {
+      const key = arg.replace(/^-/, '');
       flags[key] = true;
     }
-  } else if (arg.startsWith('-')) {
-    const key = arg.replace(/^-/, '');
-    flags[key] = true;
   }
-}
 
   try {
     switch (cmd) {

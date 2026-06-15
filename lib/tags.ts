@@ -16,7 +16,6 @@ export type PostEntity = {
   created_at: number;
 };
 
-/** List all tags */
 export async function listAllTags(): Promise<Tag[]> {
   return await db
     .select({ id: tags.id, name: tags.name })
@@ -25,7 +24,6 @@ export async function listAllTags(): Promise<Tag[]> {
     .execute();
 }
 
-/** List tags for a specific post */
 export async function listTagsForPost(postId: number): Promise<Tag[]> {
   return await db
     .select({ id: tags.id, name: tags.name })
@@ -35,7 +33,6 @@ export async function listTagsForPost(postId: number): Promise<Tag[]> {
     .execute();
 }
 
-/** Paginated list of posts with optional search and tag filtering */
 export async function listPostsPaginated({
   offset,
   limit,
@@ -47,10 +44,10 @@ export async function listPostsPaginated({
   search?: string;
   tags?: number[];
 }): Promise<{ posts: PostEntity[]; total: number }> {
-  // Start from posts table
-  let query = db.select().from(posts);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let query: any = db.select().from(posts);
 
-  // Build filter condition
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let condition: any = undefined;
 
   if (search) {
@@ -62,30 +59,28 @@ export async function listPostsPaginated({
 
   if (tagIds && tagIds.length) {
     console.log('DEBUG: filtering by tagIds', tagIds);
-    query = (query as any).innerJoin(postTags, eq(postTags.postId, posts.id));
+    query = query.innerJoin(postTags, eq(postTags.postId, posts.id));
     const tagCond = inArray(postTags.tagId, tagIds);
     condition = condition ? and(condition, tagCond) : tagCond;
   }
 
   if (condition) {
-    query = (query as any).where(condition);
+    query = query.where(condition);
   }
 
-  // Execute with pagination (fields already selected)
   const rows = await query
     .orderBy(desc(posts.created_at))
     .offset(offset)
     .limit(limit)
     .execute();
 
-  // Total rows - need separate count query for accurate total
-  let countQuery = db.select({ count: count(posts.id) }).from(posts);
-  // Apply same joins and conditions for count
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let countQuery: any = db.select({ count: count(posts.id) }).from(posts);
   if (tagIds && tagIds.length) {
-    countQuery = (countQuery as any).innerJoin(postTags, eq(postTags.postId, posts.id));
+    countQuery = countQuery.innerJoin(postTags, eq(postTags.postId, posts.id));
   }
   if (condition) {
-    (countQuery as any).where(condition);
+    countQuery = countQuery.where(condition);
   }
   const countResult = await countQuery.execute();
   const total = countResult[0]?.count ?? 0;

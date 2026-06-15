@@ -1,7 +1,12 @@
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const db = require('../db/db.ts').default;
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { posts, tags, postTags } = require('../db/schema.ts');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { eq, desc } = require('drizzle-orm');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const fs = require('fs');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const path = require('path');
 
 async function main() {
@@ -12,6 +17,7 @@ async function main() {
     await db.select().from(posts).limit(1).execute();
   } catch (e) {
     console.log('Tables not found, running drizzle push...');
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { execSync } = require('child_process');
     execSync('npx drizzle-kit push', { stdio: 'inherit', cwd: __dirname + '/..' });
   }

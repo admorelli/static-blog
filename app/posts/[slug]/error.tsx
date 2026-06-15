@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 
 export default function Error({
-  error,
+  error: _error,
   reset,
 }: {
   error: Error & { digest?: string };
@@ -13,7 +13,7 @@ export default function Error({
   return (
     <div className="p-6 max-w-2xl mx-auto text-center">
       <h1 className="text-2xl font-bold text-red-600 mb-2">Post not found</h1>
-      <p className="text-gray-600 mb-4">The post you're looking for doesn't exist or there was an error loading it.</p>
+      <p className="text-gray-600 mb-4">The post you&apos;re looking for doesn&apos;t exist or there was an error loading it.</p>
       <div className="space-x-2">
         <button
           onClick={reset}

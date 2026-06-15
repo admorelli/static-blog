@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const path = require('path')
 
 // GitHub Pages repo name - set via environment variable during deployment
@@ -14,28 +15,6 @@ const nextConfig: NextConfig = {
   },
   basePath,
   assetPrefix,
-  turbopack: {
-    root: path.join(__dirname, '.'),
-    rules: {
-      '*': {
-        condition: {
-          all: [
-            { not: 'foreign' },
-            { path: /^img\/[0-9]{3}\// },
-            {
-              any: [
-                { path: '*.svg' },
-                { query: /[?&]svgr(?=&|$)/ },
-                { content: /\\<svg\\W/ },
-              ],
-            },
-          ],
-        },
-        loaders: ['@svgr/webpack'],
-        as: '*.js',
-      },
-    },
-  },
 }
 
 export default nextConfig;
