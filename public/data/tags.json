@@ -1,11 +1,23 @@
 [
   {
-    "id": 38,
+    "id": 46,
+    "name": "agent-architecture"
+  },
+  {
+    "id": 42,
     "name": "agent-comparison"
   },
   {
-    "id": 39,
+    "id": 38,
     "name": "development"
+  },
+  {
+    "id": 48,
+    "name": "free-tier"
+  },
+  {
+    "id": 43,
+    "name": "hermes"
   },
   {
     "id": 31,
@@ -20,20 +32,52 @@
     "name": "local-llm"
   },
   {
-    "id": 36,
+    "id": 47,
+    "name": "nemotron"
+  },
+  {
+    "id": 49,
+    "name": "nemotron-3-ultra"
+  },
+  {
+    "id": 41,
     "name": "opencode"
   },
   {
-    "id": 35,
+    "id": 44,
+    "name": "openrouter"
+  },
+  {
+    "id": 40,
     "name": "pi-agent"
   },
   {
+    "id": 50,
+    "name": "project-completion"
+  },
+  {
     "id": 37,
+    "name": "prompt-engineering"
+  },
+  {
+    "id": 36,
     "name": "quantization"
+  },
+  {
+    "id": 35,
+    "name": "qwen"
+  },
+  {
+    "id": 39,
+    "name": "retrospective"
   },
   {
     "id": 30,
     "name": "tech"
+  },
+  {
+    "id": 45,
+    "name": "tools"
   },
   {
     "id": 32,
