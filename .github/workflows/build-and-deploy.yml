@@ -28,7 +28,7 @@ jobs:
         run: npm ci
 
       - name: Install chromium
-        run: sudo apt-get update && sudo apt-get install -y chromium-browser
+        run: sudo apt-get update && sudo apt-get install -y chromium-browser xvfb
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
@@ -43,7 +43,7 @@ jobs:
         run: npm run test:unit
 
       - name: Run e2e tests
-        run: npm run test:e2e
+        run: xvfb-run -a npm run test:e2e
 
   build:
     needs: lint-and-test

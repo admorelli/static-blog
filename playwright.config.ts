@@ -10,17 +10,6 @@ export default defineConfig({
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     },
   },
-  projects: [
-    {
-      name: 'chromium',
-      use: {
-        ...(process.env.CI && {
-          channel: 'chromium',
-          executablePath: '/usr/bin/chromium-browser',
-        }),
-      },
-    },
-  ],
   webServer: {
     command: 'npm run dev -- -p 3001',
     url: 'http://localhost:3001',
