@@ -1,86 +1,78 @@
 [
   {
-    "id": 46,
+    "id": 19,
     "name": "agent-architecture"
   },
   {
-    "id": 42,
+    "id": 10,
     "name": "agent-comparison"
   },
   {
-    "id": 38,
+    "id": 6,
     "name": "development"
   },
   {
-    "id": 48,
+    "id": 13,
     "name": "free-tier"
   },
   {
-    "id": 43,
+    "id": 16,
     "name": "hermes"
   },
   {
-    "id": 31,
-    "name": "life"
-  },
-  {
-    "id": 33,
+    "id": 1,
     "name": "llm"
   },
   {
-    "id": 34,
+    "id": 2,
     "name": "local-llm"
   },
   {
-    "id": 47,
+    "id": 17,
+    "name": "mellum"
+  },
+  {
+    "id": 11,
     "name": "nemotron"
   },
   {
-    "id": 49,
+    "id": 14,
     "name": "nemotron-3-ultra"
   },
   {
-    "id": 41,
+    "id": 9,
     "name": "opencode"
   },
   {
-    "id": 44,
+    "id": 12,
     "name": "openrouter"
   },
   {
-    "id": 40,
+    "id": 8,
     "name": "pi-agent"
   },
   {
-    "id": 50,
+    "id": 15,
     "name": "project-completion"
   },
   {
-    "id": 37,
+    "id": 5,
     "name": "prompt-engineering"
   },
   {
-    "id": 36,
+    "id": 4,
     "name": "quantization"
   },
   {
-    "id": 35,
+    "id": 3,
     "name": "qwen"
   },
   {
-    "id": 39,
+    "id": 7,
     "name": "retrospective"
   },
   {
-    "id": 30,
-    "name": "tech"
-  },
-  {
-    "id": 45,
+    "id": 18,
     "name": "tools"
-  },
-  {
-    "id": 32,
-    "name": "tutorial"
   }
 ]
