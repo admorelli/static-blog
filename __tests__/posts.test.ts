@@ -3,40 +3,60 @@ import * as db from '../db/db';
 import * as posts from '../lib/posts';
 import { posts as postsSchema } from '../db/schema';
 
-interface MockDb {
-  select: ReturnType<typeof vi.fn>;
-  insert: ReturnType<typeof vi.fn>;
-  update: ReturnType<typeof vi.fn>;
-  delete: ReturnType<typeof vi.fn>;
-}
-
 const mockedDb = vi.mocked(db.default);
 
-vi.mock('../db/db', () => ({
-  default: {
-    select: vi.fn().mockReturnValue({
-      from: vi.fn().mockReturnValue({
-        orderBy: vi.fn().mockResolvedValue([]),
-        where: vi.fn().mockReturnValue({
-          limit: vi.fn().mockReturnValue({
-            get: vi.fn().mockResolvedValue(undefined),
-          }),
+// Safe escape hatch for incompatible test mock types
+function asType<T>(value: unknown): T {
+  return value as T;
+}
+
+// Type helpers using the actual mocked method return types
+type SelectBuilder = ReturnType<typeof mockedDb.select>;
+type InsertBuilder = ReturnType<typeof mockedDb.insert>;
+type UpdateBuilder = ReturnType<typeof mockedDb.update>;
+type DeleteBuilder = ReturnType<typeof mockedDb.delete>;
+
+function createSelectMock<T>(result: T): SelectBuilder {
+  return asType<SelectBuilder>({
+    from: vi.fn().mockReturnValue({
+      orderBy: vi.fn().mockResolvedValue(result),
+      where: vi.fn().mockReturnValue({
+        limit: vi.fn().mockReturnValue({
+          get: vi.fn().mockResolvedValue(result),
         }),
       }),
     }),
-    insert: vi.fn().mockReturnValue({
-      values: vi.fn().mockReturnValue({
-        run: vi.fn().mockResolvedValue({ lastInsertRowid: 1 })
-      })
+  });
+}
+
+function createInsertMock(lastInsertRowid: number = 1): InsertBuilder {
+  return asType<InsertBuilder>({
+    values: vi.fn().mockReturnValue({
+      run: vi.fn().mockResolvedValue({ lastInsertRowid }),
     }),
-    update: vi.fn().mockReturnValue({
-      set: vi.fn().mockReturnValue({
-        where: vi.fn().mockResolvedValue(undefined),
-      }),
-    }),
-    delete: vi.fn().mockReturnValue({
+  });
+}
+
+function createUpdateMock(): UpdateBuilder {
+  return asType<UpdateBuilder>({
+    set: vi.fn().mockReturnValue({
       where: vi.fn().mockResolvedValue(undefined),
     }),
+  });
+}
+
+function createDeleteMock(): DeleteBuilder {
+  return asType<DeleteBuilder>({
+    where: vi.fn().mockResolvedValue(undefined),
+  });
+}
+
+vi.mock('../db/db', () => ({
+  default: {
+    select: vi.fn().mockReturnValue(createSelectMock([])),
+    insert: vi.fn().mockReturnValue(createInsertMock()),
+    update: vi.fn().mockReturnValue(createUpdateMock()),
+    delete: vi.fn().mockReturnValue(createDeleteMock()),
   },
 }));
 
@@ -51,11 +71,7 @@ describe('listPosts', () => {
       { id: 2, title: 'Second', slug: 'second', content: 'C2', created_at: 2000 },
     ];
 
-    mockedDb.select.mockReturnValue({
-      from: vi.fn().mockReturnValue({
-        orderBy: vi.fn().mockResolvedValue(mockPosts),
-      }),
-    });
+    mockedDb.select.mockReturnValue(createSelectMock(mockPosts));
 
     const result = await posts.listPosts();
     expect(result).toEqual(mockPosts);
@@ -70,30 +86,14 @@ describe('getPostBySlug', () => {
   it('returns post when found', async () => {
     const mockPost = { id: 1, title: 'Test', slug: 'test', content: 'Content', created_at: 1000 };
 
-    mockedDb.select.mockReturnValue({
-      from: vi.fn().mockReturnValue({
-        where: vi.fn().mockReturnValue({
-          limit: vi.fn().mockReturnValue({
-            get: vi.fn().mockResolvedValue(mockPost),
-          }),
-        }),
-      }),
-    });
+    mockedDb.select.mockReturnValue(createSelectMock(mockPost));
 
     const result = await posts.getPostBySlug('test');
     expect(result).toEqual(mockPost);
   });
 
   it('returns undefined when not found', async () => {
-    mockedDb.select.mockReturnValue({
-      from: vi.fn().mockReturnValue({
-        where: vi.fn().mockReturnValue({
-          limit: vi.fn().mockReturnValue({
-            get: vi.fn().mockResolvedValue(undefined),
-          }),
-        }),
-      }),
-    });
+    mockedDb.select.mockReturnValue(createSelectMock(undefined));
 
     const result = await posts.getPostBySlug('nonexistent');
     expect(result).toBeUndefined();
@@ -118,11 +118,7 @@ describe('updatePost', () => {
   });
 
   it('updates post with provided fields', async () => {
-    mockedDb.update.mockReturnValue({
-      set: vi.fn().mockReturnValue({
-        where: vi.fn().mockResolvedValue(undefined),
-      }),
-    });
+    mockedDb.update.mockReturnValue(createUpdateMock());
 
     await posts.updatePost(1, { title: 'Updated' });
 
@@ -136,9 +132,7 @@ describe('deletePost', () => {
   });
 
   it('deletes post by id', async () => {
-    mockedDb.delete.mockReturnValue({
-      where: vi.fn().mockResolvedValue(undefined),
-    });
+    mockedDb.delete.mockReturnValue(createDeleteMock());
 
     await posts.deletePost(1);
 
