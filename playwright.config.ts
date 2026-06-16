@@ -10,11 +10,4 @@ export default defineConfig({
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     },
   },
-  webServer: {
-    command: 'npm run dev -- -p 3001',
-    url: 'http://localhost:3001',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-    cwd: process.cwd(),
-  },
 });
