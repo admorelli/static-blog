@@ -1,15 +1,14 @@
 import { notFound } from 'next/navigation';
-import { getAllPosts, getPostBySlug } from '@/lib/static-posts-generated';
+import postsIndex from '@/public/data/posts-index.json';
 import { Post } from '@/lib/types';
 
 export async function generateStaticParams() {
-  const posts = getAllPosts();
-  return posts.map((post) => ({ slug: post.slug }));
+  return postsIndex.posts.map((post) => ({ slug: post.slug }));
 }
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post: Post | undefined = getPostBySlug(slug);
+  const post: Post | undefined = postsIndex.posts.find((p) => p.slug === slug);
   if (!post) return notFound();
   return (
     <article className="p-6 max-w-2xl mx-auto">
