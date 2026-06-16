@@ -50,9 +50,6 @@ export function Header() {
           <Link href="/posts" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
             Posts
           </Link>
-          <Link href="/create" className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
-            Create
-          </Link>
           {toggleTheme ? (
             <button
               onClick={toggleTheme}

@@ -14,9 +14,12 @@ interface Post {
   created_at: number;
 }
 
-interface PostsResponse {
-  posts: Post[];
-  total: number;
+function getBasePath(): string {
+  if (typeof window !== "undefined") {
+    const meta = document.querySelector('meta[name="next-base-path"]');
+    if (meta) return meta.getAttribute("content") || "";
+  }
+  return "";
 }
 
 function TagFilter() {
@@ -26,7 +29,8 @@ function TagFilter() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    fetch("/data/tags.json")
+    const basePath = getBasePath();
+    fetch(`${basePath}/data/tags.json`)
       .then((res) => res.json())
       .then(setTags)
       .catch(() => setTags([]));
@@ -93,7 +97,8 @@ function PostsList() {
     useInfiniteQuery({
       queryKey: ["posts", search, tagIds],
       queryFn: async ({ pageParam = 0 }) => {
-        const res = await fetch("/data/posts-index.json");
+        const basePath = getBasePath();
+        const res = await fetch(`${basePath}/data/posts-index.json`);
         const indexData = await res.json();
         let posts = indexData.posts as Post[];
 
@@ -106,7 +111,7 @@ function PostsList() {
         }
 
         if (tagIds.length > 0) {
-          const tagRes = await fetch("/data/post-tags.json");
+          const tagRes = await fetch(`${basePath}/data/post-tags.json`);
           const postTags = await tagRes.json();
           const taggedPostIds = new Set(
             postTags
@@ -126,7 +131,10 @@ function PostsList() {
         };
       },
       getNextPageParam: (lastPage, allPages) => {
-        const totalLoaded = allPages.reduce((sum, page) => sum + page.posts.length, 0);
+        const totalLoaded = allPages.reduce(
+          (sum, page) => sum + page.posts.length,
+          0
+        );
         if (totalLoaded < lastPage.total) {
           return totalLoaded;
         }
