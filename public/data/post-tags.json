@@ -116,15 +116,43 @@
     "tagId": 20
   },
   {
-    "postId": 8,
+    "postId": 9,
     "tagId": 21
   },
   {
-    "postId": 8,
+    "postId": 9,
     "tagId": 22
   },
   {
-    "postId": 8,
+    "postId": 9,
+    "tagId": 24
+  },
+  {
+    "postId": 9,
     "tagId": 23
+  },
+  {
+    "postId": 9,
+    "tagId": 25
+  },
+  {
+    "postId": 9,
+    "tagId": 26
+  },
+  {
+    "postId": 9,
+    "tagId": 27
+  },
+  {
+    "postId": 9,
+    "tagId": 28
+  },
+  {
+    "postId": 9,
+    "tagId": 29
+  },
+  {
+    "postId": 9,
+    "tagId": 30
   }
 ]

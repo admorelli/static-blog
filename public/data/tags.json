@@ -8,8 +8,16 @@
     "name": "agent-comparison"
   },
   {
+    "id": 28,
+    "name": "basepath"
+  },
+  {
     "id": 23,
     "name": "debugging"
+  },
+  {
+    "id": 26,
+    "name": "deployment"
   },
   {
     "id": 6,
@@ -24,6 +32,10 @@
     "name": "github-pages"
   },
   {
+    "id": 29,
+    "name": "gray-matter"
+  },
+  {
     "id": 16,
     "name": "hermes"
   },
@@ -34,6 +46,14 @@
   {
     "id": 2,
     "name": "local-llm"
+  },
+  {
+    "id": 25,
+    "name": "markdown"
+  },
+  {
+    "id": 30,
+    "name": "marked"
   },
   {
     "id": 17,
@@ -84,11 +104,19 @@
     "name": "retrospective"
   },
   {
+    "id": 24,
+    "name": "static-site"
+  },
+  {
     "id": 20,
     "name": "test"
   },
   {
     "id": 18,
     "name": "tools"
+  },
+  {
+    "id": 27,
+    "name": "urls"
   }
 ]
