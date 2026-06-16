@@ -15,7 +15,8 @@ jobs:
   lint-and-test:
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.44.0-noble
+      image: mcr.microsoft.com/playwright:v1.60.0-noble
+      options: --ipc=host --init
     steps:
       - name: Checkout
         uses: actions/checkout@v4
