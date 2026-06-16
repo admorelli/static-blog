@@ -1,7 +1,5 @@
 import { defineConfig } from '@playwright/test';
 
-const isCI = !!process.env.CI;
-
 export default defineConfig({
   testDir: 'e2e',
   timeout: 30_000,
@@ -11,9 +9,6 @@ export default defineConfig({
     launchOptions: {
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     },
-    ...(isCI && {
-      executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH,
-    }),
   },
   webServer: {
     command: 'npm run dev -- -p 3001',
