@@ -13,37 +13,32 @@ permissions:
 
 jobs:
   lint-and-test:
+    timeout-minutes: 60
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright:v1.60.0-noble
-      options: --ipc=host --init
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install build dependencies
-        run: apt-get update && apt-get install -y build-essential
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: lts/*
           cache: 'npm'
-
       - name: Install dependencies
         run: npm ci
-
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
       - name: Run lint
         run: npm run lint
-
       - name: Run typecheck
         run: npx tsc --noEmit
-
       - name: Run unit tests
         run: npm run test:unit
-
-      - name: Run e2e tests
-        run: npm run test:e2e
+      - name: Run Playwright tests
+        run: npx playwright test
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
 
   build:
     needs: lint-and-test
