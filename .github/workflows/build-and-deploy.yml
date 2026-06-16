@@ -14,8 +14,6 @@ permissions:
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest
-    env:
-      PLAYWRIGHT_BROWSERS_PATH: ${{ runner.tool_cache }}/playwright
     steps:
       - name: Checkout
         uses: actions/checkout@v4
