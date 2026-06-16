@@ -50,7 +50,7 @@ jobs:
         run: node scripts/generate-static-data.js
 
       - name: Build static site
-        run: npm run build
+        run: NEXT_SERIALIZE_EMPTY=true npm run build
         env:
           GITHUB_REPOSITORY: ${{ github.repository }}
 
