@@ -14,6 +14,8 @@ permissions:
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest
+    env:
+      PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH: /home/runner/.cache/ms-playwright/chromium-*/chrome-linux/chrome
     steps:
       - name: Checkout
         uses: actions/checkout@v4
