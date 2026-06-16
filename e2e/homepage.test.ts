@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('homepage loads', async ({ page }) => {
-  await page.goto('http://localhost:3001/');
+  await page.goto('/');
   await expect(page.locator('text=Home')).toBeVisible({ timeout: 10000 });
   
   const searchInput = await page.locator('input[placeholder="Search posts..."]');
@@ -12,13 +12,13 @@ test('homepage loads', async ({ page }) => {
 });
 
 test('posts page loads', async ({ page }) => {
-  await page.goto('http://localhost:3001/posts');
+  await page.goto('/posts');
   const heading = await page.locator('h1:has-text("Posts")');
   await expect(heading).toBeVisible({ timeout: 10000 });
 });
 
 test('create page loads', async ({ page }) => {
-  await page.goto('http://localhost:3001/create');
+  await page.goto('/create');
   const heading = await page.locator('text=Create New Post');
   await expect(heading).toBeVisible({ timeout: 10000 });
 });
