@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
-import { getAllPosts, getPostBySlug, Post } from '@/lib/static-posts-generated';
+import { getAllPosts, getPostBySlug } from '@/lib/static-posts-generated';
+import { Post } from '@/lib/types';
 
 export async function generateStaticParams() {
   const posts = getAllPosts();
