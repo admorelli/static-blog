@@ -1,5 +1,7 @@
 import { notFound } from 'next/navigation';
 import postsIndex from '@/public/data/posts-index.json';
+import matter from 'gray-matter';
+import { marked } from 'marked';
 
 interface Post {
   id: number;
@@ -17,57 +19,18 @@ interface ParsedPost {
 }
 
 function parseFrontmatter(content: string): ParsedPost {
-  const frontmatterRegex = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/;
-  const match = content.match(frontmatterRegex);
+  const { data, content: markdownContent } = matter(content);
   
-  if (!match) {
-    return {
-      title: '',
-      date: '',
-      tags: [],
-      content: content,
-    };
-  }
-
-  const [, frontmatter, markdownContent] = match;
-  
-  // Parse YAML frontmatter
-  const titleMatch = frontmatter.match(/title:\s*"([^"]*)"/);
-  const dateMatch = frontmatter.match(/date:\s*"([^"]*)"/);
-  const tagsMatch = frontmatter.match(/tags:\s*(\[[\s\S]*?\])/);
-  
-  const title = titleMatch ? titleMatch[1] : '';
-  const date = dateMatch ? dateMatch[1] : '';
-  let tags: string[] = [];
-  
-  if (tagsMatch) {
-    try {
-      tags = JSON.parse(tagsMatch[1]);
-    } catch {
-      tags = [];
-    }
-  }
-
-  return { title, date, tags, content: markdownContent };
+  return {
+    title: data.title || '',
+    date: data.date || '',
+    tags: data.tags || [],
+    content: markdownContent,
+  };
 }
 
 function markdownToHtml(markdown: string): string {
-  // Simple markdown to HTML conversion for common elements
-  return markdown
-    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-    .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
-    .replace(/\*(.*?)\*/gim, '<em>$1</em>')
-    .replace(/`(.*?)`/gim, '<code>$1</code>')
-    .replace(/\n\n/gim, '</p><p>')
-    .replace(/\n/gim, '<br>')
-    .replace(/^\| (.*?) \|$/gim, '<p><strong>$1</strong></p>')
-    .replace(/^\|[-| ]+\|$/gim, '')
-    .replace(/^\| (.*?) \|$/gim, '<p>$1</p>')
-    .replace(/`([^`]+)`/gim, '<code>$1</code>')
-    .replace(/^\s*-\s*(.*)$/gim, '<li>$1</li>')
-    .replace(/^\s*\d+\.\s*(.*)$/gim, '<li>$1</li>');
+  return marked.parse(markdown, { async: false }) as string;
 }
 
 export async function generateStaticParams() {
