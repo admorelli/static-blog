@@ -1,6 +1,13 @@
 import { notFound } from 'next/navigation';
 import postsIndex from '@/public/data/posts-index.json';
-import { Post } from '@/lib/types';
+
+interface Post {
+  id: number;
+  title: string;
+  slug: string;
+  content: string;
+  created_at: number;
+}
 
 export async function generateStaticParams() {
   return postsIndex.posts.map((post) => ({ slug: post.slug }));
