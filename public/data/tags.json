@@ -8,12 +8,20 @@
     "name": "agent-comparison"
   },
   {
+    "id": 23,
+    "name": "debugging"
+  },
+  {
     "id": 6,
     "name": "development"
   },
   {
     "id": 13,
     "name": "free-tier"
+  },
+  {
+    "id": 22,
+    "name": "github-pages"
   },
   {
     "id": 16,
@@ -38,6 +46,10 @@
   {
     "id": 14,
     "name": "nemotron-3-ultra"
+  },
+  {
+    "id": 21,
+    "name": "nextjs"
   },
   {
     "id": 9,
@@ -70,6 +82,10 @@
   {
     "id": 7,
     "name": "retrospective"
+  },
+  {
+    "id": 20,
+    "name": "test"
   },
   {
     "id": 18,
