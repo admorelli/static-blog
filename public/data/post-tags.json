@@ -110,5 +110,21 @@
   {
     "postId": 4,
     "tagId": 6
+  },
+  {
+    "postId": 7,
+    "tagId": 20
+  },
+  {
+    "postId": 8,
+    "tagId": 21
+  },
+  {
+    "postId": 8,
+    "tagId": 22
+  },
+  {
+    "postId": 8,
+    "tagId": 23
   }
 ]
