@@ -27,14 +27,14 @@ function TagFilter() {
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const router = useRouter();
   const searchParams = useSearchParams();
+  const basePath = getBasePath();
 
   useEffect(() => {
-    const basePath = getBasePath();
     fetch(`${basePath}/data/tags.json`)
       .then((res) => res.json())
       .then(setTags)
       .catch(() => setTags([]));
-  }, []);
+  }, [basePath]);
 
   const toggleTag = (id: number) => {
     const newSet = new Set(selected);
@@ -175,12 +175,14 @@ function PostsList() {
     return <p className="p-4 text-center">No posts found.</p>;
   }
 
+  const basePath = getBasePath();
+
   return (
     <div className="p-4 max-w-2xl mx-auto">
       <ul className="space-y-3">
         {allPosts.map((post) => (
           <li key={post.id} className="border p-3 rounded">
-            <a href={`/posts/${post.slug}`}>
+            <a href={`${basePath}/posts/${post.slug}`}>
               <h2 className="text-xl font-semibold">{post.title}</h2>
             </a>
             <p className="text-sm text-gray-500">
