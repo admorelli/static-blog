@@ -1,148 +1,91 @@
-# 📝 Blog Tech — Blog Estático com Dev Mode + GitHub Pages
+# Static Blog
 
-> Um blog de tecnologia moderno, profissional e pessoal, com modo de desenvolvimento via CLI (TUI), persistência SQLite simples, SSG via GitHub Actions, UI moderna com tema escuro e tags de filtro.
+Um blog de tecnologia moderno, profissional e pessoal, com modo de desenvolvimento via CLI (TUI), persistência SQLite simples, SSG via GitHub Actions, UI moderna com tema escuro e tags de filtro.
 
----
+## 🚀 Getting Started
 
-## ✨ Destaques
-- **Dev Mode**: Crie posts diretamente no terminal (TUI) — sem precisar abrir o navegador!
-- **Persistência**: SQLite local (`db.sqlite`) para simplicidade e velocidade
-- **SSG Automático**: GitHub Actions gera páginas estáticas a cada push → deploy automático via GitHub Pages
-- **UI Moderna**: Tema dark/claro, design minimalista, tags coloridas por categoria, layout responsivo
-- **Filtros Avançados**: Filtre posts por tags (ex: "C#", "Legacy", "Migração")
+The project now includes a full unit‑test suite (Vitest) and an end‑to‑end test (Playwright) that verifies the homepage loads correctly.
 
----
+### Prerequisites
 
-## 🚀 Começando Rápido — 5 minutos para rodar o Dev Mode
+- Node.js 18+
+- npm or yarn
+
+### Installation
 
 ```bash
-# 1. Clonar e instalar dependências
-git clone https://github.com/your-repo/blog-tech.git
-cd blog-tech
+git clone https://github.com/admorelli/static-blog.git
+cd static-blog
 npm install
 ```
 
+### Development
+
+Most common tasks are now available via the top‑level `Makefile`. For example:
+
 ```bash
-# 2. Iniciar o servidor de desenvolvimento
+make device   # start the dev server (runs `npm run dev`)
+make build    # build production files (`npm run build`)
+make test     # run both unit and e2e tests (`npm run test:unit && npm run test:e2e`)
+```
+
+You can also still use the npm scripts directly:
+
+```bash
 npm run dev
 ```
 
-```bash
-# 3. Abrir o terminal e criar seu primeiro post!
-# (A TUI do Dev Mode aparecerá — siga as instruções na tela)
-```
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
----
+## 📚 Features
 
-## 🛠️ Stack Tecnológica
-| Camada | Tecnologia |
-|--------|------------|
-| **Frontend/SSG** | Next.js 14+ (App Router), React 19, TailwindCSS |
-| **Dev Mode CLI** | TUI em terminal (react-terminal ou readline simples) |
-| **Persistência Dev** | SQLite (single-file DB para simplicidade) |
-| **CI/CD** | GitHub Actions → parse SQLite → gerar páginas estáticas → commitar ao branch `gh-pages` |
-| **UI** | Tema claro/escuro, design minimalista e acessível |
+- **Modern UI**: Built with Next.js 14 and Tailwind CSS, featuring a dark/light theme toggle
+- **SQLite Persistence**: Simple file-based SQLite for blog posts and metadata
+- **SSG Pipeline**: GitHub Actions workflow generates static HTML and deploys to GitHub Pages
+- **CLI Development Mode**: TUI interface for managing posts via terminal commands
+- **Tag Filtering**: Filter posts by tags with a modern dropdown UI
+- **Responsive Design**: Mobile-first, accessible design using Radix UI primitives
 
----
+## 🛠️ Tech Stack
 
-## 📁 Estrutura do Projeto
-```
-static-blog/
-├── .github/workflows/          # GitHub Actions (build-and-deploy.yml)
-├── public/                   # Assets estáticos (logo, favicon, etc.)
-├── src/                      # Código-fonte do projeto
-│   ├── app/                  # App Router (Next.js 14+)
-│   │   ├── posts/            # Listagem e filtros por tag
-│   │   ├── new-post/         # Formulário de criação de post
-│   │   └── layout.tsx        # Layout principal com tema dark/claro
-│   ├── components/          # Componentes reutilizáveis (Card, TagSelect, etc.)
-│   ├── lib/                 # Utilitários e DAOs (CRUD SQLite)
-│   └── scripts/             # Scripts de build estático (Node.js)
-├── db.sqlite                # Banco de dados local (commitado no repositório)
-├── agents.md               # Plano de implementação sequencial
-├── ARCHITECTURE.md         # Documentação técnica e decisões de design
-└── README.md              # Este arquivo!
-```
+- [Next.js 14](https://nextjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [SQLite](https://www.sqlite.org/)
+- [Radix UI](https://radix-ui.com/)
+- [GitHub Actions](https://github.com/features/actions)
 
----
+## 📌 Milestones
 
-## 📋 Fluxo de Trabalho — Do Dev Mode ao GitHub Pages
+- **M01 – Setup** – Scaffolded Next.js 13 app with Tailwind, shadcn/ui, SQLite & Drizzle.
+- **M02 – CRUD** – Data layer, schema, API routes, posts list page.
+- **M03 – UI** – Home page with search, tag selector (functional), placeholder infinite scroll.
+- **M04 – Post Detail** – Implemented `/posts/[slug]` page and API fetching post + tags.
+- **M05 – Create Post** – Added `/create` page with form, handling tag creation/insertion.
+- **M06 – CI Pipeline** – Placeholder workflow present; not yet wired.
+- **M07 – Testing** – No tests yet (to be added).
+- **M08 – Audit & Refactor** – Pending.
 
-```mermaid
-graph LR
-    A[DEV MODE] -->|sqlite3 data.db| B[CI/CD]
-    B -->|parse DB → gerar slugs/titles/tags| C[next.config.mjs]
-    C -->|output: static pages| D[gh-pages]
-```
+## 📝 Roadmap
 
-1. **Dev Mode**: Você cria posts via TUI no terminal (cria registros no `db.sqlite`)
-2. **CI/CD**: GitHub Actions lê o SQLite, gera HTML estático para cada post
-3. **GitHub Pages**: O branch `gh-pages` é publicado automaticamente → acessível via URL pública
+- [ ] CLI TUI interface for post management
+- [ ] Post editor with markdown preview
+- [ ] RSS feed generation
+- [ ] SEO optimization (Open Graph, Twitter Cards)
+- [ ] Search functionality
+- [ ] Comments system
 
----
+- [ ] CLI TUI interface for post management
+- [ ] Post editor with markdown preview
+- [ ] RSS feed generation
+- [ ] SEO optimization (Open Graph, Twitter Cards)
+- [ ] Search functionality
+- [ ] Comments system
 
-## 🧪 Testando o Dev Mode — Criar um Post de Exemplo
+## 🤝 Contributing
 
-```bash
-# 1. Iniciar servidor (se ainda não rodou)
-npm run dev
-```
+Contributions are welcome! Please open an issue or submit a pull request.
 
-```bash
-# 2. Abrir terminal e criar post:
-#    - Título: "Migração de Código Legacy para Moderno"
-#    - Slug: "2026-05-23-migracao-codigo-legado"
-#    - Tags: ["C#", "Legacy", "Migração"]
-```
+## 📄 License
 
-```bash
-# 3. Verificar no navegador (http://localhost:3000/posts)
-#    → O novo post aparece na lista!
-```
-
----
-
-## 🎨 Tema Dark/Claro — Alternar com um Clique
-
-- **Padrão**: Dark mode ativado por padrão (ou conforme preferência do sistema via `prefers-color-scheme`)
-- **Alternar manualmente**: Clique no botão de toggle no header da página
-- **Persistência**: A escolha é salva em `localStorage` → o tema persiste ao recarregar a página
-
----
-
-## 🏷️ Filtros por Tag — Como Funciona
-
-1. Navegue para `/posts`
-2. Use o dropdown de tags no filtro superior
-3. Selecione uma ou mais tags (ex: "C#" + "Legacy")
-4. Apenas os posts marcados com essas tags aparecem na lista
-5. Clique em "Limpar Filtros" para mostrar todos os posts novamente
-
----
-
-## 📦 Scripts Disponíveis
-| Comando | Descrição |
-|--------|-----------|
-| `npm run dev` | Inicia servidor de desenvolvimento (Hot Reload) |
-| `npm run build:static` | Gera páginas estáticas a partir do SQLite local |
-| `npm run audit:checklist` | Executa checklist de auditoria de código |
-
----
-
-## 🤝 Contribuindo — Quer ajudar no projeto?
-
-1. Fork o repositório
-2. Crie uma branch (`git checkout -b feature/nome-da-sua-feature`)
-3. Faça commits com mensagens claras e descritivas
-4. Envie um Pull Request para revisão
-
----
-
-## 📜 Licença
-Este projeto está sob a licença MIT — veja o arquivo `LICENSE` para detalhes.
-
----
-
-<div align="center">
-  <strong>Feito com ❤️ usando Next.js + SQLite + GitHub Actions</strong>
-</div>
+MIT © Admorelli
