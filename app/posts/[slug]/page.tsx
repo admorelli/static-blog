@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { getAllPosts, getPostBySlug } from '@/lib/static-posts-generated';
+import { getAllPosts, getPostBySlug, Post } from '@/lib/static-posts-generated';
 
 export async function generateStaticParams() {
   const posts = getAllPosts();
@@ -8,7 +8,7 @@ export async function generateStaticParams() {
 
 export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post: Post | undefined = getPostBySlug(slug);
   if (!post) return notFound();
   return (
     <article className="p-6 max-w-2xl mx-auto">
