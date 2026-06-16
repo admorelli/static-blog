@@ -6,6 +6,9 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:3001',
     headless: true,
+    launchOptions: {
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    },
   },
   webServer: {
     command: 'npm run dev -- -p 3001',
