@@ -1,9 +1,7 @@
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const fs = require('fs');
-const path = require('path');
-const db = require('../db/db.ts').default;
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { posts, tags, postTags } = require('../db/schema.ts');
+import fs from 'fs';
+import path from 'path';
+import db from '../db/db.ts';
+import { posts, tags, postTags } from '../db/schema.ts';
 
 async function main() {
   const existing = await db.select().from(posts).limit(1);
