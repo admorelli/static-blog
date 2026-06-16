@@ -28,7 +28,10 @@ jobs:
         run: npm ci
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps
+        uses: microsoft/playwright-github-action@v1
+        with:
+          browsers: chromium
+          install-deps: true
 
       - name: Run lint
         run: npm run lint
