@@ -22,6 +22,32 @@ async function main() {
     execSync('npx drizzle-kit push', { stdio: 'inherit', cwd: __dirname + '/..' });
   }
 
+  // Create FTS5 virtual table and triggers
+  try {
+    await db.$client.exec(`
+      CREATE VIRTUAL TABLE IF NOT EXISTS posts_fts USING fts5(
+        id UNINDEXED, title, content, tokenize='porter unicode61'
+      );
+    `);
+    await db.$client.exec(`
+      CREATE TRIGGER IF NOT EXISTS posts_fts_insert AFTER INSERT ON posts BEGIN
+        INSERT INTO posts_fts(id, title, content) VALUES (new.id, new.title, new.content);
+      END;
+    `);
+    await db.$client.exec(`
+      CREATE TRIGGER IF NOT EXISTS posts_fts_update AFTER UPDATE ON posts BEGIN
+        UPDATE posts_fts SET title = new.title, content = new.content WHERE id = new.id;
+      END;
+    `);
+    await db.$client.exec(`
+      CREATE TRIGGER IF NOT EXISTS posts_fts_delete AFTER DELETE ON posts BEGIN
+        DELETE FROM posts_fts WHERE id = old.id;
+      END;
+    `);
+  } catch (e) {
+    console.log('FTS5 table already exists or creation failed:', e.message);
+  }
+
   // Seed if empty
   const existing = await db.select().from(posts).limit(1).execute();
   if (existing.length === 0) {

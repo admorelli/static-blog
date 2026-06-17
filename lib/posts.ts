@@ -1,6 +1,6 @@
 import db from '../db/db';
-import { posts, postTags } from '../db/schema';
-import { eq, desc } from 'drizzle-orm';
+import { posts, postTags, postsFts } from '../db/schema';
+import { eq, desc, or, like } from 'drizzle-orm';
 
 export type Post = {
   id: number;
@@ -68,4 +68,42 @@ export async function updatePost(id: number, data: Partial<Omit<Post, 'id'>>): P
 /** Delete a post */
 export async function deletePost(id: number): Promise<void> {
   await db.delete(posts).where(eq(posts.id, id));
+}
+
+/** Full-text search using FTS5 */
+export async function searchPostsFTS(query: string, limit: number = 10): Promise<Post[]> {
+  if (!query.trim()) return [];
+  
+  try {
+    // Use raw SQL for FTS5 MATCH query
+    const rows = await db.$client.prepare(`
+      SELECT p.id, p.title, p.slug, p.content, p.created_at
+      FROM posts p
+      INNER JOIN posts_fts f ON p.id = f.id
+      WHERE posts_fts MATCH ?
+      LIMIT ?
+    `).all(query, limit);
+    return rows as Post[];
+  } catch (e) {
+    // FTS5 might fail if table doesn't exist or query is invalid
+    console.warn('FTS5 search failed, falling back to LIKE search:', e);
+    return searchPostsFallback(query, limit);
+  }
+}
+
+/** Fallback search using LIKE (used when FTS5 is unavailable) */
+async function searchPostsFallback(query: string, limit: number = 10): Promise<Post[]> {
+  const searchTerm = `%${query}%`;
+  const rows = await db
+    .select()
+    .from(posts)
+    .where(
+      or(
+        like(posts.title, searchTerm),
+        like(posts.content, searchTerm)
+      )
+    )
+    .orderBy(desc(posts.created_at))
+    .limit(limit);
+  return rows as Post[];
 }
