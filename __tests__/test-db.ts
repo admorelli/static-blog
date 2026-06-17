@@ -125,7 +125,7 @@ export async function listPostsPaginated(options: {
       .from(postTags)
       .where(inArray(postTags.tagId, options.tags))
       .execute();
-    const ids = postIds.map(p => p.postId);
+    const ids = postIds.map((p: { postId: number }) => p.postId);
     if (ids.length === 0) {
       return { posts: [], total: 0 };
     }
