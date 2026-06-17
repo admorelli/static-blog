@@ -19,7 +19,6 @@ This file contains an up‑to‑date overview of the current project layout, arc
 │   │   ├── page.tsx       # Posts list (SSG)
 │   │   └── [slug]/
 │   │       └── page.tsx   # Post detail (SSG)
-│   └── post/[slug]/       # Legacy route (kept for compatibility)
 ├── lib/                   # Utilities & API helpers
 │   ├── posts.ts           # Posts CRUD + queries
 │   ├── tags.ts            # Tags queries + pagination
@@ -93,6 +92,7 @@ All primary commands are now exposed through a `Makefile` for quick execution. U
 | **P1** | Full-Text Search (SQLite FTS5) | Planned |
 | **P1** | SEO: Open Graph + Twitter Cards + JSON-LD | Planned |
 | **P1** | Image Optimization Pipeline (WebP, responsive, blur) | Planned |
+| **P2** | CLI Tool Review (tests, error handling, Markdown authoring commands) | 🎯 Next |
 | **P2** | Comments via Giscus (GitHub Discussions) | Planned |
 | **P2** | Reading Time + Table of Contents | Planned |
 | **P2** | Mobile Nav Drawer + Skeleton Loaders + Empty States | Planned |
