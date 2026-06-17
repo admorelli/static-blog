@@ -84,15 +84,40 @@ static_blog/
 
 ## 🎯 Remaining Work (Prioritized)
 
-### P3 — Polish & Audit
+### P0 — Core Content Experience (Next Session Focus)
 
 | Task | Description | Effort | Dependencies |
 |------|-------------|--------|--------------|
-| **Audit & Refactor** | Code review: deduplication, type strictness, component extraction, accessibility pass. | M | All features complete |
-| **Performance** | Add `next/font` optimization, verify bundle size, enable `reactStrictMode`. | S | — |
-| **Image Optimization** | Pipeline for image handling in posts. | M | — |
-| **Full-Text Search** | SQLite FTS5 for server-side search. | M | — |
-| **SEO (Open Graph, Twitter Cards)** | Meta tags for social sharing. | S | — |
+| **Markdown Authoring + Frontmatter** | Write posts in `.md` files; CLI parses frontmatter (title, date, tags, description, series), converts Markdown → HTML, stores in DB. | L | CLI core, unified/remark for MD parsing |
+| **Homepage Post Previews** | Show ~20 lines of post content on homepage with "Read more" link to `/posts/[slug]`. Truncate at block boundary (paragraph). | M | Post content in static JSON, CSS line-clamp or JS truncation |
+| **Image Support (Local + Markdown + CLI)** | `blog add-image <slug> <path>` → copies to `/public/images/posts/<slug>/`, returns markdown `![alt](/images/posts/slug/img.png)`. Build script processes markdown images to `<img>` with width/height. | M | Public folder structure, markdown processing pipeline |
+
+### P1 — Discovery & SEO
+
+| Task | Description | Effort | Dependencies |
+|------|-------------|--------|--------------|
+| **Full-Text Search** | SQLite FTS5 virtual table on posts.content + title. Server-side search API + client UI integration. Replaces/augments client-side filter. | M | Schema migration, FTS5 extension |
+| **SEO: Open Graph + Twitter Cards + JSON-LD** | Meta tags on post pages: `og:title`, `og:description`, `og:image`, `twitter:card`, `article:published_time`, `Article` schema.org JSON-LD. | S | Post detail page, frontmatter description field |
+| **Image Optimization Pipeline** | Build-time: Sharp → WebP/AVIF, multiple widths (400, 800, 1200), blur placeholder (base64), `srcset`/`sizes` generation. | M | Image support, Sharp dependency |
+
+### P2 — Engagement & Polish
+
+| Task | Description | Effort | Dependencies |
+|------|-------------|--------|--------------|
+| **Comments via Giscus** | Embed GitHub Discussions comment widget on post pages. Zero backend, uses GitHub auth. | S | GitHub repo with Discussions enabled |
+| **Reading Time Estimate** | Compute from word count (~200 wpm), display on post meta. | S | Frontmatter or computed at build |
+| **Table of Contents** | Auto-generate from `<h2>`/`<h3>` in post content, sticky sidebar on desktop, collapsible on mobile. | M | Post detail page, HTML parsing |
+| **Mobile Nav Drawer** | Hamburger menu → slide-in drawer with nav links, tag filter, theme toggle. | M | Header component, CSS animation |
+| **Skeleton Loaders + Empty States** | Replace "Loading..." with content-shaped skeletons. Illustrations + helpful copy for empty search/tag results. | S | Homepage client, posts list |
+| **Post Series / Collections** | Optional `series` + `series_order` fields. UI: "Part X of Y" badge, next/prev navigation, series landing page. | M | Schema migration, series queries, new page |
+
+### P3 — Growth
+
+| Task | Description | Effort | Dependencies |
+|------|-------------|--------|--------------|
+| **Newsletter Integration** | Buttondown/ConvertKit embed in post footer + homepage. | S | External service account |
+| **Privacy-Friendly Analytics** | Plausible or Umami self-hosted. No cookie banner needed. | S | Analytics account / self-host |
+| **Series Landing Page** | `/series/[slug]` showing all posts in order with progress indicator. | M | Post series feature |
 
 ---
 
@@ -130,7 +155,7 @@ All P0 (core product), P1 (production hardening), P2 (CLI tool), and M08 (Dark M
 | Unit tests | ✅ 80 passing |
 | E2E tests | ✅ 3 passing |
 
-**Next focus:** Audit & Refactor (code quality, type strictness, deduplication).
+**Next focus:** P0 — Markdown Authoring + Homepage Previews + Image Support
 
 ---
 

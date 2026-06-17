@@ -85,14 +85,22 @@ All primary commands are now exposed through a `Makefile` for quick execution. U
 
 ### Next Steps (Roadmap)
 
-- RSS/Sitemap generation ✅ **Done** (in scripts/generate-feed.js + generate-sitemap.js)
-- Error/loading boundaries ✅ **Done** (error.tsx, loading.tsx in each route segment)
-- Tag autocomplete on create page ❌ **Removed** (create page removed, CLI handles tag management)
-- Post editor with markdown preview (CLI-based)
-- SEO optimization (Open Graph, Twitter Cards)
-- Comments system
-- Image optimization pipeline
-- Full-text search (SQLite FTS5)
+| Priority | Task | Status |
+|----------|------|--------|
+| **P0** | Markdown Authoring + Frontmatter (CLI-based) | 🎯 Next |
+| **P0** | Homepage Post Previews (~20 lines + "Read more") | 🎯 Next |
+| **P0** | Image Support (local + markdown + CLI upload) | 🎯 Next |
+| **P1** | Full-Text Search (SQLite FTS5) | Planned |
+| **P1** | SEO: Open Graph + Twitter Cards + JSON-LD | Planned |
+| **P1** | Image Optimization Pipeline (WebP, responsive, blur) | Planned |
+| **P2** | Comments via Giscus (GitHub Discussions) | Planned |
+| **P2** | Reading Time + Table of Contents | Planned |
+| **P2** | Mobile Nav Drawer + Skeleton Loaders + Empty States | Planned |
+| **P2** | Post Series / Collections (ordered, next/prev nav) | Planned |
+| **P3** | Newsletter Integration | Backlog |
+| **P3** | Privacy-Friendly Analytics (Plausible/Umami) | Backlog |
+
+> **Completed**: RSS/Sitemap generation ✅, Error/loading boundaries ✅, Tag autocomplete on create page ❌ (removed), Dark mode ✅
 
 ---
 
