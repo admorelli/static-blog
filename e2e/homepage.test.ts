@@ -17,8 +17,9 @@ test('posts page loads', async ({ page }) => {
   await expect(heading).toBeVisible({ timeout: 15000 });
 });
 
-test('create page loads', async ({ page }) => {
-  await page.goto('/create');
-  const heading = await page.locator('text=Create New Post');
+test('post detail page loads', async ({ page }) => {
+  // Use a slug from the seeded data
+  await page.goto('/posts/hello-world');
+  const heading = await page.locator('h1');
   await expect(heading).toBeVisible({ timeout: 15000 });
 });

@@ -3,26 +3,39 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --card-bg: #fafafa;
+  --card-border: #e5e5e5;
+  --muted: #737373;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card-bg: var(--card-bg);
+  --color-card-border: var(--card-border);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: #0a0a0a;
+  --foreground: #fafafa;
+  --card-bg: #181818;
+  --card-border: #272727;
+  --muted: #a3a3a3;
+  --accent: #3b82f6;
+  --accent-hover: #60a5fa;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
 }
 
 /* Class-based dark mode (for manual toggle) */
@@ -53,88 +66,34 @@ body {
   @apply bg-transparent text-inherit;
 }
 
-/* Form inputs dark mode */
+/* Form inputs */
 input, textarea, select {
-  @apply bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100;
+  @apply bg-card-bg border-card-border text-foreground;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
 }
 
 input:focus, textarea:focus, select:focus {
-  @apply ring-2 ring-blue-500 border-transparent;
+  @apply ring-2 ring-accent border-transparent;
 }
 
-/* Card dark mode */
+/* Card */
 .border {
-  @apply border-gray-200 dark:border-gray-700;
+  @apply border-card-border;
 }
 
-.bg-white {
-  @apply dark:bg-gray-800;
+.bg-card-bg {
+  @apply bg-card-bg;
 }
 
-.text-gray-500 {
-  @apply dark:text-gray-400;
+.text-muted {
+  @apply text-muted;
 }
 
-.text-gray-600 {
-  @apply dark:text-gray-300;
+/* Button hover states */
+.hover\:bg-accent:hover {
+  @apply bg-accent-hover;
 }
 
-.text-gray-700 {
-  @apply dark:text-gray-200;
-}
-
-.text-gray-900 {
-  @apply dark:text-white;
-}
-
-.bg-gray-100 {
-  @apply dark:bg-gray-800;
-}
-
-.bg-gray-200 {
-  @apply dark:bg-gray-700;
-}
-
-.bg-gray-800 {
-  @apply dark:bg-gray-700;
-}
-
-.bg-gray-900 {
-  @apply dark:bg-gray-950;
-}
-
-.hover\:bg-gray-100:hover {
-  @apply dark:hover:bg-gray-800;
-}
-
-.hover\:bg-gray-200:hover {
-  @apply dark:hover:bg-gray-700;
-}
-
-.hover\:bg-gray-50:hover {
-  @apply dark:hover:bg-gray-800;
-}
-
-.hover\:text-gray-500:hover {
-  @apply dark:hover:text-gray-400;
-}
-
-.hover\:text-gray-700:hover {
-  @apply dark:hover:text-gray-200;
-}
-
-.hover\:text-gray-900:hover {
-  @apply dark:hover:text-white;
-}
-
-.hover\:bg-blue-600:hover {
-  @apply dark:hover:bg-blue-500;
-}
-
-.hover\:bg-gray-300:hover {
-  @apply dark:hover:bg-gray-600;
-}
-
-.hover\:text-gray-300:hover {
-  @apply dark:hover:text-gray-400;
+.hover\:bg-card-border:hover {
+  @apply bg-card-border;
 }

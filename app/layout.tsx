@@ -30,7 +30,7 @@ export default function RootLayout({
       <head>
         {basePath && <meta name="next-base-path" content={basePath} />}
       </head>
-      <body className="min-h-full flex flex-col bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100">
+      <body className="min-h-full flex flex-col">
         <Providers>
           <main className="flex-1">{children}</main>
         </Providers>
