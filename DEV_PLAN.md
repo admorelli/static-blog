@@ -21,8 +21,7 @@ static_blog/
 │   ├── globals.css                # Tailwind v4 + CSS custom properties
 │   ├── posts/
 │   │   ├── page.tsx               # Posts list (static, SSG)
-│   │   └── [slug]/page.tsx        # Post detail (static, generateStaticParams)
-│   └── post/[slug]/page.tsx       # Legacy route (kept for compatibility)
+│   └── [slug]/page.tsx        # Post detail (static, generateStaticParams) |
 ├── cli/                    # CLI tool
 │   └── blog.js                  # Inquirer-based CLI for post/tag management
 ├── db/
@@ -104,6 +103,7 @@ static_blog/
 
 | Task | Description | Effort | Dependencies |
 |------|-------------|--------|--------------|
+| **CLI Tool Review** | Audit `cli/blog.js`: add tests, improve error handling, add Markdown/frontmatter authoring commands, fix any bugs, ensure consistent UX. | M | CLI core |
 | **Comments via Giscus** | Embed GitHub Discussions comment widget on post pages. Zero backend, uses GitHub auth. | S | GitHub repo with Discussions enabled |
 | **Reading Time Estimate** | Compute from word count (~200 wpm), display on post meta. | S | Frontmatter or computed at build |
 | **Table of Contents** | Auto-generate from `<h2>`/`<h3>` in post content, sticky sidebar on desktop, collapsible on mobile. | M | Post detail page, HTML parsing |
