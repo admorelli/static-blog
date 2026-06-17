@@ -1,28 +1,17 @@
 import { describe, it, expect, beforeEach, afterAll, beforeAll } from 'vitest';
-import db from '../db/db';
+import testDb, { createPost, updatePost, deletePost, getPostBySlug, listAllTags, listTagsForPost, listPostsPaginated } from './test-db';
 import { posts, tags, postTags } from '../db/schema';
-import { createPost, updatePost, deletePost, getPostBySlug } from '../lib/posts';
-import { listAllTags, listTagsForPost, listPostsPaginated } from '../lib/tags';
 
-// Helper to reset DB before each test suite
+// Helper to reset test DB before each test suite
 async function setupDatabase() {
-  // Create tables
-  db.$client.exec(`CREATE TABLE IF NOT EXISTS posts (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    slug TEXT UNIQUE NOT NULL,
-    content TEXT NOT NULL,
-    created_at INTEGER NOT NULL DEFAULT 0
-  );`);
-  db.$client.exec(`CREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE NOT NULL);`);
-  db.$client.exec(`CREATE TABLE IF NOT EXISTS post_tags (post_id INTEGER NOT NULL REFERENCES posts(id), tag_id INTEGER NOT NULL REFERENCES tags(id));`);
+  // Tables are created in test-db.ts setup
 }
 
 async function resetDatabase() {
   // Delete in order to respect foreign keys
-  await db.run('DELETE FROM post_tags');
-  await db.run('DELETE FROM posts');
-  await db.run('DELETE FROM tags');
+  testDb.$client.exec('DELETE FROM post_tags');
+  testDb.$client.exec('DELETE FROM posts');
+  testDb.$client.exec('DELETE FROM tags');
 }
 
 describe('Posts library API', () => {
@@ -35,7 +24,6 @@ describe('Posts library API', () => {
   });
 
   afterAll(async () => {
-    // Final cleanup
     await resetDatabase();
   });
 

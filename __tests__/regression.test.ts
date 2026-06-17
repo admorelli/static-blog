@@ -1,36 +1,21 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
-import db from '../db/db';
-import { createPost, getPostBySlug, listPosts } from '../lib/posts';
+import testDb, { createPost, getPostBySlug, listPosts } from './test-db';
 import fs from 'fs';
 import path from 'path';
 
 // ─── Setup ────────────────────────────────────────────────────────────────────
 beforeAll(() => {
-  db.$client.exec('DELETE FROM post_tags');
-  db.$client.exec('DELETE FROM posts');
-  db.$client.exec('DELETE FROM tags');
-  
-  db.$client.exec(`CREATE TABLE IF NOT EXISTS posts (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    slug TEXT UNIQUE NOT NULL,
-    content TEXT NOT NULL,
-    created_at INTEGER NOT NULL DEFAULT 0
-  );`);
-  db.$client.exec(`CREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE NOT NULL);`);
-  db.$client.exec(`CREATE TABLE IF NOT EXISTS post_tags (post_id INTEGER NOT NULL REFERENCES posts(id), tag_id INTEGER NOT NULL REFERENCES tags(id));`);
+  // Tables are created in test-db.ts setup
 });
 
 afterAll(() => {
-  try { db.$client.exec('DELETE FROM post_tags'); } catch (_e) {}
-  try { db.$client.exec('DELETE FROM posts'); } catch (_e) {}
-  try { db.$client.exec('DELETE FROM tags'); } catch (_e) {}
+  // Cleanup handled in test-db.ts
 });
 
 beforeEach(() => {
-  db.$client.exec('DELETE FROM post_tags');
-  db.$client.exec('DELETE FROM posts');
-  db.$client.exec('DELETE FROM tags');
+  testDb.$client.exec('DELETE FROM post_tags');
+  testDb.$client.exec('DELETE FROM posts');
+  testDb.$client.exec('DELETE FROM tags');
 });
 
 // ─── Regression: Broken URL / slug handling ──────────────────────────────────

@@ -9,18 +9,18 @@ export interface Post {
 
 export const POSTS_DATA = [
   {
-    "id": 27,
+    "id": 49,
     "title": "Hello World",
     "slug": "hello-world",
     "content": "<p>Welcome to my blog built with Next.js, Tailwind and Drizzle ORM.</p>",
-    "created_at": 1781681304
+    "created_at": 1781690696
   },
   {
-    "id": 28,
+    "id": 50,
     "title": "Second Post",
     "slug": "second-post",
     "content": "<p>This is another post.</p>",
-    "created_at": 1781681304
+    "created_at": 1781690696
   }
 ] as const;
 
