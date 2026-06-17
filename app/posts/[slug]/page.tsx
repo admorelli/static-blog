@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { Header } from '@/app/header';
 import postsIndex from '@/public/data/posts-index.json';
 import matter from 'gray-matter';
 import { marked } from 'marked';
@@ -46,19 +47,22 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   const htmlContent = markdownToHtml(content);
 
   return (
-    <article className="p-6 max-w-2xl mx-auto">
-      <header className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">{title || post.title}</h1>
-        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-4">
-          <time dateTime={date}>{new Date(date).toLocaleDateString()}</time>
-          {tags.map((tag) => (
-            <span key={tag} className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs">
-              {tag}
-            </span>
-          ))}
-        </div>
-      </header>
-      <div className="prose dark:prose-invert flex-1" dangerouslySetInnerHTML={{ __html: htmlContent }} />
-    </article>
+    <>
+      <Header />
+      <article className="p-6 max-w-2xl mx-auto">
+        <header className="mb-6">
+          <h1 className="text-3xl font-bold mb-2">{title || post.title}</h1>
+          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-4">
+            <time dateTime={date}>{new Date(date).toLocaleDateString()}</time>
+            {tags.map((tag) => (
+              <span key={tag} className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs">
+                {tag}
+              </span>
+            ))}
+          </div>
+        </header>
+        <div className="prose dark:prose-invert flex-1" dangerouslySetInnerHTML={{ __html: htmlContent }} />
+      </article>
+    </>
   );
 }
