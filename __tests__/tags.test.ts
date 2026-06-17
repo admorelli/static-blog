@@ -16,7 +16,7 @@ beforeAll(async () => {
     .values([{ name: 'life' }, { name: 'science' }, { name: 'tech' }])
     .returning({ id: tags.id, name: tags.name })
     .execute();
-  const nameToId = Object.fromEntries(tagRows.map(t => [t.name, t.id]));
+  const nameToId = Object.fromEntries(tagRows.map((t: { id: number; name: string }) => [t.name, t.id]));
   tagIdLife = nameToId.life;
   tagIdScience = nameToId.science;
   tagIdTech = nameToId.tech;
@@ -31,7 +31,7 @@ beforeAll(async () => {
     ])
     .returning({ id: posts.id, slug: posts.slug })
     .execute();
-  const slugToId = Object.fromEntries(postRows.map(p => [p.slug, p.id]));
+  const slugToId = Object.fromEntries(postRows.map((p: { id: number; slug: string }) => [p.slug, p.id]));
   postId1 = slugToId['life-post'];
   postId2 = slugToId['science-post'];
   postId3 = slugToId['tech-post'];

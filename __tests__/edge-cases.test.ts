@@ -170,7 +170,7 @@ describe('Long content and slugs', () => {
 
     await testDb
       .insert(postTags)
-      .values(tagRes.map(t => ({ postId: postId, tagId: t.id })))
+      .values(tagRes.map((t: { id: number }) => ({ postId: postId, tagId: t.id })))
       .execute();
 
     const tagsResult = await listTagsForPost(postId);
