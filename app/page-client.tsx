@@ -53,7 +53,7 @@ function TagFilter() {
         <input
           type="text"
           placeholder="Search posts..."
-          className="w-full border rounded p-2"
+          className="w-full border rounded p-2 bg-card-bg border-card-border text-foreground"
           onChange={(e) => {
             const q = e.target.value;
             const params = new URLSearchParams(searchParams);
@@ -64,17 +64,22 @@ function TagFilter() {
         />
       </div>
       <div className="mb-4">
-        <strong>Filter by tags:</strong>
-        <div className="flex flex-wrap gap-2 mt-2">
+        <strong className="block mb-2">Filter by tags:</strong>
+        <div className="flex flex-wrap gap-2">
           {tags.map((t) => (
-            <label key={t.id} className="inline-flex items-center space-x-2">
-              <input
-                type="checkbox"
-                checked={selected.has(t.id)}
-                onChange={() => toggleTag(t.id)}
-              />
-              <span>{t.name}</span>
-            </label>
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => toggleTag(t.id)}
+              className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
+                selected.has(t.id)
+                  ? "bg-accent text-white border-accent hover:bg-accent-hover"
+                  : "bg-card-bg text-muted border-card-border hover:bg-card-border hover:text-foreground"
+              }`}
+              aria-pressed={selected.has(t.id)}
+            >
+              {t.name}
+            </button>
           ))}
         </div>
       </div>
@@ -168,11 +173,11 @@ function PostsList() {
   const allPosts = data?.pages.flatMap((page) => page.posts) ?? [];
 
   if (isLoading && allPosts.length === 0) {
-    return <div className="p-4 text-center">Loading posts...</div>;
+    return <div className="p-4 text-center text-muted">Loading posts...</div>;
   }
 
   if (allPosts.length === 0) {
-    return <p className="p-4 text-center">No posts found.</p>;
+    return <p className="p-4 text-center text-muted">No posts found.</p>;
   }
 
   const basePath = getBasePath();
@@ -181,20 +186,20 @@ function PostsList() {
     <div className="p-4 max-w-2xl mx-auto">
       <ul className="space-y-3">
         {allPosts.map((post) => (
-          <li key={post.id} className="border p-3 rounded">
-            <a href={`${basePath}/posts/${post.slug}`}>
+          <li key={post.id} className="border p-3 rounded bg-card-bg border-card-border">
+            <a href={`${basePath}/posts/${post.slug}`} className="text-foreground hover:text-accent transition-colors">
               <h2 className="text-xl font-semibold">{post.title}</h2>
             </a>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted">
               {new Date(post.created_at * 1000).toLocaleDateString()}
             </p>
           </li>
         ))}
       </ul>
       <div ref={loadMoreRef} className="h-4">
-        {isFetchingNextPage && <div className="text-center py-2">Loading more...</div>}
+        {isFetchingNextPage && <div className="text-center py-2 text-muted">Loading more...</div>}
         {hasNextPage === false && allPosts.length > 0 && (
-          <div className="text-center py-2 text-gray-500">End of posts</div>
+          <div className="text-center py-2 text-muted">End of posts</div>
         )}
       </div>
     </div>
