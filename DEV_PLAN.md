@@ -120,6 +120,13 @@ static_blog/
 | **Privacy-Friendly Analytics** | Plausible or Umami self-hosted. No cookie banner needed. | S | Analytics account / self-host |
 | **Series Landing Page** | `/series/[slug]` showing all posts in order with progress indicator. | M | Post series feature |
 
+### P4 — Code Quality & Maintenance
+
+| Task | Description | Effort | Dependencies |
+|------|-------------|--------|--------------|
+| **Dependency Audit & Updates** | Run `npm audit fix` to resolve 13 vulnerabilities (1 low, 8 moderate, 3 high, 1 critical). Update outdated dependencies. Pin versions in lockfile. | M | — |
+| **Code Warning Cleanup** | Fix 26 ESLint warnings: unused variables, unused imports, unused async error params, unused destructured properties. Add `_` prefix or remove unused code. | S | — |
+
 ---
 
 ## 🛠 Quick Commands (Makefile)
