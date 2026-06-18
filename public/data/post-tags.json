@@ -1,14 +1,158 @@
 [
   {
-    "postId": 27,
+    "postId": 1,
+    "tagId": 1
+  },
+  {
+    "postId": 1,
+    "tagId": 16
+  },
+  {
+    "postId": 1,
+    "tagId": 2
+  },
+  {
+    "postId": 1,
+    "tagId": 17
+  },
+  {
+    "postId": 1,
+    "tagId": 18
+  },
+  {
+    "postId": 1,
+    "tagId": 19
+  },
+  {
+    "postId": 1,
+    "tagId": 6
+  },
+  {
+    "postId": 2,
+    "tagId": 1
+  },
+  {
+    "postId": 2,
+    "tagId": 11
+  },
+  {
+    "postId": 2,
+    "tagId": 12
+  },
+  {
+    "postId": 2,
+    "tagId": 13
+  },
+  {
+    "postId": 2,
+    "tagId": 14
+  },
+  {
+    "postId": 2,
+    "tagId": 15
+  },
+  {
+    "postId": 2,
+    "tagId": 6
+  },
+  {
+    "postId": 3,
+    "tagId": 1
+  },
+  {
+    "postId": 3,
+    "tagId": 2
+  },
+  {
+    "postId": 3,
+    "tagId": 3
+  },
+  {
+    "postId": 3,
+    "tagId": 4
+  },
+  {
+    "postId": 3,
+    "tagId": 5
+  },
+  {
+    "postId": 3,
+    "tagId": 6
+  },
+  {
+    "postId": 3,
+    "tagId": 7
+  },
+  {
+    "postId": 4,
+    "tagId": 1
+  },
+  {
+    "postId": 4,
+    "tagId": 2
+  },
+  {
+    "postId": 4,
+    "tagId": 8
+  },
+  {
+    "postId": 4,
+    "tagId": 9
+  },
+  {
+    "postId": 4,
+    "tagId": 4
+  },
+  {
+    "postId": 4,
+    "tagId": 10
+  },
+  {
+    "postId": 4,
+    "tagId": 6
+  },
+  {
+    "postId": 7,
+    "tagId": 20
+  },
+  {
+    "postId": 9,
+    "tagId": 21
+  },
+  {
+    "postId": 9,
+    "tagId": 22
+  },
+  {
+    "postId": 9,
+    "tagId": 24
+  },
+  {
+    "postId": 9,
+    "tagId": 23
+  },
+  {
+    "postId": 9,
+    "tagId": 25
+  },
+  {
+    "postId": 9,
+    "tagId": 26
+  },
+  {
+    "postId": 9,
+    "tagId": 27
+  },
+  {
+    "postId": 9,
+    "tagId": 28
+  },
+  {
+    "postId": 9,
+    "tagId": 29
+  },
+  {
+    "postId": 9,
     "tagId": 30
-  },
-  {
-    "postId": 28,
-    "tagId": 31
-  },
-  {
-    "postId": 28,
-    "tagId": 32
   }
 ]

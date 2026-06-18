@@ -14,6 +14,17 @@ interface Post {
   created_at: number;
 }
 
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+}
+
+function getExcerpt(content: string, maxLines: number = 20): string {
+  const plain = stripHtml(content);
+  const lines = plain.split('\n').filter(l => l.trim().length > 0);
+  const excerpt = lines.slice(0, maxLines).join('\n');
+  return excerpt.length < plain.length ? excerpt + '...' : excerpt;
+}
+
 function getBasePath(): string {
   if (typeof window !== "undefined") {
     const meta = document.querySelector('meta[name="next-base-path"]');
@@ -184,15 +195,24 @@ function PostsList() {
 
   return (
     <div className="p-4 max-w-2xl mx-auto">
-      <ul className="space-y-3">
+      <ul className="space-y-4">
         {allPosts.map((post) => (
-          <li key={post.id} className="border p-3 rounded bg-card-bg border-card-border">
+          <li key={post.id} className="border p-4 rounded bg-card-bg border-card-border">
             <a href={`${basePath}/posts/${post.slug}`} className="text-foreground hover:text-accent transition-colors">
-              <h2 className="text-xl font-semibold">{post.title}</h2>
+              <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
             </a>
-            <p className="text-sm text-muted">
+            <p className="text-sm text-muted mb-2">
               {new Date(post.created_at * 1000).toLocaleDateString()}
             </p>
+            <div className="prose prose-sm text-muted mb-3 line-clamp-8">
+              {getExcerpt(post.content, 20)}
+            </div>
+            <a href={`${basePath}/posts/${post.slug}`} className="text-sm font-medium text-accent hover:underline inline-flex items-center gap-1">
+              Read more
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </a>
           </li>
         ))}
       </ul>

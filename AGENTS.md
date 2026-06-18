@@ -89,6 +89,7 @@ All primary commands are now exposed through a `Makefile` for quick execution. U
 | **P0** | Markdown Authoring + Frontmatter (CLI-based) | 🎯 Next |
 | **P0** | Homepage Post Previews (~20 lines + "Read more") | 🎯 Next |
 | **P0** | Image Support (local + markdown + CLI upload) | 🎯 Next |
+| **P1** | Database Protection (isolate test DB from production) | 🎯 Next |
 | **P1** | Full-Text Search (SQLite FTS5) | Planned |
 | **P1** | SEO: Open Graph + Twitter Cards + JSON-LD | Planned |
 | **P1** | Image Optimization Pipeline (WebP, responsive, blur) | Planned |
@@ -99,6 +100,8 @@ All primary commands are now exposed through a `Makefile` for quick execution. U
 | **P2** | Post Series / Collections (ordered, next/prev nav) | Planned |
 | **P3** | Newsletter Integration | Backlog |
 | **P3** | Privacy-Friendly Analytics (Plausible/Umami) | Backlog |
+| **P4** | Dependency Audit & Updates (13 vulnerabilities) | Planned |
+| **P4** | Code Warning Cleanup (26 ESLint warnings) | Planned |
 
 > **Completed**: RSS/Sitemap generation ✅, Error/loading boundaries ✅, Tag autocomplete on create page ❌ (removed), Dark mode ✅
 

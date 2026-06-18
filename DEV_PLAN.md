@@ -95,6 +95,7 @@ static_blog/
 
 | Task | Description | Effort | Dependencies |
 |------|-------------|--------|--------------|
+| **Database Protection** | Prevent test suite from wiping production `db.sqlite`. Options: (1) Tests use temp SQLite file (`:memory:` or temp file) via Vitest setup; (2) Auto-backup `db.sqlite` before test run + restore after; (3) Separate test DB schema. CI should never touch committed DB. | S | Vitest config, test setup |
 | **Full-Text Search** | SQLite FTS5 virtual table on posts.content + title. Server-side search API + client UI integration. Replaces/augments client-side filter. | M | Schema migration, FTS5 extension |
 | **SEO: Open Graph + Twitter Cards + JSON-LD** | Meta tags on post pages: `og:title`, `og:description`, `og:image`, `twitter:card`, `article:published_time`, `Article` schema.org JSON-LD. | S | Post detail page, frontmatter description field |
 | **Image Optimization Pipeline** | Build-time: Sharp → WebP/AVIF, multiple widths (400, 800, 1200), blur placeholder (base64), `srcset`/`sizes` generation. | M | Image support, Sharp dependency |
@@ -118,6 +119,13 @@ static_blog/
 | **Newsletter Integration** | Buttondown/ConvertKit embed in post footer + homepage. | S | External service account |
 | **Privacy-Friendly Analytics** | Plausible or Umami self-hosted. No cookie banner needed. | S | Analytics account / self-host |
 | **Series Landing Page** | `/series/[slug]` showing all posts in order with progress indicator. | M | Post series feature |
+
+### P4 — Code Quality & Maintenance
+
+| Task | Description | Effort | Dependencies |
+|------|-------------|--------|--------------|
+| **Dependency Audit & Updates** | Run `npm audit fix` to resolve 13 vulnerabilities (1 low, 8 moderate, 3 high, 1 critical). Update outdated dependencies. Pin versions in lockfile. | M | — |
+| **Code Warning Cleanup** | Fix 26 ESLint warnings: unused variables, unused imports, unused async error params, unused destructured properties. Add `_` prefix or remove unused code. | S | — |
 
 ---
 

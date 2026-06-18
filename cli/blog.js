@@ -12,6 +12,10 @@ const fs = require('fs');
 const path = require('path');
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { execSync } = require('child_process');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const matter = require('gray-matter');
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { marked } = require('marked');
 
 const DB_PATH = path.join(__dirname, '..', 'db.sqlite');
 
@@ -130,10 +134,127 @@ async function createPostCmd(args) {
   if (tagIds.length) console.log(`   Tags: ${tagNames}`);
 }
 
+async function newPostFromMarkdownCmd(args) {
+  await ensureTables();
+  
+  let filePath = args.file || args['<file>'];
+  if (!filePath) {
+    console.error('Usage: blog new <file.md>');
+    console.error('       blog new --file <file.md>');
+    process.exit(1);
+  }
+  
+  const fullPath = path.resolve(filePath);
+  if (!fs.existsSync(fullPath)) {
+    console.error(`File not found: ${fullPath}`);
+    process.exit(1);
+  }
+  
+  const fileContent = fs.readFileSync(fullPath, 'utf-8');
+  const { data: frontmatter, content: markdownContent } = matter(fileContent);
+  
+  let { title, slug, date, tags: tagNames, description, series, seriesOrder } = frontmatter;
+  
+  if (!title) {
+    console.error('Frontmatter must include "title"');
+    process.exit(1);
+  }
+  
+  if (!slug) {
+    slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  }
+  
+  const createdAt = date ? Math.floor(new Date(date).getTime() / 1000) : Math.floor(Date.now() / 1000);
+  
+  // Convert markdown to HTML
+  const htmlContent = marked.parse(markdownContent, { async: false }) + '';
+  
+  let tagIds = [];
+  if (tagNames) {
+    const tagList = Array.isArray(tagNames) ? tagNames : tagNames.split(',').map(t => t.trim()).filter(Boolean);
+    for (const tagName of tagList) {
+      let tagRow = await db.select({ id: tags.id }).from(tags).where(eq(tags.name, tagName)).limit(1).execute();
+      if (tagRow.length === 0) {
+        const inserted = await db.insert(tags).values({ name: tagName }).returning({ id: tags.id }).execute();
+        tagIds.push(inserted[0].id);
+      } else {
+        tagIds.push(tagRow[0].id);
+      }
+    }
+  }
+  
+  const result = await db
+    .insert(posts)
+    .values({ title, slug, content: htmlContent, created_at: createdAt })
+    .returning({ id: posts.id })
+    .execute();
+  
+  const postId = result[0].id;
+  
+  if (tagIds.length) {
+    await db.insert(postTags).values(tagIds.map(tagId => ({ postId, tagId }))).execute();
+  }
+  
+  console.log(`✅ Created post #${postId}: "${title}" (slug: ${slug})`);
+  if (tagIds.length) console.log(`   Tags: ${Array.isArray(tagNames) ? tagNames.join(', ') : tagNames}`);
+  if (description) console.log(`   Description: ${description}`);
+  if (series) console.log(`   Series: ${series} (order: ${seriesOrder || 'N/A'})`);
+}
+
+async function addImageCmd(args) {
+  await ensureTables();
+  
+  let slug = args.slug || args['<slug>'];
+  let imagePath = args.path || args['<path>'];
+  
+  if (!slug || !imagePath) {
+    console.error('Usage: blog add-image <slug> <path>');
+    console.error('       blog add-image --slug <slug> --path <path>');
+    console.error('');
+    console.error('Copies image to public/images/posts/<slug>/ and outputs markdown syntax.');
+    process.exit(1);
+  }
+  
+  const post = await db.select().from(posts).where(eq(posts.slug, slug)).limit(1).execute();
+  if (!post.length) {
+    console.error(`Post with slug "${slug}" not found.`);
+    process.exit(1);
+  }
+  
+  const sourcePath = path.resolve(imagePath);
+  if (!fs.existsSync(sourcePath)) {
+    console.error(`Image not found: ${sourcePath}`);
+    process.exit(1);
+  }
+  
+  const ext = path.extname(sourcePath).toLowerCase();
+  const allowedExts = ['.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg'];
+  if (!allowedExts.includes(ext)) {
+    console.error(`Unsupported image format: ${ext}. Allowed: ${allowedExts.join(', ')}`);
+    process.exit(1);
+  }
+  
+  const destDir = path.join(__dirname, '..', 'public', 'images', 'posts', slug);
+  fs.mkdirSync(destDir, { recursive: true });
+  
+  const fileName = `${Date.now()}${ext}`;
+  const destPath = path.join(destDir, fileName);
+  
+  fs.copyFileSync(sourcePath, destPath);
+  
+  const publicPath = `/images/posts/${slug}/${fileName}`;
+  const markdown = `![${slug}-${fileName}](${publicPath})`;
+  
+  console.log(`✅ Image copied to: ${destPath}`);
+  console.log(`📋 Markdown to use in your post:`);
+  console.log(`   ${markdown}`);
+  console.log(`   <!-- Alt text suggestion: ${slug} screenshot -->`);
+}
+
 async function deletePostCmd(args) {
   await ensureTables();
   const { id, slug } = args;
-
+  
   let postId = id;
   if (!postId && slug) {
     const post = await db.select({ id: posts.id }).from(posts).where(eq(posts.slug, slug)).limit(1).execute();
@@ -143,49 +264,49 @@ async function deletePostCmd(args) {
     }
     postId = post[0].id;
   }
-
+  
   if (!postId) {
     const { confirmId } = await inquirer.prompt([
       { type: 'input', name: 'confirmId', message: 'Post ID to delete:' }
     ]);
     postId = parseInt(confirmId);
   }
-
+  
   if (isNaN(postId)) {
     console.error('Invalid post ID.');
     return;
   }
-
+  
   const post = await db.select().from(posts).where(eq(posts.id, postId)).limit(1).execute();
   if (!post.length) {
     console.error(`Post #${postId} not found.`);
     return;
   }
-
+  
   const { confirm } = await inquirer.prompt([
     { type: 'confirm', name: 'confirm', message: `Delete "${post[0].title}" (ID: ${postId})?`, default: false }
   ]);
-
+  
   if (!confirm) {
     console.log('Cancelled.');
     return;
   }
-
+  
   await db.delete(postTags).where(eq(postTags.postId, postId));
   await db.delete(posts).where(eq(posts.id, postId));
-
+  
   console.log(`✅ Deleted post #${postId}: "${post[0].title}"`);
 }
 
 async function listTagsCmd() {
   await ensureTables();
   const tagRows = await db.select({ id: tags.id, name: tags.name }).from(tags).orderBy(tags.name).execute();
-
+  
   if (tagRows.length === 0) {
     console.log('No tags found.');
     return;
   }
-
+  
   console.log('\n🏷️  Tags:\n');
   for (const tag of tagRows) {
     const count = await db
@@ -207,7 +328,7 @@ async function createTagCmd(args) {
     ]);
     name = tagName;
   }
-
+  
   try {
     const result = await db.insert(tags).values({ name }).returning({ id: tags.id }).execute();
     console.log(`✅ Created tag #${result[0].id}: "${name}"`);
@@ -223,7 +344,7 @@ async function createTagCmd(args) {
 async function deleteTagCmd(args) {
   await ensureTables();
   const { name } = args;
-
+  
   let tagName = name;
   if (!tagName) {
     const { tagName: input } = await inquirer.prompt([
@@ -231,25 +352,25 @@ async function deleteTagCmd(args) {
     ]);
     tagName = input;
   }
-
+  
   const tagRow = await db.select({ id: tags.id }).from(tags).where(eq(tags.name, tagName)).limit(1).execute();
   if (!tagRow.length) {
     console.error(`Tag "${tagName}" not found.`);
     return;
   }
-
+  
   const { confirm } = await inquirer.prompt([
     { type: 'confirm', name: 'confirm', message: `Delete tag "${tagName}" and all associations?`, default: false }
   ]);
-
+  
   if (!confirm) {
     console.log('Cancelled.');
     return;
   }
-
+  
   await db.delete(postTags).where(eq(postTags.tagId, tagRow[0].id));
   await db.delete(tags).where(eq(tags.id, tagRow[0].id));
-
+  
   console.log(`✅ Deleted tag "${tagName}"`);
 }
 
@@ -258,7 +379,7 @@ async function tagPostCmd(args) {
   let { postId, tagName } = args;
   postId = postId || args['post-id'];
   tagName = tagName || args.tag;
-
+  
   if (!postId) {
     const { id } = await inquirer.prompt([{ type: 'input', name: 'id', message: 'Post ID:' }]);
     postId = parseInt(id);
@@ -267,13 +388,13 @@ async function tagPostCmd(args) {
     const { tag } = await inquirer.prompt([{ type: 'input', name: 'tag', message: 'Tag name:' }]);
     tagName = tag;
   }
-
+  
   const post = await db.select().from(posts).where(eq(posts.id, postId)).limit(1).execute();
   if (!post.length) {
     console.error(`Post #${postId} not found.`);
     return;
   }
-
+  
   let tagRow = await db.select({ id: tags.id }).from(tags).where(eq(tags.name, tagName)).limit(1).execute();
   if (!tagRow.length) {
     const { create } = await inquirer.prompt([
@@ -283,13 +404,13 @@ async function tagPostCmd(args) {
     const inserted = await db.insert(tags).values({ name: tagName }).returning({ id: tags.id }).execute();
     tagRow = inserted;
   }
-
+  
   const existing = await db.select().from(postTags).where(and(eq(postTags.postId, postId), eq(postTags.tagId, tagRow[0].id))).execute();
   if (existing.length) {
     console.log(`Post already has tag "${tagName}".`);
     return;
   }
-
+  
   await db.insert(postTags).values({ postId, tagId: tagRow[0].id }).execute();
   console.log(`✅ Tagged post #${postId} with "${tagName}"`);
 }
@@ -299,7 +420,7 @@ async function untagPostCmd(args) {
   let { postId, tagName } = args;
   postId = postId || args['post-id'];
   tagName = tagName || args.tag;
-
+  
   if (!postId) {
     const { id } = await inquirer.prompt([{ type: 'input', name: 'id', message: 'Post ID:' }]);
     postId = parseInt(id);
@@ -308,22 +429,22 @@ async function untagPostCmd(args) {
     const { tag } = await inquirer.prompt([{ type: 'input', name: 'tag', message: 'Tag name to remove:' }]);
     tagName = tag;
   }
-
+  
   const tagRow = await db.select({ id: tags.id }).from(tags).where(eq(tags.name, tagName)).limit(1).execute();
   if (!tagRow.length) {
     console.error(`Tag "${tagName}" not found.`);
     return;
   }
-
+  
   await db.delete(postTags).where(and(eq(postTags.postId, postId), eq(postTags.tagId, tagRow[0].id)));
   console.log(`✅ Removed tag "${tagName}" from post #${postId}`);
 }
 
 async function generateStaticCmd() {
   await ensureTables();
-
+  
   console.log('Generating static data...');
-
+  
   // Seed if empty
   const existing = await db.select().from(posts).limit(1).execute();
   if (existing.length === 0) {
@@ -358,32 +479,32 @@ async function generateStaticCmd() {
     
     console.log('Seeded posts with tags');
   }
-
+  
   const allPosts = await db
     .select()
     .from(posts)
     .orderBy(desc(posts.created_at))
     .execute();
-
+  
   const allPostTags = await db
     .select({ postId: postTags.postId, tagId: postTags.tagId })
     .from(postTags)
     .execute();
-
+  
   const allTags = await db
     .select({ id: tags.id, name: tags.name })
     .from(tags)
     .orderBy(tags.name)
     .execute();
-
+  
   const indexData = { posts: allPosts, total: allPosts.length, generatedAt: new Date().toISOString() };
-
+  
   const outDir = path.join(__dirname, '..', 'public', 'data');
   fs.mkdirSync(outDir, { recursive: true });
   fs.writeFileSync(path.join(outDir, 'posts-index.json'), JSON.stringify(indexData, null, 2));
   fs.writeFileSync(path.join(outDir, 'tags.json'), JSON.stringify(allTags, null, 2));
   fs.writeFileSync(path.join(outDir, 'post-tags.json'), JSON.stringify(allPostTags, null, 2));
-
+  
   console.log(`✅ Generated posts-index.json with ${allPosts.length} posts`);
   console.log(`✅ Generated tags.json with ${allTags.length} tags`);
   console.log(`✅ Generated post-tags.json with ${allPostTags.length} relationships`);
@@ -392,7 +513,7 @@ async function generateStaticCmd() {
 async function buildCmd() {
   console.log('Building static site...');
   try {
-    execSync('npx npm run generate:static-data && npx next build', { stdio: 'inherit', cwd: path.join(__dirname, '..') });
+    execSync('npm run generate:static-data && npm run build', { stdio: 'inherit', cwd: path.join(__dirname, '..') });
     console.log('✅ Build complete! Output in ./out/');
   } catch (e) {
     console.error('Build failed.');
@@ -402,7 +523,7 @@ async function buildCmd() {
 
 async function devCmd() {
   console.log('Starting dev server...');
-  execSync('npx npm run dev', { stddio: 'inherit', cwd: path.join(__dirname, '..') });
+  execSync('npm run dev', { stdio: 'inherit', cwd: path.join(__dirname, '..') });
 }
 
 function showHelp() {
@@ -417,11 +538,19 @@ Commands:
     --search <term>        Search in title/content
     --tag <name>           Filter by tag name
 
-  create                   Create a new post
+  create                   Create a new post (interactive or via flags)
     --title <text>         Post title
     --slug <text>          URL slug (auto-generated if omitted)
     --content <html>       Post content (HTML/Markdown)
     --tags <list>          Comma-separated tags
+
+  new                      Create post from markdown file with frontmatter
+    --file <file.md>       Path to markdown file
+    --watch                Watch for changes (not yet implemented)
+
+  add-image                Add image to post
+    --slug <text>          Post slug
+    --path <file>          Image file path
 
   delete                   Delete a post
     --id <number>          Post ID
@@ -455,6 +584,8 @@ Commands:
 Examples:
   blog posts --search "Next.js" --tag tech
   blog create --title "My Post" --content "<p>Hello</p>" --tags "tech,tutorial"
+  blog new ./my-post.md
+  blog add-image hello-world ./screenshot.png
   blog delete --id 5
   blog tag-post --post-id 3 --tag "deploy"
   blog build
@@ -479,6 +610,12 @@ async function main() {
     } else if (arg.startsWith('-')) {
       const key = arg.replace(/^-/, '');
       flags[key] = true;
+    } else if (!args['<file>'] && cmd === 'new') {
+      args['<file>'] = arg;
+    } else if (!args['<slug>'] && (cmd === 'add-image' || cmd === 'delete')) {
+      args['<slug>'] = arg;
+    } else if (!args['<path>'] && cmd === 'add-image') {
+      args['<path>'] = arg;
     }
   }
 
@@ -489,6 +626,12 @@ async function main() {
         break;
       case 'create':
         await createPostCmd(args, flags);
+        break;
+      case 'new':
+        await newPostFromMarkdownCmd(args, flags);
+        break;
+      case 'add-image':
+        await addImageCmd(args, flags);
         break;
       case 'delete':
         await deletePostCmd(args, flags);

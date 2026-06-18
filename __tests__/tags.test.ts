@@ -1,8 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import db from '../db/db';
-import { posts, tags, postTags } from '../db/schema';
-import { listAllTags, listTagsForPost, listPostsPaginated } from '../lib/tags';
-import { createPost } from '../lib/posts';
+import testDb, { posts, tags, postTags, listAllTags, listTagsForPost, listPostsPaginated, createPost } from './test-db';
 
 let postId1: number;
 let postId2: number;
@@ -12,35 +9,20 @@ let tagIdLife: number;
 let tagIdScience: number;
 
 beforeAll(async () => {
-  // Clean tables
-  db.$client.exec('DELETE FROM post_tags');
-  db.$client.exec('DELETE FROM posts');
-  db.$client.exec('DELETE FROM tags');
-
-  // Create tables if not exist
-  db.$client.exec(`CREATE TABLE IF NOT EXISTS posts (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    slug TEXT UNIQUE NOT NULL,
-    content TEXT NOT NULL,
-    created_at INTEGER NOT NULL DEFAULT 0
-  );`);
-  db.$client.exec(`CREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE NOT NULL);`);
-  db.$client.exec(`CREATE TABLE IF NOT EXISTS post_tags (post_id INTEGER NOT NULL REFERENCES posts(id), tag_id INTEGER NOT NULL REFERENCES tags(id));`);
-
+  // Tables are created in test-db.ts setup
   // Seed exactly 3 tags
-  const tagRows = await db
+  const tagRows = await testDb
     .insert(tags)
     .values([{ name: 'life' }, { name: 'science' }, { name: 'tech' }])
     .returning({ id: tags.id, name: tags.name })
     .execute();
-  const nameToId = Object.fromEntries(tagRows.map(t => [t.name, t.id]));
+  const nameToId = Object.fromEntries(tagRows.map((t: { id: number; name: string }) => [t.name, t.id]));
   tagIdLife = nameToId.life;
   tagIdScience = nameToId.science;
   tagIdTech = nameToId.tech;
 
   // Seed 3 posts
-  const postRows = await db
+  const postRows = await testDb
     .insert(posts)
     .values([
       { title: 'Life Post', slug: 'life-post', content: 'About life', created_at: 1 },
@@ -49,13 +31,13 @@ beforeAll(async () => {
     ])
     .returning({ id: posts.id, slug: posts.slug })
     .execute();
-  const slugToId = Object.fromEntries(postRows.map(p => [p.slug, p.id]));
+  const slugToId = Object.fromEntries(postRows.map((p: { id: number; slug: string }) => [p.slug, p.id]));
   postId1 = slugToId['life-post'];
   postId2 = slugToId['science-post'];
   postId3 = slugToId['tech-post'];
 
   // Link posts to tags
-  await db
+  await testDb
     .insert(postTags)
     .values([
       { postId: postId1, tagId: tagIdLife },
@@ -66,10 +48,8 @@ beforeAll(async () => {
     .execute();
 });
 
-afterAll(async () => {
-  db.$client.exec('DELETE FROM post_tags');
-  db.$client.exec('DELETE FROM posts');
-  db.$client.exec('DELETE FROM tags');
+afterAll(() => {
+  // Cleanup handled in test-db.ts
 });
 
 describe('listAllTags', () => {
