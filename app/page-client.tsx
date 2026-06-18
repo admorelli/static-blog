@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Tag } from "@/lib/tags";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import matter from "gray-matter";
+import { marked } from "marked";
 
 export const dynamic = "force-dynamic";
 
@@ -14,12 +16,18 @@ interface Post {
   created_at: number;
 }
 
+function parseContent(rawContent: string): string {
+  const { content } = matter(rawContent);
+  return marked.parse(content, { async: false }) as string;
+}
+
 function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
 }
 
-function getExcerpt(content: string, maxLines: number = 20): string {
-  const plain = stripHtml(content);
+function getExcerpt(rawContent: string, maxLines: number = 20): string {
+  const htmlContent = parseContent(rawContent);
+  const plain = stripHtml(htmlContent);
   const lines = plain.split('\n').filter(l => l.trim().length > 0);
   const excerpt = lines.slice(0, maxLines).join('\n');
   return excerpt.length < plain.length ? excerpt + '...' : excerpt;
