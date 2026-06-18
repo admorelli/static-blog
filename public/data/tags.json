@@ -1,14 +1,122 @@
 [
   {
-    "id": 31,
-    "name": "life"
+    "id": 19,
+    "name": "agent-architecture"
+  },
+  {
+    "id": 10,
+    "name": "agent-comparison"
+  },
+  {
+    "id": 28,
+    "name": "basepath"
+  },
+  {
+    "id": 23,
+    "name": "debugging"
+  },
+  {
+    "id": 26,
+    "name": "deployment"
+  },
+  {
+    "id": 6,
+    "name": "development"
+  },
+  {
+    "id": 13,
+    "name": "free-tier"
+  },
+  {
+    "id": 22,
+    "name": "github-pages"
+  },
+  {
+    "id": 29,
+    "name": "gray-matter"
+  },
+  {
+    "id": 16,
+    "name": "hermes"
+  },
+  {
+    "id": 1,
+    "name": "llm"
+  },
+  {
+    "id": 2,
+    "name": "local-llm"
+  },
+  {
+    "id": 25,
+    "name": "markdown"
   },
   {
     "id": 30,
-    "name": "tech"
+    "name": "marked"
   },
   {
-    "id": 32,
-    "name": "tutorial"
+    "id": 17,
+    "name": "mellum"
+  },
+  {
+    "id": 11,
+    "name": "nemotron"
+  },
+  {
+    "id": 14,
+    "name": "nemotron-3-ultra"
+  },
+  {
+    "id": 21,
+    "name": "nextjs"
+  },
+  {
+    "id": 9,
+    "name": "opencode"
+  },
+  {
+    "id": 12,
+    "name": "openrouter"
+  },
+  {
+    "id": 8,
+    "name": "pi-agent"
+  },
+  {
+    "id": 15,
+    "name": "project-completion"
+  },
+  {
+    "id": 5,
+    "name": "prompt-engineering"
+  },
+  {
+    "id": 4,
+    "name": "quantization"
+  },
+  {
+    "id": 3,
+    "name": "qwen"
+  },
+  {
+    "id": 7,
+    "name": "retrospective"
+  },
+  {
+    "id": 24,
+    "name": "static-site"
+  },
+  {
+    "id": 20,
+    "name": "test"
+  },
+  {
+    "id": 18,
+    "name": "tools"
+  },
+  {
+    "id": 27,
+    "name": "urls"
   }
 ]

@@ -402,9 +402,9 @@ describe('Regression: Static generation outputs', () => {
 // ─── Regression: RSS/Atom feed generation ────────────────────────────────────
 describe('Regression: RSS/Atom feed generation', () => {
   
-  const feedScriptPath = path.join(process.cwd(), 'scripts', 'generate-feed.js');
+  const feedScriptPath = path.join(process.cwd(), 'scripts', 'generate-feed.ts');
   
-  it('should have generate-feed.js script', () => {
+  it('should have generate-feed.ts script', () => {
     expect(fs.existsSync(feedScriptPath)).toBe(true);
   });
 
