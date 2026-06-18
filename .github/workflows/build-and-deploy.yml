@@ -52,7 +52,7 @@ jobs:
         run: npm rebuild better-sqlite3
 
       - name: Generate static data
-        run: tsx ./scripts/generate-static-data.ts
+        run: npx tsx ./scripts/generate-static-data.ts
 
       - name: Extract repo name
         id: repo
