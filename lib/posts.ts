@@ -8,6 +8,8 @@ export type Post = {
   slug: string;
   content: string;
   created_at: number;
+  series: string | null;
+  series_order: number | null;
 };
 
 /** Get all posts ordered by newest first */
@@ -106,4 +108,51 @@ async function searchPostsFallback(query: string, limit: number = 10): Promise<P
     .orderBy(desc(posts.created_at))
     .limit(limit);
   return rows as Post[];
+}
+
+/** Get all posts in a series ordered by series_order */
+export async function getPostsBySeries(seriesName: string): Promise<Post[]> {
+  const rows = await db
+    .select()
+    .from(posts)
+    .where(eq(posts.series, seriesName))
+    .orderBy(posts.series_order);
+  return rows as Post[];
+}
+
+/** Get all unique series names */
+export async function getAllSeries(): Promise<string[]> {
+  const rowsAll = await db
+    .select({ series: posts.series })
+    .from(posts);
+  const series = rowsAll
+    .map(r => r.series)
+    .filter((s): s is string => s !== null && s !== undefined && s !== '')
+    .filter((s, i, arr) => arr.indexOf(s) === i)
+    .sort();
+  return series;
+}
+
+/** Get next post in series */
+export async function getNextInSeries(series: string, currentOrder: number): Promise<Post | undefined> {
+  const rows = await db
+    .select()
+    .from(posts)
+    .where(eq(posts.series, series))
+    .orderBy(posts.series_order);
+  const seriesPosts = rows as Post[];
+  const next = seriesPosts.find(p => p.series_order !== null && p.series_order > currentOrder);
+  return next;
+}
+
+/** Get previous post in series */
+export async function getPrevInSeries(series: string, currentOrder: number): Promise<Post | undefined> {
+  const rows = await db
+    .select()
+    .from(posts)
+    .where(eq(posts.series, series))
+    .orderBy(posts.series_order);
+  const seriesPosts = rows as Post[];
+  const prev = seriesPosts.filter(p => p.series_order !== null && p.series_order < currentOrder).pop();
+  return prev;
 }
