@@ -30,7 +30,7 @@ const server = new Server(
 );
 
 // Helper to run CLI commands
-function runCLI(args) {
+function runCLI(args: string[]) {
   return new Promise((resolve, reject) => {
     const child = spawn("node", [CLI_PATH, ...args], {
       cwd: PROJECT_ROOT,
@@ -40,10 +40,10 @@ function runCLI(args) {
     let stdout = "";
     let stderr = "";
 
-    child.stdout.on("data", (data) => { stdout += data.toString(); });
-    child.stderr.on("data", (data) => { stderr += data.toString(); });
+    child.stdout.on("data", (data: Buffer) => { stdout += data.toString(); });
+    child.stderr.on("data", (data: Buffer) => { stderr += data.toString(); });
 
-    child.on("close", (code) => {
+    child.on("close", (code: number) => {
       if (code === 0) {
         resolve(stdout);
       } else {
@@ -51,7 +51,7 @@ function runCLI(args) {
       }
     });
 
-    child.on("error", (err) => {
+    child.on("error", (err: Error) => {
       reject(err);
     });
   });
@@ -171,7 +171,21 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 });
 
 // Handle tool calls
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
+type ToolArgs = {
+  limit?: number;
+  search?: string;
+  tag?: string;
+  title?: string;
+  slug?: string;
+  content?: string;
+  tags?: string;
+  id?: number;
+  yes?: boolean;
+  name?: string;
+  post_id: number;
+};
+
+server.setRequestHandler(CallToolRequestSchema, async (request: { params: { name: string; arguments: ToolArgs } }) => {
   const { name, arguments: args } = request.params;
 
   try {
@@ -237,13 +251,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         throw new McpError(ErrorCode.MethodNotFound, `Unknown tool: ${name}`);
     }
 
-    const output = await runCLI(cliArgs);
+    const output = await runCLI(cliArgs as string[]);
     return {
       content: [{ type: "text", text: output }],
     };
-  } catch (error) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
     return {
-      content: [{ type: "text", text: `Error: ${error.message}` }],
+      content: [{ type: "text", text: `Error: ${message}` }],
       isError: true,
     };
   }

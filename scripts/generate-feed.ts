@@ -1,7 +1,5 @@
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const fs = require('fs');
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 async function generateFeed() {
   console.log('Generating RSS/Atom feed...');
@@ -15,7 +13,7 @@ async function generateFeed() {
   }
   
   const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
-  const posts = (data.posts || []).sort((a, b) => b.created_at - a.created_at);
+  const posts = (data.posts || []).sort((a: { created_at: number }, b: { created_at: number }) => b.created_at - a.created_at);
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://your-username.github.io/static_blog';
   const siteTitle = 'Static Blog';
@@ -33,7 +31,7 @@ async function generateFeed() {
   <author>
     <name>Blog Author</name>
   </author>
-${posts.slice(0, 20).map(post => `  <entry>
+${posts.slice(0, 20).map((post: { title: string; slug: string; created_at: number; content: string }) => `  <entry>
     <title>${escapeXml(post.title)}</title>
     <link href="${siteUrl}/posts/${post.slug}"/>
     <id>${siteUrl}/posts/${post.slug}</id>
@@ -52,7 +50,7 @@ ${posts.slice(0, 20).map(post => `  <entry>
     <language>en</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
     <atom:link href="${siteUrl}/feed.xml" rel="self" type="application/rss+xml"/>
-${posts.slice(0, 20).map(post => `    <item>
+${posts.slice(0, 20).map((post: { title: string; slug: string; created_at: number; content: string }) => `    <item>
       <title>${escapeXml(post.title)}</title>
       <link>${siteUrl}/posts/${post.slug}</link>
       <guid isPermaLink="true">${siteUrl}/posts/${post.slug}</guid>
@@ -71,16 +69,16 @@ ${posts.slice(0, 20).map(post => `    <item>
   console.log(`✅ Generated atom.xml (Atom 1.0) with ${Math.min(posts.length, 20)} items`);
 }
 
-function escapeXml(str) {
+function escapeXml(str: string): string {
   return str
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/\"/g, '&quot;')
+    .replace(/"/g, '&quot;')
     .replace(/'/g, '&apos;');
 }
 
-generateFeed().catch((e) => {
-  console.error('Feed generation failed:', e);
+generateFeed().catch((err: unknown) => {
+  console.error('Feed generation failed:', err);
   process.exit(1);
 });
