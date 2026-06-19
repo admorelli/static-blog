@@ -20,6 +20,8 @@ export type Post = {
   slug: string;
   content: string;
   created_at: number;
+  series: string | null;
+  series_order: number | null;
 };
 
 /** Get all posts ordered by newest first */
@@ -144,6 +146,93 @@ export async function listPostsPaginated(options: {
     posts: paginatedRows as Post[],
     total,
   };
+}
+
+/** Full-text search using FTS5 (mirrors lib/posts.ts) */
+export async function searchPostsFTS(query: string, limit: number = 10): Promise<Post[]> {
+  if (!query.trim()) return [];
+
+  try {
+    // Use raw SQL for FTS5 MATCH query
+    const rows = await testDb.$client.prepare(`
+      SELECT p.id, p.title, p.slug, p.content, p.created_at
+      FROM posts p
+      INNER JOIN posts_fts f ON p.id = f.id
+      WHERE posts_fts MATCH ?
+      LIMIT ?
+    `).all(query, limit);
+    return rows as Post[];
+  } catch (e) {
+    // FTS5 might fail if table doesn't exist or query is invalid
+    console.warn('FTS5 search failed, falling back to LIKE search:', e);
+    return searchPostsFallback(query, limit);
+  }
+}
+
+/** Fallback search using LIKE (used when FTS5 is unavailable) */
+async function searchPostsFallback(query: string, limit: number = 10): Promise<Post[]> {
+  const searchTerm = `%${query}%`;
+  const rows = await testDb
+    .select()
+    .from(posts)
+    .where(
+      or(
+        like(posts.title, searchTerm),
+        like(posts.content, searchTerm)
+      )
+    )
+    .orderBy(desc(posts.created_at))
+    .limit(limit);
+  return rows as Post[];
+}
+
+// --- Series functions (mirroring lib/posts.ts) ---
+
+/** Get all posts in a series ordered by series_order */
+export async function getPostsBySeries(seriesName: string): Promise<Post[]> {
+  const rows = await testDb
+    .select()
+    .from(posts)
+    .where(eq(posts.series, seriesName))
+    .orderBy(posts.series_order);
+  return rows as Post[];
+}
+
+/** Get all unique series names */
+export async function getAllSeries(): Promise<string[]> {
+  const rowsAll = await testDb
+    .select({ series: posts.series })
+    .from(posts);
+  const series = rowsAll
+    .map((r: { series: string | null }) => r.series)
+    .filter((s: string | null): s is string => s !== null && s !== undefined && s !== '')
+    .filter((s: string, i: number, arr: string[]) => arr.indexOf(s) === i)
+    .sort();
+  return series;
+}
+
+/** Get next post in series */
+export async function getNextInSeries(series: string, currentOrder: number): Promise<Post | undefined> {
+  const rows = await testDb
+    .select()
+    .from(posts)
+    .where(eq(posts.series, series))
+    .orderBy(posts.series_order);
+  const seriesPosts = rows as Post[];
+  const next = seriesPosts.find((p: Post) => p.series_order !== null && p.series_order > currentOrder);
+  return next;
+}
+
+/** Get previous post in series */
+export async function getPrevInSeries(series: string, currentOrder: number): Promise<Post | undefined> {
+  const rows = await testDb
+    .select()
+    .from(posts)
+    .where(eq(posts.series, series))
+    .orderBy(posts.series_order);
+  const seriesPosts = rows as Post[];
+  const prev = seriesPosts.filter((p: Post) => p.series_order !== null && p.series_order < currentOrder).pop();
+  return prev;
 }
 
 // Export schema for direct access if needed
