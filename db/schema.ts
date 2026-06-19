@@ -6,6 +6,8 @@ export const posts = sqliteTable('posts', {
   slug: text('slug').unique().notNull(),
   content: text('content').notNull(),
   created_at: integer('created_at').default(0).notNull(),
+  series: text('series'),
+  series_order: integer('series_order'),
 });
 
 export const tags = sqliteTable('tags', {

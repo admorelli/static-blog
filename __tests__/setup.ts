@@ -10,7 +10,9 @@ testDb.$client.exec(`CREATE TABLE posts (
   title TEXT NOT NULL,
   slug TEXT UNIQUE NOT NULL,
   content TEXT NOT NULL,
-  created_at INTEGER NOT NULL DEFAULT 0
+  created_at INTEGER NOT NULL DEFAULT 0,
+  series TEXT,
+  series_order INTEGER
 );`);
 testDb.$client.exec(`CREATE TABLE tags (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE NOT NULL);`);
 testDb.$client.exec(`CREATE TABLE post_tags (post_id INTEGER NOT NULL REFERENCES posts(id), tag_id INTEGER NOT NULL REFERENCES tags(id));`);

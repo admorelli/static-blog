@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * static_blog CLI - Manage your blog from the terminal
  * TypeScript version with proper types and error handling
@@ -17,15 +18,14 @@ import { marked } from 'marked';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const DB_PATH = path.join(__dirname, '..', 'db.sqlite');
-
-// Types
 interface Post {
   id: number;
   title: string;
   slug: string;
   content: string;
   created_at: number;
+  series: string | null;
+  series_order: number | null;
 }
 
 interface Tag {
@@ -84,66 +84,58 @@ function slugify(str: string): string {
 
 async function listPostsCmd(args: CliArgs): Promise<void> {
   await ensureTables();
-  async function listPostsCmd(args: CliArgs): Promise<void> {
-    await ensureTables();
-    const { limit = '20', search, tag } = args;
+  const { limit = '20', search, tag } = args;
 
-    // Fetch all posts
-    const allPosts = await db.select({
-      id: posts.id,
-      title: posts.title,
-      slug: posts.slug,
-      content: posts.content,
-      created_at: posts.created_at,
-    }).from(posts).orderBy(desc(posts.created_at)).execute();
+  const allPosts = await db.select({
+    id: posts.id,
+    title: posts.title,
+    slug: posts.slug,
+    content: posts.content,
+    created_at: posts.created_at,
+  }).from(posts).orderBy(desc(posts.created_at)).execute();
 
-    // Filter by search
-    let filteredPosts = allPosts;
-    if (search) {
-      const searchLower = search.toLowerCase();
-      filteredPosts = filteredPosts.filter(p =>
-        p.title.toLowerCase().includes(searchLower) ||
-        p.content.toLowerCase().includes(searchLower)
-      );
+  let filteredPosts = allPosts;
+  if (search) {
+    const searchLower = search.toLowerCase();
+    filteredPosts = filteredPosts.filter(p =>
+      p.title.toLowerCase().includes(searchLower) ||
+      p.content.toLowerCase().includes(searchLower)
+    );
+  }
+  if (tag) {
+    const tagRows = await db.select({ id: tags.id }).from(tags).where(eq(tags.name, tag)).execute();
+    if (tagRows.length) {
+      const tagId = tagRows[0].id;
+      const postTagRows = await db.select({ postId: postTags.postId }).from(postTags).where(eq(postTags.tagId, tagId)).execute();
+      const taggedPostIds = new Set(postTagRows.map(r => r.postId));
+      filteredPosts = filteredPosts.filter(p => taggedPostIds.has(p.id));
+    } else {
+      filteredPosts = [];
     }
+  }
 
-    // Filter by tag
-    if (tag) {
-      const tagRows = await db.select({ id: tags.id }).from(tags).where(eq(tags.name, tag)).execute();
-      if (tagRows.length) {
-        const tagId = tagRows[0].id;
-        const postTagRows = await db.select({ postId: postTags.postId }).from(postTags).where(eq(postTags.tagId, tagId)).execute();
-        const taggedPostIds = new Set(postTagRows.map(r => r.postId));
-        filteredPosts = filteredPosts.filter(p => taggedPostIds.has(p.id));
-      } else {
-        filteredPosts = [];
-      }
-    }
+  const rows = filteredPosts.slice(0, parseInt(args.limit || '20', 10));
 
-    // Apply limit
-    const rows = filteredPosts.slice(0, parseInt(args.limit || '20', 10));
+  if (rows.length === 0) {
+    console.log('No posts found.');
+    return;
+  }
 
-    if (rows.length === 0) {
-      console.log('No posts found.');
-      return;
-    }
-
-    console.log('\n📝 Posts:\n');
-    for (const post of rows) {
-      const postTagsList = await db
-        .select({ name: tags.name })
-        .from(postTags)
-        .innerJoin(tags, eq(postTags.tagId, tags.id))
-        .where(eq(postTags.postId, post.id))
-        .execute();
-      const tagNames = postTagsList.map(t => t.name).join(', ') || '(no tags)';
-      console.log(`  #${post.id}  ${post.title}`);
-      console.log(`        slug: ${post.slug}`);
-      console.log(`        tags: ${tagNames}`);
-      console.log(`        created: ${new Date(post.created_at * 1000).toLocaleString()}`);
-      console.log('');
-    }
-
+  console.log('\n📝 Posts:\n');
+  for (const post of rows) {
+    const postTagsList = await db
+      .select({ name: tags.name })
+      .from(postTags)
+      .innerJoin(tags, eq(postTags.tagId, tags.id))
+      .where(eq(postTags.postId, post.id))
+      .execute();
+    const tagNames = postTagsList.map(t => t.name).join(', ') || '(no tags)';
+    console.log(`  #${post.id}  ${post.title}`);
+    console.log(`        slug: ${post.slug}`);
+    console.log(`        tags: ${tagNames}`);
+    console.log(`        created: ${new Date(post.created_at * 1000).toLocaleString()}`);
+    console.log('');
+  }
 }
 
 async function createPostCmd(args: CliArgs, _flags: CliFlags): Promise<void> {
@@ -230,7 +222,6 @@ async function newPostFromMarkdownCmd(args: CliArgs): Promise<void> {
 
   const createdAt = date ? Math.floor(new Date(date as string).getTime() / 1000) : Math.floor(Date.now() / 1000);
 
-  // Convert markdown to HTML
   const htmlContent = marked.parse(markdownContent as string, { async: false }) + '';
 
   let tagIds: number[] = [];
@@ -383,7 +374,6 @@ async function listTagsCmd(): Promise<void> {
       .execute();
     console.log(`  #${tag.id}  ${tag.name}  (${count.length} post${count.length !== 1 ? 's' : ''})`);
   }
-  console.log('');
 }
 
 async function createTagCmd(args: CliArgs): Promise<void> {
@@ -391,7 +381,7 @@ async function createTagCmd(args: CliArgs): Promise<void> {
   let { name } = args;
   if (!name) {
     const { tagName } = await inquirer.prompt([
-      { type: 'input', name: 'tagName', message: 'Tag name:', validate: (v: string) => v.length > 0 || 'Name required' }
+      { type: 'input', name: 'tagName', message: 'Tag name:', validate: (v: string) => v.length > 0 || 'Tag name required' }
     ]);
     name = tagName;
   }
@@ -411,9 +401,7 @@ async function createTagCmd(args: CliArgs): Promise<void> {
 
 async function deleteTagCmd(args: CliArgs, flags: CliFlags): Promise<void> {
   await ensureTables();
-  const { name } = args;
-
-  let tagName = name;
+  let tagName = args.name || args.tagName;
   if (!tagName) {
     const { tagName: input } = await inquirer.prompt([
       { type: 'input', name: 'tagName', message: 'Tag name to delete:' }
@@ -481,7 +469,8 @@ async function tagPostCmd(args: CliArgs): Promise<void> {
     return;
   }
 
-  await db.insert(postTags).values({ postId: postId!, tagId: tagRow[0].id }).execute();
+  await db.insert(postTags).values({ postId, tagId: tagRow[0].id }).execute();
+
   console.log(`✅ Tagged post #${postId} with "${tagName}"`);
 }
 
@@ -507,6 +496,7 @@ async function untagPostCmd(args: CliArgs): Promise<void> {
   }
 
   await db.delete(postTags).where(and(eq(postTags.postId, postId!), eq(postTags.tagId, tagRow[0].id)));
+
   console.log(`✅ Removed tag "${tagName}" from post #${postId}`);
 }
 
@@ -515,7 +505,6 @@ async function generateStaticCmd(): Promise<void> {
 
   console.log('Generating static data...');
 
-  // Seed if empty
   const existing = await db.select().from(posts).limit(1).execute();
   if (existing.length === 0) {
     console.log('Database empty, seeding...');
@@ -534,7 +523,7 @@ async function generateStaticCmd(): Promise<void> {
     const postRows = await db
       .insert(posts)
       .values([
-        { title: 'Hello World', slug: 'hello-world', content: '<p>Welcome to my blog built with Next.js, Tailwind and Drizzle ORM.</p>', created_at: now },
+        { title: 'Hello World', slug: 'hello-world', content: '<p>Welcome to my blog built with Next.js, SQLite and Drizzle ORM</p>', created_at: now },
         { title: 'Second Post', slug: 'second-post', content: '<p>This is another post.</p>', created_at: now },
       ])
       .returning({ id: posts.id, slug: posts.slug })
@@ -543,14 +532,13 @@ async function generateStaticCmd(): Promise<void> {
     const helloPost = postRows.find(p => p.slug === 'hello-world');
     const secondPost = postRows.find(p => p.slug === 'second-post');
 
-    if (helloPost && techTag) await db.insert(postTags).values([{ postId: helloPost.id, tagId: techTag.id }]).execute();
-    if (secondPost && lifeTag) await db.insert(postTags).values([{ postId: secondPost.id, tagId: lifeTag.id }]).execute();
-    if (secondPost && tutorialTag) await db.insert(postTags).values([{ postId: secondPost.id, tagId: tutorialTag.id }]).execute();
+    if (helloPost && techTag) await db.insert(postTags).values([{ postId: helloPost.id, tagId: techTag.id }]);
+    if (secondPost && lifeTag) await db.insert(postTags).values([{ postId: secondPost.id, tagId: lifeTag.id }]);
+    if (secondPost && tutorialTag) await db.insert(postTags).values([{ postId: secondPost.id, tagId: tutorialTag.id }]);
 
     console.log('Seeded posts with tags');
   }
 
-  // Create FTS5 virtual table and triggers
   try {
     await db.$client.exec(`
       CREATE VIRTUAL TABLE IF NOT EXISTS posts_fts USING fts5(
@@ -606,7 +594,6 @@ async function generateStaticCmd(): Promise<void> {
   console.log(`✅ Generated tags.json with ${allTags.length} tags`);
   console.log(`✅ Generated post-tags.json with ${allPostTags.length} relationships`);
 
-  // Generate TypeScript module for static import
   const postsModulePath = path.join(__dirname, '..', 'lib', 'static-posts-generated.ts');
   const postsModuleContent = `// Auto-generated by generate-static-data.ts - DO NOT EDIT MANUALLY
 export interface Post {
@@ -615,6 +602,8 @@ export interface Post {
   slug: string;
   content: string;
   created_at: number;
+  series: string | null;
+  series_order: number | null;
 }
 
 export const POSTS_DATA = ${JSON.stringify(allPosts, null, 2)} as const;
@@ -794,7 +783,7 @@ async function main(): Promise<void> {
       default:
         showHelp();
         break;
-    }
+  }
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : String(e);
     console.error('Error:', message);
@@ -803,4 +792,3 @@ async function main(): Promise<void> {
 }
 
 main();
-// export {};
