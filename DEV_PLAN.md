@@ -90,6 +90,7 @@ static_blog/
 | **Markdown Authoring + Frontmatter** | Write posts in `.md` files; CLI parses frontmatter (title, date, tags, description, series), converts Markdown → HTML, stores in DB. | L | CLI core, unified/remark for MD parsing |
 | **Homepage Post Previews** | Show ~20 lines of post content on homepage with "Read more" link to `/posts/[slug]`. Truncate at block boundary (paragraph). | M | Post content in static JSON, CSS line-clamp or JS truncation |
 | **Image Support (Local + Markdown + CLI)** | `blog add-image <slug> <path>` → copies to `/public/images/posts/<slug>/`, returns markdown `![alt](/images/posts/slug/img.png)`. Build script processes markdown images to `<img>` with width/height. | M | Public folder structure, markdown processing pipeline |
+| **Order Posts by Date Descending** | Ensure all post listings (homepage, posts page, series page, search results, tag filtered results) are ordered by created_at descending (newest first). | S | Post schema, listPosts, listPostsPaginated, getPostsBySeries |
 
 ### P1 — Discovery & SEO
 
@@ -126,6 +127,9 @@ static_blog/
 |------|-------------|--------|--------------|
 | **Dependency Audit & Updates** | Run `npm audit fix` to resolve 13 vulnerabilities (1 low, 8 moderate, 3 high, 1 critical). Update outdated dependencies. Pin versions in lockfile. | M | — |
 | **Code Warning Cleanup** | Fix 26 ESLint warnings: unused variables, unused imports, unused async error params, unused destructured properties. Add `_` prefix or remove unused code. | S | — |
+| **Expand Unit Test Coverage** | Add more unit tests for edge cases: tag operations, series navigation, search edge cases, pagination boundaries, empty states, FTS5 search, SEO metadata generation, CLI commands, markdown parsing edge cases. Target: >90% coverage. | M | Existing test infrastructure |
+| **Comprehensive E2E Test Suite** | Write Playwright tests for all critical user flows: homepage search/tag filtering/infinite scroll, post detail page (reading time, TOC, Giscus, series nav), series landing page, tag filter, mobile nav drawer, theme toggle, dark mode persistence, empty states, skeleton loaders, response/error boundaries. | M | Playwright setup, test data seeding |
+| **Fix & Restore E2E to CI** | Fix Playwright configuration (webServer, baseURL, health check), ensure dev server starts reliably in CI, add test data seeding for E2E, add `npm run test:e2e` to CI workflow, make CI fail on E2E failures. | M | Playwright config, CI workflow, test data |
 
 ---
 
