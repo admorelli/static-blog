@@ -83,6 +83,7 @@ export async function searchPostsFTS(query: string, limit: number = 10): Promise
       FROM posts p
       INNER JOIN posts_fts f ON p.id = f.id
       WHERE posts_fts MATCH ?
+      ORDER BY p.created_at DESC
       LIMIT ?
     `).all(query, limit);
     return rows as Post[];
