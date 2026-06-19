@@ -8,6 +8,7 @@ import Link from 'next/link';
 import postsIndex from '@/public/data/posts-index.json';
 import matter from 'gray-matter';
 import { marked } from 'marked';
+import { processMarkdownImages } from '@/lib/enhance-images';
 
 interface Post {
   id: number;
@@ -134,7 +135,9 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   if (!post) return notFound();
 
   const { title, date, tags, description, content } = parseFrontmatter(post.content);
-  const htmlContent = markdownToHtml(content);
+  const markdownContent = content;
+  const htmlContent = markdownToHtml(markdownContent);
+  const enhancedHtmlContent = processMarkdownImages(htmlContent);
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://your-username.github.io/static_blog';
   const postTitle = title || post.title;
   const postDescription = description || `Read ${postTitle} on Static Blog`;
@@ -168,7 +171,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                 ))}
               </div>
             </header>
-            <div className="prose dark:prose-invert flex-1" dangerouslySetInnerHTML={{ __html: htmlContent }} />
+            <div className="prose dark:prose-invert flex-1" dangerouslySetInnerHTML={{ __html: enhancedHtmlContent }} />
             <GiscusComments
               repo="admorelli/static-blog"
               repoId="R_kgDOKQhNvg"
