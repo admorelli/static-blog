@@ -154,5 +154,33 @@
   {
     "postId": 9,
     "tagId": 30
+  },
+  {
+    "postId": 10,
+    "tagId": 21
+  },
+  {
+    "postId": 10,
+    "tagId": 31
+  },
+  {
+    "postId": 10,
+    "tagId": 32
+  },
+  {
+    "postId": 10,
+    "tagId": 33
+  },
+  {
+    "postId": 10,
+    "tagId": 34
+  },
+  {
+    "postId": 10,
+    "tagId": 35
+  },
+  {
+    "postId": 10,
+    "tagId": 7
   }
 ]

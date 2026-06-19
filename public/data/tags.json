@@ -24,6 +24,14 @@
     "name": "development"
   },
   {
+    "id": 33,
+    "name": "drizzle"
+  },
+  {
+    "id": 35,
+    "name": "engagement"
+  },
+  {
     "id": 13,
     "name": "free-tier"
   },
@@ -80,6 +88,10 @@
     "name": "openrouter"
   },
   {
+    "id": 34,
+    "name": "p2"
+  },
+  {
     "id": 8,
     "name": "pi-agent"
   },
@@ -104,6 +116,10 @@
     "name": "retrospective"
   },
   {
+    "id": 32,
+    "name": "sqlite"
+  },
+  {
     "id": 24,
     "name": "static-site"
   },
@@ -114,6 +130,10 @@
   {
     "id": 18,
     "name": "tools"
+  },
+  {
+    "id": 31,
+    "name": "typescript"
   },
   {
     "id": 27,
