@@ -21,16 +21,70 @@ function parseContent(rawContent: string): string {
   return marked.parse(content, { async: false }) as string;
 }
 
+/**
+ * Truncates HTML at a safe boundary (not in the middle of a tag)
+ * Preserves valid HTML structure
+ */
+function truncateHtml(html: string, maxChars: number): string {
+  if (html.length <= maxChars) return html;
+
+  // Find the last complete tag before maxChars
+  let truncated = html.slice(0, maxChars);
+  
+  // Find the last complete tag end
+  const lastTagEnd = truncated.lastIndexOf('>');
+  const lastTagStart = truncated.lastIndexOf('<');
+  
+  // If we're in the middle of a tag, cut before the tag
+  if (lastTagStart > lastTagEnd) {
+    truncated = truncated.slice(0, lastTagStart);
+  }
+  
+  // Close any unclosed tags by finding open tags and closing them
+  // Simple approach: count opening vs closing tags for common inline elements
+  const openTags = ['<p>', '<div>', '<span>', '<strong>', '<em>', '<b>', '<i>', '<u>', '<a>', '<code>', '<pre>', '<ul>', '<ol>', '<li>'];
+  const closeTags = ['</p>', '</div>', '</span>', '</strong>', '</em>', '</b>', '</i>', '</u>', '</a>', '</code>', '</pre>', '</ul>', '</ol>', '</li>'];
+  
+  let result = truncated;
+  
+  // For each opening tag, count occurrences and close if needed
+  openTags.forEach((openTag, index) => {
+    const openCount = (truncated.match(new RegExp(openTag.replace('<', '\\<').replace('>', '\\>'), 'g')) || []).length;
+    const closeTag = closeTags[index];
+    const closeCount = (truncated.match(new RegExp(closeTag.replace('<', '\\<').replace('/', '\\/').replace('>', '\\>'), 'g')) || []).length;
+    
+    // Add closing tags if needed
+    if (openCount > closeCount) {
+      result += closeTag.repeat(openCount - closeCount);
+    }
+  });
+  
+  return result + '...';
+}
+
 function stripHtml(html: string): string {
-  return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+  const withoutTags = html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+  // Decode common HTML entities
+  return withoutTags
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&mdash;/g, '—')
+    .replace(/&ndash;/g, '–')
+    .replace(/&lsquo;/g, '\u2018')
+    .replace(/&rsquo;/g, '\u2019')
+    .replace(/&ldquo;/g, '\u201c')
+    .replace(/&rdquo;/g, '\u201d');
 }
 
 function getExcerpt(rawContent: string, maxLines: number = 20): string {
   const htmlContent = parseContent(rawContent);
-  const plain = stripHtml(htmlContent);
-  const lines = plain.split('\n').filter(l => l.trim().length > 0);
-  const excerpt = lines.slice(0, maxLines).join('\n');
-  return excerpt.length < plain.length ? excerpt + '...' : excerpt;
+  
+  // Return truncated HTML instead of plain text
+  return truncateHtml(htmlContent, 500);
 }
 
 function getBasePath(): string {
@@ -196,6 +250,10 @@ function PostsList() {
   }
 
   if (allPosts.length === 0) {
+    const search = searchParams.get("q") || "";
+    if (search) {
+      return <div className="p-4 text-center text-muted">No results for &quot;{search}&quot;</div>;
+    }
     return <p className="p-4 text-center text-muted">No posts found.</p>;
   }
 
@@ -212,9 +270,7 @@ function PostsList() {
             <p className="text-sm text-muted mb-2">
               {new Date(post.created_at * 1000).toLocaleDateString()}
             </p>
-            <div className="prose prose-sm text-muted mb-3 line-clamp-8">
-              {getExcerpt(post.content, 20)}
-            </div>
+            <div className="prose prose-sm text-muted mb-3" dangerouslySetInnerHTML={{ __html: getExcerpt(post.content, 20) }} />
             <a href={`${basePath}/posts/${post.slug}`} className="text-sm font-medium text-accent hover:underline inline-flex items-center gap-1">
               Read more
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
