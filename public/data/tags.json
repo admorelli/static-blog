@@ -12,6 +12,10 @@
     "name": "basepath"
   },
   {
+    "id": 36,
+    "name": "cli"
+  },
+  {
     "id": 23,
     "name": "debugging"
   },
@@ -134,6 +138,10 @@
   {
     "id": 31,
     "name": "typescript"
+  },
+  {
+    "id": 37,
+    "name": "updated"
   },
   {
     "id": 27,
