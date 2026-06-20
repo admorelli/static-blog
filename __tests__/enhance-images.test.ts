@@ -56,4 +56,11 @@ describe('enhance-images', () => {
 
     expect(out).toBe('<img src="/a.png">');
   });
+
+  it('enhanceImages leaves image untouched when no optimized files exist', () => {
+    const input = '<img src="/images/posts/unknown-slug/abc.jpg">';
+    const out = enhanceImages(input);
+
+    expect(out).toBe(input);
+  });
 });

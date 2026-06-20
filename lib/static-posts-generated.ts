@@ -66,7 +66,7 @@ export const POSTS_DATA = [
     "id": 5,
     "title": "Hello World",
     "slug": "hello-world",
-    "content": "<p>Welcome to my blog built with Next.js, Tailwind and Drizzle ORM.</p>",
+    "content": "<p>Welcome to my blog built with Next.js, Tailwind and Drizzle ORM.\n\n![e2e-check](/images/posts/hello-world/hello-world.webp)\n</p>",
     "created_at": 1781539587,
     "series": null,
     "series_order": null
