@@ -1,6 +1,4 @@
 import type { NextConfig } from "next";
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const path = require('path')
 
 // GitHub Pages repo name - set via environment variable during deployment
 const repoName = process.env.GITHUB_REPOSITORY?.split('/')[1] || '';

@@ -5,7 +5,7 @@ import path from 'path';
  * Post-process HTML to enhance images with responsive attributes
  * Finds optimized image versions and adds srcset, sizes, loading="lazy", blur placeholder
  */
-export function enhanceImages(html: string, baseUrl: string = ''): string {
+export function enhanceImages(html: string, _baseUrl: string = ''): string {
   // Match <img> tags and enhance them
   // Pattern: <img src="/images/posts/slug/image.png" ...>
   const imgRegex = /<img\s+([^>]*?)src=["']([^"']+)["']([^>]*?)>/gi;
@@ -24,7 +24,6 @@ export function enhanceImages(html: string, baseUrl: string = ''): string {
     const slug = slugMatch[1];
     const fileName = path.basename(src);
     const baseName = path.parse(fileName).name;
-    const ext = path.extname(fileName).toLowerCase();
 
     // Check if optimized versions exist
     const postsDir = path.join(process.cwd(), 'public', 'images', 'posts', slug);
