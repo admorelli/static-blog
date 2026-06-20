@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { describe, it, expect, beforeEach } from 'vitest';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -10,9 +11,7 @@ const { enhanceImages } = await import('@/lib/enhance-images');
 const createPostImgDir = (slug: string, basename: string) => {
   const dir = path.join(__dirname, '..', 'public', 'images', 'posts', slug);
   try {
-    const fs = require('fs');
     fs.mkdirSync(dir, { recursive: true });
-
     fs.writeFileSync(path.join(dir, `${basename}-800w.webp`), Buffer.from('WEBP'));
     fs.writeFileSync(path.join(dir, `${basename}-blur.txt`), 'data:image/webp;base64,BLUR');
   } catch {}
@@ -27,7 +26,6 @@ describe('cli-images', () => {
     const slug = 'hello-world';
     const imageBaseName = 'editorial';
     const ext = '.png';
-
     const sourceBase = imageBaseName;
     const safeBase = String(slug)
       .split('/')
