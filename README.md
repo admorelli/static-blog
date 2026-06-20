@@ -47,7 +47,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - **Modern UI**: Built with Next.js 15 App Router and Tailwind CSS v4, featuring a dark/light theme toggle with CSS custom properties
 - **SQLite Persistence**: File-based SQLite with Drizzle ORM for blog posts and metadata
 - **SSG Pipeline**: GitHub Actions workflow generates static HTML and deploys to GitHub Pages
-- **CLI Management**: Full Inquirer-based CLI for post/tag management, static generation, and build
+- **CLI Management**: TypeScript registry-based CLI with grouped subcommands (posts, tags, images, series)
 - **Tag Filtering**: Toggleable pill tags on homepage with URL-synced filter state
 - **Search**: Client-side search across post titles and content
 - **Infinite Scroll**: 10-post batches loaded on scroll respecting current search/filter

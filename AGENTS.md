@@ -30,8 +30,14 @@ This file contains an up‑to‑date overview of the current project layout, arc
 │   ├── generate-static-data.js  # Generates JSON + TS module
 │   ├── generate-feed.js         # Generates RSS/Atom feeds
 │   └── generate-sitemap.js      # Sitemap generation
-├── cli/                   # CLI tools
-│   └── blog.js            # Inquirer-based post/tag management
+├── cli/                   # TypeScript CLI (registry + command modules)
+│   ├── index.ts           # Entrypoint: `npm run blog` or `npx tsx cli/index.ts`
+│   ├── commands/          # Subcommands grouped by domain
+│   │   ├── posts/         # list, create, create-from-markdown, update, delete
+│   │   ├── tags/          # list, create, delete, tag-post, untag-post
+│   │   ├── images/        # add (deterministic copy + markdown embed)
+│   │   └── series/        # list, create, add, reorder
+│   └── utils/             # Shared CLI helpers (args, db, help, inquirer, registry, types)
 ├── public/data/           # Generated JSON files for SSG
 ├── out/                   # Static export output
 ├── __tests__/             # Unit tests (Vitest, 80 tests)
@@ -116,7 +122,7 @@ All primary commands are now exposed through a `Makefile` for quick execution. U
 * **Tags API** – `lib/tags.ts`
 * **Static Generation** – `scripts/generate-static-data.js`
 * **Feed/Sitemap** – `scripts/generate-feed.js`, `next-sitemap.config.js`
-* **CLI** – `cli/blog.js`
+- **CLI** – `cli/index.ts` + `cli/commands/` modules (`posts`, `tags`, `images`, `series`)
 * **Workbench** – `scripts/seed.ts` for sample data
 * **Tests** – `__tests__/` (unit), `e2e/` (e2e)
 * **Docs** – `docs/architecture.md`
