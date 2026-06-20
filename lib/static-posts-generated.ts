@@ -5,6 +5,8 @@ export interface Post {
   slug: string;
   content: string;
   created_at: number;
+  series: string | null;
+  series_order: number | null;
 }
 
 export const POSTS_DATA = [
