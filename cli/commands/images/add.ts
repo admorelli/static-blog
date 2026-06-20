@@ -1,9 +1,8 @@
-/** Add Image to Post Command - Refactored: copies image, embeds in content, tracks in DB */
-
+/** Add Image to Post Command - copies image, embeds in content with deterministic filename */
 import type { Command } from '../../utils/types.ts';
 import { registry } from '../../utils/registry.ts';
 import { ensureTables, db, posts, eq } from '../../utils/db.ts';
-import { promptPostSlug, promptImagePath, promptConfirm } from '../../utils/inquirer.ts';
+import { promptConfirm } from '../../utils/inquirer.ts';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -13,7 +12,7 @@ const __dirname = path.dirname(__filename);
 
 const command: Command = {
   name: 'images',
-  description: 'Add image to post (copies to public/images/posts/<slug>/ and embeds markdown in content)',
+  description: 'Add image to post (copies to public/images/posts/<slug>/<slug>-<sourcebasename>.ext and embeds markdown in content)',
   usage: 'add [--slug <text>] [--path <file>] [--embed] [--alt <text>]',
   examples: [
     'blog images add --slug hello-world --path ./screenshot.png',
@@ -21,9 +20,13 @@ const command: Command = {
     'blog images add',
   ],
   async execute(args, flags) {
+    if (flags.help || flags.h) {
+      console.log([command.description, `Usage: ${command.usage}`, ...(command.examples ?? []).map(example => `  ${example}`)].join('\n'));
+      return;
+    }
+
     await ensureTables();
 
-    // Handle subcommand - for now we only support 'add'
     const subcmd = args['<file>'] || 'add';
     if (subcmd !== 'add') {
       console.error('Usage: blog images add [options]');
@@ -36,11 +39,9 @@ const command: Command = {
     const altText = args.alt;
     const shouldEmbed = args.embed !== 'false' && flags.embed !== false;
 
-    if (!slug) {
-      slug = await promptPostSlug();
-    }
-    if (!imagePath) {
-      imagePath = await promptImagePath();
+    if (!slug || !imagePath) {
+      console.log('Missing required options. Examples:\n' + command.examples.map(example => `  ${example}`).join('\n'));
+      return;
     }
 
     const post = await db.select().from(posts).where(eq(posts.slug, slug)).limit(1).execute();
@@ -62,10 +63,19 @@ const command: Command = {
       return;
     }
 
+    const sourceBase = path.parse(imagePath).name;
+    const safeBase = String(slug)
+      .split('/')
+      .filter(Boolean)
+      .join('-')
+      .toLowerCase()
+      .replace(/[^a-z0-9-]+/g, '-')
+      .replace(/^-|-$/g, '') || sourceBase.toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-|-$/g, '');
+
     const destDir = path.join(__dirname, '..', '..', '..', 'public', 'images', 'posts', slug);
     fs.mkdirSync(destDir, { recursive: true });
 
-    const fileName = `${Date.now()}${ext}`;
+    const fileName = `${safeBase}-${sourceBase}${ext}`;
     const destPath = path.join(destDir, fileName);
 
     fs.copyFileSync(sourcePath, destPath);
@@ -79,7 +89,7 @@ const command: Command = {
     console.log(`   ${markdown}`);
 
     const skipPrompts = flags.yes || flags.y;
-    
+
     if (shouldEmbed) {
       let embed = true;
       if (!skipPrompts) {
@@ -92,9 +102,6 @@ const command: Command = {
         console.log(`✅ Image markdown appended to post content.`);
       }
     }
-
-    // TODO: Track in database for future gallery support
-    // Could add a post_images table to track all images associated with a post
   },
 };
 

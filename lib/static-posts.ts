@@ -11,6 +11,8 @@ export interface Post {
   slug: string;
   content: string;
   created_at: number;
+  series: string | null;
+  series_order: number | null;
 }
 
 const DATA_PATH = path.join(__dirname, '..', 'public', 'data', 'posts-index.json');

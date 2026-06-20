@@ -55,7 +55,8 @@ function getCategory(name: string): string {
 }
 
 export function showCommandHelp(commandName: string): void {
-  const cmd = registry.get(commandName);
+  const joined = commandName.replace(/ /g, '-');
+  const cmd = registry.get(joined) || registry.get(commandName);
   if (!cmd) {
     console.error(`Unknown command: ${commandName}`);
     return;

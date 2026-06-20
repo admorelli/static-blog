@@ -5,12 +5,12 @@ import path from 'path';
  * Post-process HTML to enhance images with responsive attributes
  * Finds optimized image versions and adds srcset, sizes, loading="lazy", blur placeholder
  */
-export function enhanceImages(html: string, baseUrl: string = ''): string {
+export function enhanceImages(html: string, _baseUrl: string = ''): string {
   // Match <img> tags and enhance them
   // Pattern: <img src="/images/posts/slug/image.png" ...>
   const imgRegex = /<img\s+([^>]*?)src=["']([^"']+)["']([^>]*?)>/gi;
 
-  return html.replace(imgRegex, (match, beforeSrc, src, afterSrc) => {
+  return html.replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1">').replace(imgRegex, (match, beforeSrc, src, afterSrc) => {
     // Only process images from our posts images directory
     if (!src.startsWith('/images/posts/')) {
       return match;
@@ -24,7 +24,6 @@ export function enhanceImages(html: string, baseUrl: string = ''): string {
     const slug = slugMatch[1];
     const fileName = path.basename(src);
     const baseName = path.parse(fileName).name;
-    const ext = path.extname(fileName).toLowerCase();
 
     // Check if optimized versions exist
     const postsDir = path.join(process.cwd(), 'public', 'images', 'posts', slug);
@@ -62,6 +61,7 @@ export function enhanceImages(html: string, baseUrl: string = ''): string {
     // Build enhanced img tag
     const altMatch = match.match(/alt=["']([^"']*)["']/i);
     const alt = altMatch ? altMatch[1] : '';
+    const afterSrcClean = afterSrc.replace(/\s*alt=["'][^"']*["']/i, '');
 
     let enhanced = `<img ${beforeSrc.trim()} src="${src}"`;
 
@@ -73,7 +73,7 @@ export function enhanceImages(html: string, baseUrl: string = ''): string {
       enhanced += ` style="background-image: url('${blurDataUri}'); background-size: cover; background-position: center; min-height: 20px; filter: blur(20px); transition: filter 0.3s ease;" onload="this.style.filter='none'; this.style.backgroundImage='none'"`;
     }
 
-    enhanced += ` loading="lazy" decoding="async" alt="${alt}"${afterSrc.trim()}>`;
+    enhanced += ` loading="lazy" decoding="async" alt="${alt}"${afterSrcClean.trim()}>`;
 
     return enhanced;
   });

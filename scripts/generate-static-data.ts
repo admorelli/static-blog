@@ -171,6 +171,8 @@ export interface Post {
   slug: string;
   content: string;
   created_at: number;
+  series: string | null;
+  series_order: number | null;
 }
 
 export const POSTS_DATA = ${JSON.stringify(allPosts, null, 2)} as const;
