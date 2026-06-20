@@ -21,7 +21,7 @@ import './commands/tags/create.js';
 import './commands/tags/delete.js';
 import './commands/tags/tag-post.js';
 import './commands/tags/untag-post.js';
-import './commands/images/add.js';
+import './commands/images/add.ts';
 import './commands/series/list.js';
 import './commands/series/create.js';
 import './commands/series/add.js';
@@ -30,7 +30,21 @@ import './commands/series/reorder.js';
 async function main(): Promise<void> {
   const { cmd, args, flags } = parseArgs(process.argv);
 
-  // Handle help
+  let mainCmd = '';
+  let subCmd = '';
+
+  if (cmd && cmd !== 'help') {
+    const parts = cmd.split(' ');
+    mainCmd = parts[0] || '';
+    subCmd = parts[1] || '';
+  }
+
+  if ((args['help'] || flags.h || flags.help)) {
+    const helpTarget = subCmd ? `${mainCmd} ${subCmd}` : mainCmd;
+    showCommandHelp(helpTarget);
+    return;
+  }
+
   if (cmd === 'help' || cmd === undefined) {
     if (args['<file>']) {
       showCommandHelp(args['<file>']);
@@ -40,17 +54,10 @@ async function main(): Promise<void> {
     return;
   }
 
-  // Handle subcommands (e.g., "images add", "series list")
-  const parts = cmd.split(' ');
-  const mainCmd = parts[0];
-  const subCmd = parts[1];
-
   let command = registry.get(mainCmd);
-  
-  if (subCmd) {
-    // Try to find subcommand (e.g., "images add" -> "images-add")
-    const subCommandName = `${mainCmd}-${subCmd}`;
-    command = registry.get(subCommandName);
+
+  if (!command && subCmd) {
+    command = registry.get(`${mainCmd}-${subCmd}`);
   }
 
   if (!command) {
