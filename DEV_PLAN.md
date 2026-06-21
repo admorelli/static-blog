@@ -1,8 +1,8 @@
 # Development Plan — static_blog
 
 **Generated:** 2026-06-21
-**Branch:** master
-**Status:** Clean build & tests
+**Branch:** feat/privacy-analytics
+**Status:** Clean build & tests; privacy analytics implemented
 
 ---
 
@@ -37,12 +37,12 @@
 | Post series / collections | ✅ Done | Next/prev series nav in `app/posts/[slug]/page.tsx` |
 | Newsletter integration | ✅ Done | `app/newsletter/page.tsx` + `cli/commands/newsletter/*` |
 | CLI E2E tests + hardening | ✅ Done | Post/tag/series/image/newsletter CLI commands exercised via E2E |
+| Privacy-friendly analytics | ✅ Done | `app/analytics.tsx` with Plausible/Umami support + DNT respect |
 
 ## Still To Do
 
-1. Privacy-friendly analytics (Plausible/Umami) — in progress
-2. Dependency audit & updates
-3. ESLint/code warning cleanup
+1. Dependency audit & updates
+2. ESLint/code warning cleanup
 
 ---
 
@@ -52,7 +52,7 @@
 - [x] Use slug-based image layout (`/posts/<slug>/img/<id>/`)
 - [x] Wire FTS5 search to UI
 - [x] Newsletter integration (page + CLI commands)
-- [ ] Privacy-friendly analytics
+- [x] Privacy-friendly analytics (Plausible/Umami)
 - [ ] Dependency audit & updates
 - [ ] ESLint/code warning cleanup
 

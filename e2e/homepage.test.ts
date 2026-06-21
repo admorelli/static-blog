@@ -83,3 +83,9 @@ test('post detail page has JSON-Ld', async ({ page }) => {
   expect(text).toContain('"@type":"BlogPosting"');
   expect(text).toContain('"@context":"https://schema.org"');
 });
+
+test('homepage loads without analytics provider configured', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('text=Static Blog')).toBeVisible({ timeout: 30000 });
+  await expect(page.locator('input[placeholder="Search posts..."]')).toBeVisible({ timeout: 30000 });
+});

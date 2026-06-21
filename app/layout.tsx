@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import { loadAnalytics } from "./analytics";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,9 +33,17 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col">
         <Providers>
+          <AnalyticsInjector />
           <main className="flex-1">{children}</main>
         </Providers>
       </body>
     </html>
   );
+}
+
+function AnalyticsInjector() {
+  if (typeof window !== "undefined") {
+    loadAnalytics();
+  }
+  return null;
 }
