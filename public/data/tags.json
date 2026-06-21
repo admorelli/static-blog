@@ -8,6 +8,10 @@
     "name": "agent-comparison"
   },
   {
+    "id": 50,
+    "name": "analytics"
+  },
+  {
     "id": 28,
     "name": "basepath"
   },
@@ -40,6 +44,10 @@
     "name": "development"
   },
   {
+    "id": 43,
+    "name": "devlog"
+  },
+  {
     "id": 33,
     "name": "drizzle"
   },
@@ -66,6 +74,10 @@
   {
     "id": 16,
     "name": "hermes"
+  },
+  {
+    "id": 44,
+    "name": "images"
   },
   {
     "id": 1,
@@ -96,6 +108,10 @@
     "name": "nemotron-3-ultra"
   },
   {
+    "id": 49,
+    "name": "newsletter"
+  },
+  {
     "id": 21,
     "name": "nextjs"
   },
@@ -114,6 +130,10 @@
   {
     "id": 8,
     "name": "pi-agent"
+  },
+  {
+    "id": 51,
+    "name": "privacy"
   },
   {
     "id": 15,
@@ -136,6 +156,10 @@
     "name": "retrospective"
   },
   {
+    "id": 46,
+    "name": "search"
+  },
+  {
     "id": 41,
     "name": "shared-check"
   },
@@ -152,6 +176,10 @@
     "name": "test"
   },
   {
+    "id": 48,
+    "name": "tooling"
+  },
+  {
     "id": 18,
     "name": "tools"
   },
@@ -160,11 +188,19 @@
     "name": "typescript"
   },
   {
+    "id": 47,
+    "name": "ui"
+  },
+  {
     "id": 37,
     "name": "updated"
   },
   {
     "id": 27,
     "name": "urls"
+  },
+  {
+    "id": 45,
+    "name": "web performance"
   }
 ]

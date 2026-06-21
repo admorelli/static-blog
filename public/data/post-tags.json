@@ -182,5 +182,73 @@
   {
     "postId": 10,
     "tagId": 7
+  },
+  {
+    "postId": 21,
+    "tagId": 43
+  },
+  {
+    "postId": 21,
+    "tagId": 44
+  },
+  {
+    "postId": 21,
+    "tagId": 45
+  },
+  {
+    "postId": 21,
+    "tagId": 21
+  },
+  {
+    "postId": 22,
+    "tagId": 43
+  },
+  {
+    "postId": 22,
+    "tagId": 46
+  },
+  {
+    "postId": 22,
+    "tagId": 47
+  },
+  {
+    "postId": 22,
+    "tagId": 21
+  },
+  {
+    "postId": 23,
+    "tagId": 43
+  },
+  {
+    "postId": 23,
+    "tagId": 36
+  },
+  {
+    "postId": 23,
+    "tagId": 48
+  },
+  {
+    "postId": 24,
+    "tagId": 43
+  },
+  {
+    "postId": 24,
+    "tagId": 49
+  },
+  {
+    "postId": 24,
+    "tagId": 36
+  },
+  {
+    "postId": 25,
+    "tagId": 43
+  },
+  {
+    "postId": 25,
+    "tagId": 50
+  },
+  {
+    "postId": 25,
+    "tagId": 51
   }
 ]
