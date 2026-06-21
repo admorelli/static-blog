@@ -7,6 +7,7 @@ export type Post = {
   title: string;
   slug: string;
   content: string;
+  content_html?: string | null;
   created_at: number;
   series: string | null;
   series_order: number | null;
@@ -75,7 +76,7 @@ export async function deletePost(id: number): Promise<void> {
 /** Full-text search using FTS5 */
 export async function searchPostsFTS(query: string, limit: number = 10): Promise<Post[]> {
   if (!query.trim()) return [];
-  
+
   try {
     // Use raw SQL for FTS5 MATCH query
     const rows = await db.$client.prepare(`

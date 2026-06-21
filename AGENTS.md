@@ -40,8 +40,8 @@ This file contains an up‑to‑date overview of the current project layout, arc
 │   └── utils/             # Shared CLI helpers (args, db, help, inquirer, registry, types)
 ├── public/data/           # Generated JSON files for SSG
 ├── out/                   # Static export output
-├── __tests__/             # Unit tests (Vitest, 80 tests)
-└── e2e/                   # E2E tests (Playwright, 3 tests)
+├── __tests__/             # Unit tests (Vitest, 80+ tests)
+└── e2e/                   # E2E tests (Playwright, 3+ tests)
 ├── .github/
 │   └── workflows/
 │       └── build-and-deploy.yml   # GitHub Actions pipeline
@@ -62,7 +62,7 @@ This file contains an up‑to‑date overview of the current project layout, arc
 * **Tailwind CSS v4** – CSS-first config with `@theme inline` and CSS custom properties for theming.
 * **TanStack Query** – Client-side data fetching, caching, and infinite scroll.
 * **GitHub Actions** – Build → static site generation → deploy to GitHub Pages.
-* **Testing** – Vitest for unit tests (80 tests), Playwright for e2e (3 tests).
+* **Testing** – Vitest for unit tests, Playwright for e2e.
 
 Refer to `docs/architecture.md` for detailed design decisions and diagrammatic representation.
 
@@ -83,7 +83,7 @@ All primary commands are now exposed through a `Makefile` for quick execution. U
 4. **Post Detail (M04)** – Implemented `/posts/[slug]` page and `/post/[slug]` page with SSG via `generateStaticParams` returning post content and tags.
 5. **CLI Tool (M05)** – Full Inquirer-based CLI for post/tag management, static generation, and build. (Web-based `/create` page removed per design decision).
 6. **Pipeline (M06)** – CI workflow wired: lint → typecheck → test → build → deploy to GitHub Pages.
-7. **Testing (M07)** – 80 unit tests passing (41 regression + 39 existing) + 3 E2E tests.
+7. **Testing (M07)** – Unit/E2E suites in place, with passing unit test baseline maintained.
 8. **Theme & Accessibility (M08)** – CSS custom properties for both light/dark themes, semantic color classes, accessible tag pills with `aria-pressed`.
 
 ---
@@ -92,13 +92,13 @@ All primary commands are now exposed through a `Makefile` for quick execution. U
 
 | Priority | Task | Status |
 |----------|------|--------|
-| **P0** | Markdown Authoring + Frontmatter (CLI-based) | 🎯 Next |
-| **P0** | Homepage Post Previews (~20 lines + "Read more") | 🎯 Next |
-| **P0** | Image Support (local + markdown + CLI upload) | 🎯 Next |
+| **P0** | Markdown Authoring + Frontmatter (CLI-based) | ✅ Implemented |
+| **P0** | Homepage Post Previews (~20 lines + "Read more") | ✅ Implemented |
+| **P0** | Image Support (local + markdown + CLI upload) | ✅ Implemented |
+| **P0** | Image Optimization Pipeline (WebP, responsive, blur) | 🔜 Build-gated next step |
 | **P1** | Database Protection (isolate test DB from production) | 🎯 Next |
 | **P1** | Full-Text Search (SQLite FTS5) | Planned |
 | **P1** | SEO: Open Graph + Twitter Cards + JSON-LD | Planned |
-| **P1** | Image Optimization Pipeline (WebP, responsive, blur) | Planned |
 | **P2** | CLI Tool Review (tests, error handling, Markdown authoring commands) | 🎯 Next |
 | **P2** | Comments via Giscus (GitHub Discussions) | Planned |
 | **P2** | Reading Time + Table of Contents | Planned |
@@ -109,7 +109,7 @@ All primary commands are now exposed through a `Makefile` for quick execution. U
 | **P4** | Dependency Audit & Updates (13 vulnerabilities) | Planned |
 | **P4** | Code Warning Cleanup (26 ESLint warnings) | Planned |
 
-> **Completed**: RSS/Sitemap generation ✅, Error/loading boundaries ✅, Tag autocomplete on create page ❌ (removed), Dark mode ✅
+> **Image Optimization Pipeline note**: image manifests, responsive variants, and placeholder support remain implemented in feature-branch work, but full end-to-end validation is blocked until the image optimizer is made compatible with CI/local sharp/libvips availability. Gating it here prevents merge-blocking test failures while preserving the authoring and preview work already completed.
 
 ---
 

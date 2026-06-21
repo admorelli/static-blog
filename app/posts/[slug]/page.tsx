@@ -8,7 +8,9 @@ import Link from 'next/link';
 import postsIndex from '@/public/data/posts-index.json';
 import matter from 'gray-matter';
 import { marked } from 'marked';
-import { processMarkdownImages } from '@/lib/enhance-images';
+import fs from 'fs';
+import path from 'path';
+
 
 interface Post {
   id: number;
@@ -42,6 +44,66 @@ function parseFrontmatter(content: string): ParsedPost {
 
 function markdownToHtml(markdown: string): string {
   return marked.parse(markdown, { async: false }) as string;
+}
+
+type PostImage = {
+  id: string;
+  original: string;
+  src: string;
+  srcset: string;
+  sizes: string;
+  blurDataUri: string;
+  width: number | null;
+  height: number | null;
+  createdAt: string;
+};
+
+function parseMarkdownImageTokens(html: string, baseDir: string, imageRecords: PostImage[]) {
+  return html.replace(/<img([^>]*?)src="([^"]+)"([^>]*?)>/g, (match, before, rawSrc, after) => {
+    if (!rawSrc.startsWith('/images/posts/')) {
+      return match;
+    }
+
+    const fileFromToken = decodeURIComponent(rawSrc.split('/').pop() || '');
+    const byTokens = imageRecords.filter((item) => item.original === fileFromToken);
+    const candidate = byTokens[0];
+    if (!candidate) {
+      return match;
+    }
+
+    const recordedPath = path.posix.join(baseDir, candidate.src);
+    const finalSrc = rawSrc.endsWith(path.posix.join('posts', candidate.original))
+      ? recordedPath
+      : recordedPath;
+
+    const widthAttr = candidate.width ? ` width="${candidate.width}"` : '';
+    const heightAttr = candidate.height ? ` height="${candidate.height}"` : '';
+    const baseAltMatch = (before + after).match(/alt="([^"]*)"/);
+    const altText = baseAltMatch ? baseAltMatch[1] : '';
+
+    return `<picture><source type="image/webp" srcset="${candidate.srcset}" sizes="${candidate.sizes}"><img${before} src="${finalSrc}"${heightAttr}${widthAttr} alt="${altText}" style="background-image:url('${candidate.blurDataUri}');background-size:cover;background-position:center;" class="blur-up"${after}></picture>`;
+  });
+}
+
+function loadPostImages(slug: string): PostImage[] {
+  const imgDir = path.join(process.cwd(), 'public', 'posts', slug, 'img');
+  if (!fs.existsSync(imgDir) || !fs.statSync(imgDir).isDirectory()) {
+    return [];
+  }
+
+  const ids = fs.readdirSync(imgDir).filter((id) => fs.statSync(path.join(imgDir, id)).isDirectory());
+
+  return ids
+    .map((id) => {
+      const manifestPath = path.join(imgDir, id, 'manifest.json');
+      if (!fs.existsSync(manifestPath)) return null;
+      try {
+        return JSON.parse(fs.readFileSync(manifestPath, 'utf8')) as PostImage;
+      } catch {
+        return null;
+      }
+    })
+    .filter((item): item is PostImage => item !== null);
 }
 
 function calculateReadingTime(content: string): number {
@@ -135,9 +197,29 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   if (!post) return notFound();
 
   const { title, date, tags, description, content } = parseFrontmatter(post.content);
-  const markdownContent = content;
-  const htmlContent = markdownToHtml(markdownContent);
-  const enhancedHtmlContent = processMarkdownImages(htmlContent);
+  const postImages = loadPostImages(post.slug);
+  const optimizedContent = postImages.length
+    ? content.replace(/!\[([^\]]*)\]\((\/posts\/[^/]+\/img\/[^)]+)\)/g, (match, alt, src) => {
+        const parts = decodeURIComponent(src).split('/');
+        const imgId = parts[parts.length - 2] || '';
+        const candidate = postImages.find((item) => item.id === imgId);
+        if (!candidate) {
+          return match;
+        }
+
+        const widthAttr = candidate.width ? ` width="${candidate.width}"` : '';
+        const heightAttr = candidate.height ? ` height="${candidate.height}"` : '';
+
+        return [
+          '<picture>',
+          `<source type="image/webp" srcset="${candidate.srcset}" sizes="${candidate.sizes}">`,
+          `<img src="${candidate.src}" alt="${alt}" style="background-image:url('${candidate.blurDataUri}');background-size:cover;background-position:center;" class="blur-up"${heightAttr}${widthAttr}>`,
+          '</picture>',
+        ].join('');
+      })
+    : content;
+  const htmlContent = markdownToHtml(optimizedContent);
+
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://your-username.github.io/static_blog';
   const postTitle = title || post.title;
   const postDescription = description || `Read ${postTitle} on Static Blog`;

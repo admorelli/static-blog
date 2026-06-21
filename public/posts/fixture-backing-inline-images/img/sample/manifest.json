@@ -1,0 +1,11 @@
+{
+  "id": "sample",
+  "original": "sample.png",
+  "src": "/posts/fixture-backing-inline-images/img/sample/max.webp",
+  "srcset": "/posts/fixture-backing-inline-images/img/sample/400w.webp 400w",
+  "sizes": "400px",
+  "blurDataUri": "data:image/webp;base64,test",
+  "width": 400,
+  "height": 300,
+  "createdAt": "2026-06-21T07:30:01.202Z"
+}
