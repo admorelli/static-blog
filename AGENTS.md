@@ -14,6 +14,7 @@ This file contains an up‑to‑date overview of the current project layout, arc
 │   ├── providers.tsx      # React Query + Theme providers
 │   ├── globals.css        # Tailwind v4 + CSS custom properties
 │   ├── newsl.*   # Newsletter page + form (server + client)
+│   ├── analytics.tsx      # Privacy analytics loader (Plausible/Umami)
 │   ├── search/
 │   │   ├── page.tsx       # Search page (server)
 │   │   └── page-client.tsx # Search client (client-side filtering of posts-index.json)
@@ -51,8 +52,8 @@ This file contains an up‑to‑date overview of the current project layout, arc
 │   └── utils/             # Shared CLI helpers (args, db, help, inquirer, registry, types)
 ├── public/data/           # Generated JSON files for SSG
 ├── out/                   # Static export output
-├── __tests__/             # Unit tests (Vitest, 80+ tests)
-└── e2e/                   # E2E tests (Playwright, 15+ tests)
+├── __tests__/             # Unit tests (Vitest, 124+ tests)
+└── e2e/                   # E2E tests (Playwright, 17+ tests)
 ├── .github/
 │   └── workflows/
 │       └── build-and-deploy.yml   # GitHub Actions pipeline
@@ -74,6 +75,7 @@ This file contains an up‑to‑date overview of the current project layout, arc
 * **TanStack Query** – Client-side data fetching, caching, and infinite scroll.
 * **GitHub Actions** – Build → static site generation → deploy to GitHub Pages.
 * **Testing** – Vitest for unit tests, Playwright for e2e.
+* **Privacy Analytics** – Optional Plausible/Umami injection with DNT respect.
 
 Refer to `docs/architecture.md` for detailed design decisions and diagrammatic representation.
 
@@ -100,7 +102,7 @@ All primary commands are now exposed through a `Makefile` for quick execution. U
 10. **Search (M10)** – Full client-side `/search` page, header nav integration, E2E coverage.
 11. **Newsletter (M11)** – Newsletter subscription page + CLI commands (list/add/remove).
 12. **CLI Hardening (M12)** – E2E tests for CLI commands + error handling improvements across posts/tags/images/series/newsletter.
-13. **Privacy Analytics (M13)** – Privacy-oriented analytics via `app/analytics.tsx` supporting Plausible/Umami with DNT respect.
+13. **Privacy Analytics (M13)** – Privacy-oriented analytics via `app/analytics.tsx` supporting Plausible/Umami with DNT respect. E2E coverage added.
 
 ---
 
@@ -131,7 +133,8 @@ All primary commands are now exposed through a `Makefile` for quick execution. U
 ### Quick References
 
 * **Keep plan in sync** – After completing any development task, update the `AGENTS.md` milestones section to reflect the new state.
-
+* **Development plan file** – `DEV_PLAN.md` contains the full task breakdown, statuses, and resumption checklist.
+* **Roadmap** – The table above is the source of truth for priorities. Keep it updated when work starts or finishes.
 * **Schema** – `db/schema.ts`
 * **Posts API** – `lib/posts.ts`
 * **Tags API** – `lib/tags.ts`
@@ -141,3 +144,18 @@ All primary commands are now exposed through a `Makefile` for quick execution. U
 * **Workbench** – `scripts/seed.ts` for sample data
 * **Tests** – `__tests__/` (unit), `e2e/` (e2e)
 * **Docs** – `docs/architecture.md`
+
+---
+
+## 🔄 Contribution Workflow
+
+When working on a new feature or fix, follow this checklist before pushing to `master` or opening a PR:
+
+1. Update `DEV_PLAN.md` to reflect the current task status.
+2. Update the Roadmap table in `AGENTS.md` to mark tasks in progress or completed.
+3. If applicable, update `README.md` features/roadmap sections.
+4. Run `make test` (or `npm run test:unit && npm run test:e2e`) to verify all tests pass.
+5. Run `make lint` (or `npm run lint`) and fix any new errors introduced by your changes.
+6. Commit your changes with a descriptive message.
+7. Push your branch and open a PR. The CI will run lint, tests, and build automatically.
+8. After CI success, merge the PR into `master`.

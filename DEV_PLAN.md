@@ -1,8 +1,8 @@
 # Development Plan — static_blog
 
 **Generated:** 2026-06-21
-**Branch:** feat/privacy-analytics
-**Status:** Clean build & tests; privacy analytics implemented
+**Branch:** master
+**Status:** Clean build & tests; privacy analytics merged
 
 ---
 
@@ -37,7 +37,7 @@
 | Post series / collections | ✅ Done | Next/prev series nav in `app/posts/[slug]/page.tsx` |
 | Newsletter integration | ✅ Done | `app/newsletter/page.tsx` + `cli/commands/newsletter/*` |
 | CLI E2E tests + hardening | ✅ Done | Post/tag/series/image/newsletter CLI commands exercised via E2E |
-| Privacy-friendly analytics | ✅ Done | `app/analytics.tsx` with Plausible/Umami support + DNT respect |
+| Privacy-friendly analytics | ✅ Done | `app/analytics.tsx` with Plausible/Umami support + DNT respect + E2E coverage |
 
 ## Still To Do
 

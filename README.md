@@ -87,6 +87,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 │   ├── newsl
 │   │   ├── page.tsx       # Newsletter page (server)
 │   │   └── newsletter-form.tsx # Newsletter form component
+│   ├── analytics.tsx      # Privacy analytics loader (Plausible/Umami)
 │   ├── search/
 │   │   ├── page.tsx       # Search page (server)
 │   │   └── page-client.tsx # Search client (client-side filtering of posts-index.json)
@@ -138,7 +139,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - **M04 – Post Detail** – Implemented `/posts/[slug]` page and `/post/[slug]` page with SSG via `generateStaticParams`.
 - **M05 – CLI Tool** – Full Inquirer-based CLI for post/tag management, static generation, and build. (Web create page removed)
 - **M06 – Pipeline** – CI workflow wired: lint → typecheck → test → build → deploy to GitHub Pages.
-- **M07 – Testing** – 110+ unit tests passing + 15+ E2E tests covering homepage, posts, images, search, and newsletter.
+- **M07 – Testing** – 124+ unit tests passing + 17+ E2E tests covering homepage, posts, images, search, newsletter.
 - **M08 – Theme & Accessibility** – CSS custom properties for light/dark themes, semantic colors, accessible tag pills.
 - **M09 – Images** – Post-creation image optimization, slug-based storage (`/posts/<slug>/img/<id>/`), E2E verified `<picture>` rendering, optimizer removed from build.
 - **M10 – Search** – Client-side `/search` page with header nav, filters `posts-index.json` by title/content, E2E coverage.
@@ -167,7 +168,13 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please open an issue or submit a pull request.
+Before opening a PR or pushing to `master`, please:
+
+1. Update `DEV_PLAN.md` to reflect the current task and its status.
+2. Update the roadmap/table in `AGENTS.md` if relevant.
+3. Run `make test` to ensure unit + E2E tests pass.
+4. Run `make lint` and fix any new errors from your changes.
+5. Open a PR against `master`. The CI will validate lint, tests, and build.
 
 ## 📄 License
 
