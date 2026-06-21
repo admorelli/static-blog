@@ -52,6 +52,20 @@ export async function generateMetadata({ params }: SeriesPageProps): Promise<Met
   return getSeriesMetadata(slug);
 }
 
+export function generateSeriesJsonLd(slug: string, seriesPosts: PostWithSeries[], baseUrl: string) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: `${slug} - Series`,
+    description: `Posts in the "${slug}" series (${seriesPosts.length} posts)`,
+    url: `${baseUrl}/series/${slug}`,
+    isPartOf: {
+      '@type': 'WebSite',
+      '@id': `${baseUrl}/`,
+    },
+  };
+}
+
 export async function generateStaticParams() {
   console.log('generateStaticParams called for series');
   const series = new Set<string>();
@@ -73,6 +87,8 @@ export default async function SeriesPage({ params }: SeriesPageProps) {
     return notFound();
   }
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://your-username.github.io/static_blog';
+
   const allPosts = postsIndex.posts as unknown as Array<PostWithSeries>;
   const allSeries = allPosts
     .filter(p => p.series !== null && p.series !== undefined && p.series !== '')
@@ -83,6 +99,12 @@ export default async function SeriesPage({ params }: SeriesPageProps) {
   return (
     <>
       <Header />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(generateSeriesJsonLd(slug, seriesPosts, baseUrl)),
+        }}
+      />
       <div className="p-6 max-w-4xl mx-auto">
         <header className="mb-8">
           <nav className="mb-4">

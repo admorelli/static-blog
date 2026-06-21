@@ -30,6 +30,18 @@ test('series page loads', async ({ page }) => {
   await expect(heading).toBeVisible({ timeout: 30000 });
 });
 
+test('series page has OpenGraph and JSON-Ld metadata', async ({ page }) => {
+  await page.goto('/series/getting-started');
+  const ogTitle = await page.locator('meta[property="og:title"]');
+  await expect(ogTitle).toHaveCount(1);
+  await expect(ogTitle).toHaveAttribute('content', 'getting-started - Series');
+
+  const jsonLd = await page.locator('script[type="application/ld+json"]');
+  await expect(jsonLd).toHaveCount(1);
+  const text = await jsonLd.textContent();
+  expect(text).toContain('"@type":"CollectionPage"');
+});
+
 test('post detail page renders optimized images', async ({ page }) => {
   await page.goto('/posts/e2e-img-test');
   const heading = await page.locator('h1');
@@ -44,4 +56,30 @@ test('post detail page renders optimized images', async ({ page }) => {
   const img = await picture.locator('img');
   await expect(img).toBeVisible({ timeout: 30000 });
   await expect(img).toHaveAttribute('src', /\/posts\/e2e-img-test\/img\/seed-1\/max\.webp/);
+});
+
+test('post detail page has OpenGraph metadata', async ({ page }) => {
+  await page.goto('/posts/hello-world');
+  const ogTitle = await page.locator('meta[property="og:title"]');
+  await expect(ogTitle).toHaveCount(1);
+  await expect(ogTitle).toHaveAttribute('content', 'Hello World');
+
+  const ogType = await page.locator('meta[property="og:type"]');
+  await expect(ogType).toHaveAttribute('content', 'article');
+});
+
+test('post detail page has Twitter metadata', async ({ page }) => {
+  await page.goto('/posts/hello-world');
+  const twitterCard = await page.locator('meta[name="twitter:card"]');
+  await expect(twitterCard).toHaveCount(1);
+  await expect(twitterCard).toHaveAttribute('content', 'summary_large_image');
+});
+
+test('post detail page has JSON-Ld', async ({ page }) => {
+  await page.goto('/posts/hello-world');
+  const jsonLd = await page.locator('script[type="application/ld+json"]');
+  await expect(jsonLd).toHaveCount(1);
+  const text = await jsonLd.textContent();
+  expect(text).toContain('"@type":"BlogPosting"');
+  expect(text).toContain('"@context":"https://schema.org"');
 });

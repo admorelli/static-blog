@@ -104,7 +104,7 @@ All primary commands are now exposed through a `Makefile` for quick execution. U
 || **P1** | Database Protection (isolate test DB from production) | ✅ Done |
 || **P1** | Full-Text Search (SQLite FTS5) | ✅ Done |
 || **P1** | Search UI Integration | ✅ Done |
-|| **P1** | SEO: Open Graph + Twitter Cards + JSON-LD | Planned |
+|| **P1** | SEO: Open Graph + Twitter Cards + JSON-LD | ✅ Done |
 || **P2** | CLI Tool Review (tests, error handling, Markdown authoring commands) | 🎯 Next |
 || **P2** | Comments via Giscus (GitHub Discussions) | ✅ Done |
 || **P2** | Reading Time + Table of Contents | ✅ Done |

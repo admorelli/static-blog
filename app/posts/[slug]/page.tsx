@@ -113,7 +113,7 @@ function calculateReadingTime(content: string): number {
   return Math.ceil(wordCount / wordsPerMinute);
 }
 
-function generateJsonLd(post: Post, parsed: ParsedPost, baseUrl: string) {
+export function generateJsonLd(post: Post, parsed: ParsedPost, baseUrl: string) {
   return {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
