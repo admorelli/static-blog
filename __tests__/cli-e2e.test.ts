@@ -8,7 +8,7 @@ const fixtureDir = '/tmp/static-blog-cli-e2e-fixtures';
 
 function runCli(args: string[], env: Record<string, string | undefined> = {}) {
   return new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
-    const cmd = 'npx tsx cli/index.ts ' + args.join(' ');
+    const cmd = 'npx tsx cli/index.ts ' + args.map((arg) => `"${arg.replace(/"/g, '\\"')}"`).join(' ');
     const child = spawn('/bin/bash', ['-c', cmd], {
       cwd: '/home/allfa/git-projects/static_blog',
       env: { ...process.env, ...env, CI: '1', TERM: 'dumb' },
@@ -25,7 +25,7 @@ function runCli(args: string[], env: Record<string, string | undefined> = {}) {
       if (code === 0) {
         resolve({ stdout, stderr });
       } else {
-        const err = new Error(`Command failed: ${cmd}\n${stderr}`) as any;
+        const err = new Error(`Command failed: ${cmd}\n${stderr}`) as CliError;
         err.stdout = stdout;
         err.stderr = stderr;
         err.code = code;
@@ -57,24 +57,51 @@ function createTables(dbPath: string) {
   db.close();
 }
 
+interface PostRow {
+  id: number;
+  title: string;
+  slug: string;
+  content: string;
+  created_at: number;
+}
+
+interface TagRow {
+  id: number;
+  name: string;
+}
+
+interface TagJoinRow {
+  name: string;
+}
+
+interface CliError extends Error {
+  stdout?: string;
+  stderr?: string;
+  code?: number;
+}
+
+function allPostRows(db: Database.Database, sql: string, params: unknown[]): PostRow[] {
+  return db.prepare(sql).all(...params) as PostRow[];
+}
+
+function allTagRows(db: Database.Database, sql: string, params: unknown[]): TagRow[] {
+  return db.prepare(sql).all(...params) as TagRow[];
+}
+
+function allTagJoinRows(db: Database.Database, sql: string, params: unknown[]): TagJoinRow[] {
+  return db.prepare(sql).all(...params) as TagJoinRow[];
+}
+
 describe('cli e2e', () => {
   beforeAll(() => {
     mkdirSync(fixtureDir, { recursive: true });
   });
 
   afterAll(() => {
-    try { rmSync(fixtureDir, { recursive: true }); } catch {}
+    try {
+      rmSync(fixtureDir, { recursive: true });
+    } catch {}
   });
-
-  async function runCli(args: string[], env: Record<string, string | undefined> = {}) {
-    return exec(
-      'npx tsx cli/index.ts ' + args.join(' '),
-      {
-        cwd: '/home/allfa/git-projects/static_blog',
-        env: { ...process.env, ...env, CI: '1', TERM: 'dumb' },
-      }
-    );
-  }
 
   it('create post via flags', async () => {
     const dbPath = '/tmp/cli-e2e-list.sqlite';
@@ -84,12 +111,15 @@ describe('cli e2e', () => {
       await runCli(['create', '--title', 'E2E List', '--content', 'List body', '--slug', 'e2e-list'], { TEST_DB_PATH: dbPath });
 
       const db = new Database(dbPath);
-      const rows = db.prepare('SELECT title, slug FROM posts').all() as { title: string; slug: string }[];
+      const rows = allPostRows(db, 'SELECT title, slug, content, created_at FROM posts WHERE slug = ?', ['e2e-list']);
       db.close();
 
-      expect(rows.map((r) => r.slug)).toContain('e2e-list');
+      expect(rows).toHaveLength(1);
+      expect(rows[0]?.title).toBe('E2E List');
     } finally {
-      try { rmSync(dbPath); } catch {}
+      try {
+        rmSync(dbPath);
+      } catch {}
     }
   });
 
@@ -106,23 +136,24 @@ describe('cli e2e', () => {
 
       const db = new Database(dbPath);
 
-      const [post] = db.prepare('SELECT id, title, slug FROM posts WHERE slug = ?').all('e2e-markdown-post') as { id: number; title: string; slug: string }[];
+      const [post] = allPostRows(db, 'SELECT id, title, slug FROM posts WHERE slug = ?', ['e2e-markdown-post']);
       db.close();
 
       expect(post.title).toBe('E2E Markdown Post');
 
       const db2 = new Database(dbPath);
-      const joined = db2.prepare(`
-        SELECT tags.name
-        FROM post_tags
-        JOIN tags ON tags.id = post_tags.tag_id
-        WHERE post_tags.post_id = ?
-      `).all(post.id) as { name: string }[];
+      const joined = allTagJoinRows(
+        db2,
+        'SELECT tags.name FROM post_tags JOIN tags ON tags.id = post_tags.tag_id WHERE post_tags.post_id = ?',
+        [post.id]
+      );
       db2.close();
 
       expect(joined.map((r) => r.name).sort()).toEqual(['cli', 'e2e']);
     } finally {
-      try { rmSync(dbPath); } catch {}
+      try {
+        rmSync(dbPath);
+      } catch {}
     }
   });
 
@@ -134,12 +165,14 @@ describe('cli e2e', () => {
       await runCli(['tag-create', '--name', 'tag-e2e'], { TEST_DB_PATH: dbPath });
 
       const db = new Database(dbPath);
-      const rows = db.prepare('SELECT name FROM tags').all() as { name: string }[];
+      const rows = allTagRows(db, 'SELECT name FROM tags', []);
       db.close();
 
       expect(rows.map((r) => r.name)).toContain('tag-e2e');
     } finally {
-      try { rmSync(dbPath); } catch {}
+      try {
+        rmSync(dbPath);
+      } catch {}
     }
   });
 
@@ -151,19 +184,21 @@ describe('cli e2e', () => {
       await runCli(['tag-create', '--name', 'deleteme'], { TEST_DB_PATH: dbPath });
 
       let db = new Database(dbPath);
-      let rows = db.prepare('SELECT name FROM tags').all() as { name: string }[];
+      let rows = allTagRows(db, 'SELECT name FROM tags WHERE name = ?', ['deleteme']);
       db.close();
-      expect(rows.map((r) => r.name)).toContain('deleteme');
+      expect(rows).toHaveLength(1);
 
       await runCli(['tag-delete', '--name', 'deleteme', '--yes'], { TEST_DB_PATH: dbPath });
 
       db = new Database(dbPath);
-      rows = db.prepare('SELECT name FROM tags').all() as { name: string }[];
+      rows = allTagRows(db, 'SELECT name FROM tags WHERE name = ?', ['deleteme']);
       db.close();
 
-      expect(rows.map((r) => r.name)).not.toContain('deleteme');
+      expect(rows).toHaveLength(0);
     } finally {
-      try { rmSync(dbPath); } catch {}
+      try {
+        rmSync(dbPath);
+      } catch {}
     }
   });
 
@@ -177,7 +212,9 @@ describe('cli e2e', () => {
       const { stdout } = await runCli(['posts'], { TEST_DB_PATH: dbPath });
       expect(stdout).toContain('list-post');
     } finally {
-      try { rmSync(dbPath); } catch {}
+      try {
+        rmSync(dbPath);
+      } catch {}
     }
   });
 
@@ -189,19 +226,21 @@ describe('cli e2e', () => {
       await runCli(['create', '--title', 'Delete Me', '--content', 'body', '--slug', 'delete-me'], { TEST_DB_PATH: dbPath });
 
       let db = new Database(dbPath);
-      let rows = db.prepare('SELECT id FROM posts WHERE slug = ?').all('delete-me') as { id: number }[];
+      let rows = allPostRows(db, 'SELECT id FROM posts WHERE slug = ?', ['delete-me']);
       db.close();
       expect(rows).toHaveLength(1);
 
       await runCli(['delete', '--slug', 'delete-me', '--yes'], { TEST_DB_PATH: dbPath });
 
       db = new Database(dbPath);
-      rows = db.prepare('SELECT id FROM posts WHERE slug = ?').all('delete-me') as { id: number }[];
+      rows = allPostRows(db, 'SELECT id FROM posts WHERE slug = ?', ['delete-me']);
       db.close();
 
       expect(rows).toHaveLength(0);
     } finally {
-      try { rmSync(dbPath); } catch {}
+      try {
+        rmSync(dbPath);
+      } catch {}
     }
   });
 });
