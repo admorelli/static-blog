@@ -25,3 +25,10 @@ export const postsFts = sqliteTable('posts_fts', {
   title: text('title'),
   content: text('content'),
 });
+
+export const subscribers = sqliteTable('subscribers', {
+  id: integer('id').primaryKey({ autoIncrement: true }).notNull(),
+  email: text('email').unique().notNull(),
+  status: text('status').default('pending').notNull(),
+  created_at: integer('created_at').default(0).notNull(),
+});

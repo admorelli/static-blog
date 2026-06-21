@@ -53,6 +53,9 @@ export function Header() {
           <Link href="/search" className="text-muted hover:text-foreground transition-colors">
             Search
           </Link>
+          <Link href="/newsletter" className="text-muted hover:text-foreground transition-colors">
+            Newsletter
+          </Link>
           {toggleTheme ? (
             <button
               onClick={toggleTheme}

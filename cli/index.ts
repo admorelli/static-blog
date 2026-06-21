@@ -26,6 +26,9 @@ import './commands/series/list.ts';
 import './commands/series/create.ts';
 import './commands/series/add.ts';
 import './commands/series/reorder.ts';
+import './commands/newsletter/list.ts';
+import './commands/newsletter/add.ts';
+import './commands/newsletter/remove.ts';
 
 async function main(): Promise<void> {
   const { cmd, args, flags } = parseArgs(process.argv);
