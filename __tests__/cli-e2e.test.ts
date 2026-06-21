@@ -6,7 +6,7 @@ import { promisify } from 'util';
 import Database from 'better-sqlite3';
 
 const exec = promisify(_exec);
-const fixtureDir = join('/home/allfa/git-projects/static_blog/__tests__', 'fixtures', 'cli-e2e');
+const fixtureDir = '/tmp/static-blog-cli-e2e-fixtures';
 
 function createTables(dbPath: string) {
   const db = new Database(dbPath);
