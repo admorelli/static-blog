@@ -7,6 +7,12 @@ import path from 'node:path';
 import fs from 'node:fs';
 import Database from 'better-sqlite3';
 
+interface CliError extends Error {
+  stdout?: string;
+  stderr?: string;
+  code?: number | null;
+}
+
 const fixtureDir = '/tmp/static-blog-cli-e2e-fixtures';
 
 function runCli(args: string[], env: Record<string, string | undefined> = {}) {
