@@ -23,7 +23,7 @@ function runCli(args: string[], env: Record<string, string | undefined> = {}) {
     const tsxEntry = path.join(pkgDir, JSON.parse(fs.readFileSync(pkgPath, 'utf8')).bin);
     const cmd = ['node', tsxEntry, 'cli/index.ts', ...args];
     const child = spawn(cmd[0], cmd.slice(1), {
-      cwd: '/home/allfa/git-projects/static_blog',
+      cwd: process.cwd(),
       env: { ...process.env, ...env, CI: '1', TERM: 'dumb' },
     });
     let stdout = '';
