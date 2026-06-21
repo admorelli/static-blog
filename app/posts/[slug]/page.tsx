@@ -251,7 +251,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                 ))}
               </div>
             </header>
-            <div className="prose dark:prose-invert flex-1" dangerouslySetInnerHTML={{ __html: enhancedHtmlContent }} />
+            <div className="prose dark:prose-invert flex-1" dangerouslySetInnerHTML={{ __html: htmlContent }} />
           </article>
           <aside className="lg:block hidden">
             <TableOfContents content={htmlContent} />

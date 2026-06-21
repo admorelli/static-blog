@@ -19,6 +19,28 @@ export interface Post {
 
 export const POSTS_DATA = [
   {
+    "id": 12,
+    "title": "E2E Image Test",
+    "slug": "e2e-img-test",
+    "content": "---\ntitle: \"E2E Image Test\"\ndate: \"2025-06-22\"\ntags: [\"test\"]\n---\n\nTesting image rendering.\n\n![Alt text](/posts/e2e-img-test/img/seed-1/max.webp)\n\nDone.\n",
+    "created_at": 9999999999,
+    "series": null,
+    "series_order": null,
+    "images": [
+      {
+        "id": "seed-1",
+        "original": "seed-1.png",
+        "src": "/posts/e2e-img-test/img/seed-1/max.webp",
+        "srcset": "/posts/e2e-img-test/img/seed-1/400w.webp 400w",
+        "sizes": "400px",
+        "blurDataUri": "data:image/webp;base64,test",
+        "width": 400,
+        "height": 300,
+        "createdAt": "2026-06-21T07:14:34.661Z"
+      }
+    ]
+  },
+  {
     "id": 9,
     "title": "Fixing a Static Blog: From Broken URLs to Working Markdown",
     "slug": "fixing-static-blog-broken-urls-markdown",
