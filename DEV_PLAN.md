@@ -2,7 +2,7 @@
 
 **Generated:** 2026-06-21
 **Branch:** master
-**Status:** Clean build & tests; PR #12 and PR #13 merged
+**Status:** Clean build & tests
 
 ---
 
@@ -35,15 +35,14 @@
 | TOC | ✅ Done | `app/components/TableOfContents.tsx` with scroll spy |
 | Skeleton loaders + empty states | ✅ Done | `app/components/SkeletonLoaders.tsx` wired in client UI |
 | Post series / collections | ✅ Done | Next/prev series nav in `app/posts/[slug]/page.tsx` |
+| Newsletter integration | ✅ Done | `app/newsletter/page.tsx` + `cli/commands/newsletter/*` |
+| CLI E2E tests + hardening | ✅ Done | Post/tag/series/image/newsletter CLI commands exercised via E2E |
 
-## ⚠️ Still To Do
+## Still To Do
 
-1. Mobile nav drawer (hamburger/drawer on `<lg` — not implemented yet)
-2. CLI tool review for posts/tags/series commands (error handling + coverage beyond images)
-3. Newsletter integration
-4. Privacy-friendly analytics (Plausible/Umami)
-5. Dependency audit & updates
-6. ESLint/code warning cleanup
+1. Privacy-friendly analytics (Plausible/Umami) — in progress
+2. Dependency audit & updates
+3. ESLint/code warning cleanup
 
 ---
 
@@ -52,8 +51,7 @@
 - [x] Move image optimization to post creation
 - [x] Use slug-based image layout (`/posts/<slug>/img/<id>/`)
 - [x] Wire FTS5 search to UI
-- [ ] Mobile nav drawer
-- [ ] Newsletter integration
+- [x] Newsletter integration (page + CLI commands)
 - [ ] Privacy-friendly analytics
 - [ ] Dependency audit & updates
 - [ ] ESLint/code warning cleanup
@@ -64,6 +62,7 @@
 
 * Schema — `db/schema.ts`
 * Posts API — `lib/posts.ts`
+* Tags API — `lib/tags.ts`
 * Static Generation — `scripts/generate-static-data.ts`
 * Feed/Sitemap — `scripts/generate-feed.js`, `next-sitemap.config.js`
 * CLI — `cli/index.ts` + `cli/commands/`
