@@ -20,8 +20,6 @@ export const postTags = sqliteTable('post_tags', {
   tagId: integer('tag_id').notNull().references(() => tags.id),
 });
 
-// FTS5 virtual table for full-text search
-// Note: This is created via raw SQL, not Drizzle ORM
 export const postsFts = sqliteTable('posts_fts', {
   id: integer('id').primaryKey(),
   title: text('title'),

@@ -56,7 +56,7 @@ export async function createPost(data: {
   tags?: number[];
 }): Promise<number> {
   const slug = data.slug ?? simpleSlug(data.title);
-  const result = await testDb
+  const [inserted] = await testDb
     .insert(posts)
     .values({
       title: data.title,
@@ -64,8 +64,8 @@ export async function createPost(data: {
       content: data.content,
       created_at: Math.floor(Date.now() / 1000),
     })
-    .run();
-  const id = Number(result.lastInsertRowid);
+    .returning({ id: posts.id });
+  const id = inserted.id;
   if (data.tags && data.tags.length) {
     await testDb
       .insert(postTags)

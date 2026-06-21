@@ -1,0 +1,11 @@
+{
+  "id": "seed-1",
+  "original": "seed-1.png",
+  "src": "/posts/e2e-img-test/img/seed-1/max.webp",
+  "srcset": "/posts/e2e-img-test/img/seed-1/400w.webp 400w",
+  "sizes": "400px",
+  "blurDataUri": "data:image/webp;base64,test",
+  "width": 400,
+  "height": 300,
+  "createdAt": "2026-06-21T07:14:34.661Z"
+}
