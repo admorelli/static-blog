@@ -1,37 +1,17 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { mkdirSync, rmSync, writeFileSync } from 'fs';
 import { join } from 'path';
-import { spawn } from 'child_process';
+import { execFile } from 'child_process';
+import { promisify } from 'util';
 import Database from 'better-sqlite3';
 
+const execFileAsync = promisify(execFile);
 const fixtureDir = '/tmp/static-blog-cli-e2e-fixtures';
 
 function runCli(args: string[], env: Record<string, string | undefined> = {}) {
-  return new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
-    const cmd = 'npx tsx cli/index.ts ' + args.map((arg) => `"${arg.replace(/"/g, '\\"')}"`).join(' ');
-    const child = spawn('/bin/bash', ['-c', cmd], {
-      cwd: '/home/allfa/git-projects/static_blog',
-      env: { ...process.env, ...env, CI: '1', TERM: 'dumb' },
-    });
-    let stdout = '';
-    let stderr = '';
-    child.stdout.on('data', (chunk) => {
-      stdout += chunk.toString();
-    });
-    child.stderr.on('data', (chunk) => {
-      stderr += chunk.toString();
-    });
-    child.on('close', (code) => {
-      if (code === 0) {
-        resolve({ stdout, stderr });
-      } else {
-        const err = new Error(`Command failed: ${cmd}\n${stderr}`) as CliError;
-        err.stdout = stdout;
-        err.stderr = stderr;
-        err.code = code;
-        reject(err);
-      }
-    });
+  return execFileAsync('npx', ['tsx', 'cli/index.ts', ...args], {
+    cwd: '/home/allfa/git-projects/static_blog',
+    env: { ...process.env, ...env, CI: '1', TERM: 'dumb' },
   });
 }
 
@@ -72,12 +52,6 @@ interface TagRow {
 
 interface TagJoinRow {
   name: string;
-}
-
-interface CliError extends Error {
-  stdout?: string;
-  stderr?: string;
-  code?: number | null;
 }
 
 function allPostRows(db: Database.Database, sql: string, params: unknown[]): PostRow[] {
