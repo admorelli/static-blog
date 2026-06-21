@@ -1,12 +1,39 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { mkdirSync, rmSync, writeFileSync } from 'fs';
 import { join } from 'path';
-import { exec as _exec } from 'child_process';
-import { promisify } from 'util';
+import { spawn } from 'child_process';
 import Database from 'better-sqlite3';
 
-const exec = promisify(_exec);
 const fixtureDir = '/tmp/static-blog-cli-e2e-fixtures';
+
+function runCli(args: string[], env: Record<string, string | undefined> = {}) {
+  return new Promise<{ stdout: string; stderr: string }>((resolve, reject) => {
+    const cmd = 'npx tsx cli/index.ts ' + args.join(' ');
+    const child = spawn('/bin/bash', ['-c', cmd], {
+      cwd: '/home/allfa/git-projects/static_blog',
+      env: { ...process.env, ...env, CI: '1', TERM: 'dumb' },
+    });
+    let stdout = '';
+    let stderr = '';
+    child.stdout.on('data', (chunk) => {
+      stdout += chunk.toString();
+    });
+    child.stderr.on('data', (chunk) => {
+      stderr += chunk.toString();
+    });
+    child.on('close', (code) => {
+      if (code === 0) {
+        resolve({ stdout, stderr });
+      } else {
+        const err = new Error(`Command failed: ${cmd}\n${stderr}`) as any;
+        err.stdout = stdout;
+        err.stderr = stderr;
+        err.code = code;
+        reject(err);
+      }
+    });
+  });
+}
 
 function createTables(dbPath: string) {
   const db = new Database(dbPath);
