@@ -1,6 +1,6 @@
 /** Command Registry - Central registry for all CLI commands */
 
-import type { Command } from './types.js';
+import type { Command } from './types.ts';
 
 export class CommandRegistry {
   private commands = new Map<string, Command>();

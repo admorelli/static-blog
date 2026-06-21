@@ -11,21 +11,21 @@ import { showHelp, showCommandHelp } from './utils/help.ts';
 import { registry } from './utils/registry.ts';
 
 // Import all command modules to register them
-import './commands/posts/list.js';
-import './commands/posts/create.js';
-import './commands/posts/create-from-markdown.js';
-import './commands/posts/update.js';
-import './commands/posts/delete.js';
-import './commands/tags/list.js';
-import './commands/tags/create.js';
-import './commands/tags/delete.js';
-import './commands/tags/tag-post.js';
-import './commands/tags/untag-post.js';
+import './commands/posts/list.ts';
+import './commands/posts/create.ts';
+import './commands/posts/create-from-markdown.ts';
+import './commands/posts/update.ts';
+import './commands/posts/delete.ts';
+import './commands/tags/list.ts';
+import './commands/tags/create.ts';
+import './commands/tags/delete.ts';
+import './commands/tags/tag-post.ts';
+import './commands/tags/untag-post.ts';
 import './commands/images/add.ts';
-import './commands/series/list.js';
-import './commands/series/create.js';
-import './commands/series/add.js';
-import './commands/series/reorder.js';
+import './commands/series/list.ts';
+import './commands/series/create.ts';
+import './commands/series/add.ts';
+import './commands/series/reorder.ts';
 
 async function main(): Promise<void> {
   const { cmd, args, flags } = parseArgs(process.argv);

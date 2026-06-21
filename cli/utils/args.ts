@@ -1,6 +1,6 @@
 /** Argument Parser - Parse CLI arguments into structured objects */
 
-import type { CliArgs, CliFlags } from './types.js';
+import type { CliArgs, CliFlags } from './types.ts';
 
 export function parseArgs(argv: string[]): { cmd: string; args: CliArgs; flags: CliFlags } {
   const cmd = argv[2] || 'help';

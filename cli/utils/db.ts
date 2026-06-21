@@ -1,7 +1,7 @@
 /** Database Utilities - Shared DB connection and helpers */
 
-import db from '../../db/db.js';
-import { posts, tags, postTags } from '../../db/schema.js';
+import db from '../../db/db.ts';
+import { posts, tags, postTags } from '../../db/schema.ts';
 import { eq, desc, inArray, and, sql } from 'drizzle-orm';
 import { execSync } from 'child_process';
 import path from 'path';

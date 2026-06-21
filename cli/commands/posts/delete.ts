@@ -4,6 +4,7 @@ import type { Command } from '../../utils/types.ts';
 import { registry } from '../../utils/registry.ts';
 import { ensureTables, db, posts, postTags, eq } from '../../utils/db.ts';
 import { promptPostId, promptConfirm } from '../../utils/inquirer.ts';
+import { CliError } from '../../utils/errors.ts';
 
 const command: Command = {
   name: 'delete',

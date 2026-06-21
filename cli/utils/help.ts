@@ -1,7 +1,7 @@
 /** Help Generator - Dynamic help from command registry */
 
-import type { Command } from './types.js';
-import { registry } from './registry.js';
+import type { Command } from './types.ts';
+import { registry } from './registry.ts';
 
 export function showHelp(): void {
   const commands = registry.getAll();

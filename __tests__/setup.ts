@@ -1,6 +1,10 @@
 // Vitest global setup - runs once before all tests
-import { getDb } from '../db/db';
-import { posts, tags, postTags } from '../db/schema';
+import { getDb } from '@/db/db';
+import { posts, tags, postTags } from '@/db/schema';
+
+// Reset global singleton so each vitest run starts clean.
+// @ts-expect-error - intentional reset between test runs
+if (globalThis.__DB__) globalThis.__DB__ = undefined;
 
 const testDb = getDb(':memory:');
 
