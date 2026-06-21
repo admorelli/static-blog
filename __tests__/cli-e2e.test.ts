@@ -1,17 +1,44 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { mkdirSync, rmSync, writeFileSync } from 'fs';
 import { join } from 'path';
-import { execFile } from 'child_process';
-import { promisify } from 'util';
+import { spawn } from 'node:child_process';
+import { createRequire } from 'node:module';
+import path from 'node:path';
+import fs from 'node:fs';
 import Database from 'better-sqlite3';
 
-const execFileAsync = promisify(execFile);
 const fixtureDir = '/tmp/static-blog-cli-e2e-fixtures';
 
 function runCli(args: string[], env: Record<string, string | undefined> = {}) {
-  return execFileAsync('npx', ['tsx', 'cli/index.ts', ...args], {
-    cwd: '/home/allfa/git-projects/static_blog',
-    env: { ...process.env, ...env, CI: '1', TERM: 'dumb' },
+  return new Promise<{ stdout: string; stderr: string }>((resolve) => {
+    const require = createRequire(import.meta.url);
+    const pkgPath = require.resolve('tsx/package.json');
+    const pkgDir = path.dirname(pkgPath);
+    const tsxEntry = path.join(pkgDir, JSON.parse(fs.readFileSync(pkgPath, 'utf8')).bin);
+    const cmd = [process.execPath, tsxEntry, 'cli/index.ts', ...args];
+    const child = spawn(cmd[0], cmd.slice(1), {
+      cwd: '/home/allfa/git-projects/static_blog',
+      env: { ...process.env, ...env, CI: '1', TERM: 'dumb' },
+    });
+    let stdout = '';
+    let stderr = '';
+    child.stdout.on('data', (chunk) => {
+      stdout += chunk.toString();
+    });
+    child.stderr.on('data', (chunk) => {
+      stderr += chunk.toString();
+    });
+    child.on('close', (code) => {
+      if (code === 0) {
+        resolve({ stdout, stderr });
+      } else {
+        const err = new Error(`Command failed: ${cmd}\n${stderr}`) as CliError;
+        err.stdout = stdout;
+        err.stderr = stderr;
+        err.code = code;
+        throw err;
+      }
+    });
   });
 }
 

@@ -9,7 +9,7 @@ declare global {
 }
 
 function getDb(path?: string): SQLiteDb {
-  const dbPath = path || process.env.TEST_DB_PATH || './db.sqlite';
+  const dbPath = path || process.env.TEST_DB_PATH || process.env.DB_PATH || './db.sqlite';
   const isMemory = path === ':memory:';
 
   const instance = globalThis.__DB__;
