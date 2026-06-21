@@ -77,7 +77,7 @@ interface TagJoinRow {
 interface CliError extends Error {
   stdout?: string;
   stderr?: string;
-  code?: number;
+  code?: number | null;
 }
 
 function allPostRows(db: Database.Database, sql: string, params: unknown[]): PostRow[] {
