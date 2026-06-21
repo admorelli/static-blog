@@ -50,6 +50,9 @@ export function Header() {
           <Link href="/posts" className="text-muted hover:text-foreground transition-colors">
             Posts
           </Link>
+          <Link href="/search" className="text-muted hover:text-foreground transition-colors">
+            Search
+          </Link>
           {toggleTheme ? (
             <button
               onClick={toggleTheme}
