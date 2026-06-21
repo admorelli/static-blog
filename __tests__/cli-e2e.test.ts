@@ -21,7 +21,7 @@ function runCli(args: string[], env: Record<string, string | undefined> = {}) {
     const pkgPath = require.resolve('tsx/package.json');
     const pkgDir = path.dirname(pkgPath);
     const tsxEntry = path.join(pkgDir, JSON.parse(fs.readFileSync(pkgPath, 'utf8')).bin);
-    const cmd = [process.execPath, tsxEntry, 'cli/index.ts', ...args];
+    const cmd = ['node', tsxEntry, 'cli/index.ts', ...args];
     const child = spawn(cmd[0], cmd.slice(1), {
       cwd: '/home/allfa/git-projects/static_blog',
       env: { ...process.env, ...env, CI: '1', TERM: 'dumb' },
