@@ -5,7 +5,7 @@ import { registry } from '../../utils/registry.ts';
 import { ensureTables, db, posts, eq, sql } from '../../utils/db.ts';
 import { promptConfirm } from '../../utils/inquirer.ts';
 import inquirer from 'inquirer';
-
+import { CliError } from '../../utils/errors.ts';
 const command: Command = {
   name: 'series-reorder',
   description: 'Reorder posts within a series',

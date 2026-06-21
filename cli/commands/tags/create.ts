@@ -2,8 +2,9 @@
 
 import type { Command } from '../../utils/types.ts';
 import { registry } from '../../utils/registry.ts';
-import { ensureTables, db, tags, eq } from '../../utils/db.ts';
+import { ensureTables, db, tags, postTags, eq } from '../../utils/db.ts';
 import { promptTagName } from '../../utils/inquirer.ts';
+import { CliError } from '../../utils/errors.ts';
 
 const command: Command = {
   name: 'tag-create',

@@ -4,6 +4,7 @@ import type { Command } from '../../utils/types.ts';
 import { registry } from '../../utils/registry.ts';
 import { ensureTables, db, posts, tags, postTags, eq, and } from '../../utils/db.ts';
 import { promptPostId, promptTagForPost } from '../../utils/inquirer.ts';
+import { CliError } from '../../utils/errors.ts';
 
 const command: Command = {
   name: 'untag-post',

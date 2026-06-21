@@ -7,6 +7,7 @@ import path from 'path';
 import matter from 'gray-matter';
 import { marked } from 'marked';
 import { fileURLToPath } from 'url';
+import { CliError } from '../../utils/errors.ts';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
