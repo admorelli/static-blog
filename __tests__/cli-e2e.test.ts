@@ -67,6 +67,12 @@ function createTables(dbPath: string) {
     post_id INTEGER NOT NULL REFERENCES posts(id),
     tag_id INTEGER NOT NULL REFERENCES tags(id)
   );`);
+  db.exec(`CREATE TABLE IF NOT EXISTS subscribers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT UNIQUE NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending',
+    created_at INTEGER NOT NULL DEFAULT 0
+  );`);
   db.close();
 }
 
@@ -241,6 +247,66 @@ describe('cli e2e', () => {
 
       db = new Database(dbPath);
       rows = allPostRows(db, 'SELECT id FROM posts WHERE slug = ?', ['delete-me']);
+      db.close();
+
+      expect(rows).toHaveLength(0);
+    } finally {
+      try {
+        rmSync(dbPath);
+      } catch {}
+    }
+  });
+
+  it('newsletter-add creates a subscriber', async () => {
+    const dbPath = '/tmp/cli-e2e-newsletter-add.sqlite';
+    try {
+      createTables(dbPath);
+
+      await runCli(['newsletter-add', '--email', 'newsletter@example.com'], { TEST_DB_PATH: dbPath });
+
+      const db = new Database(dbPath);
+      const rows = db.prepare('SELECT email, status FROM subscribers WHERE email = ?').all('newsletter@example.com') as { email: string; status: string }[];
+      db.close();
+
+      expect(rows).toHaveLength(1);
+      expect(rows[0]?.status).toBe('pending');
+    } finally {
+      try {
+        rmSync(dbPath);
+      } catch {}
+    }
+  });
+
+  it('newsletter-list shows subscribers', async () => {
+    const dbPath = '/tmp/cli-e2e-newsletter-list.sqlite';
+    try {
+      createTables(dbPath);
+      await runCli(['newsletter-add', '--email', 'list-me@example.com'], { TEST_DB_PATH: dbPath });
+
+      const { stdout } = await runCli(['newsletter-list'], { TEST_DB_PATH: dbPath });
+      expect(stdout).toContain('list-me@example.com');
+    } finally {
+      try {
+        rmSync(dbPath);
+      } catch {}
+    }
+  });
+
+  it('newsletter-remove deletes a subscriber', async () => {
+    const dbPath = '/tmp/cli-e2e-newsletter-remove.sqlite';
+    try {
+      createTables(dbPath);
+      await runCli(['newsletter-add', '--email', 'remove-me@example.com'], { TEST_DB_PATH: dbPath });
+
+      let db = new Database(dbPath);
+      let rows = db.prepare('SELECT id FROM subscribers WHERE email = ?').all('remove-me@example.com') as { id: number }[];
+      db.close();
+      expect(rows).toHaveLength(1);
+
+      await runCli(['newsletter-remove', '--email', 'remove-me@example.com'], { TEST_DB_PATH: dbPath });
+
+      db = new Database(dbPath);
+      rows = db.prepare('SELECT id FROM subscribers WHERE email = ?').all('remove-me@example.com') as { id: number }[];
       db.close();
 
       expect(rows).toHaveLength(0);

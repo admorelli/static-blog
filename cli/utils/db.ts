@@ -1,7 +1,7 @@
 /** Database Utilities - Shared DB connection and helpers */
 
 import db from '../../db/db.ts';
-import { posts, tags, postTags } from '../../db/schema.ts';
+import { posts, tags, postTags, subscribers } from '../../db/schema.ts';
 import { eq, desc, inArray, and, sql } from 'drizzle-orm';
 import { execSync } from 'child_process';
 import path from 'path';
@@ -26,4 +26,4 @@ export function slugify(str: string): string {
     .replace(/^-|-$/g, '');
 }
 
-export { db, posts, tags, postTags, eq, desc, inArray, and, sql };
+export { db, posts, tags, postTags, subscribers, eq, desc, inArray, and, sql };

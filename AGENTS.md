@@ -105,15 +105,15 @@ All primary commands are now exposed through a `Makefile` for quick execution. U
 || **P1** | Full-Text Search (SQLite FTS5) | ✅ Done |
 || **P1** | Search UI Integration | ✅ Done |
 || **P1** | SEO: Open Graph + Twitter Cards + JSON-LD | ✅ Done |
-|| **P2** | CLI Tool Review (tests, error handling, Markdown authoring commands) | 🎯 Next |
-|| **P2** | Comments via Giscus (GitHub Discussions) | ✅ Done |
-|| **P2** | Reading Time + Table of Contents | ✅ Done |
-|| **P2** | Mobile Nav Drawer + Skeleton Loaders + Empty States | ✅ Done |
-|| **P2** | Post Series / Collections (ordered, next/prev nav) | ✅ Done |
-|| **P3** | Newsletter Integration | Backlog |
-|| **P3** | Privacy-Friendly Analytics (Plausible/Umami) | Backlog |
-|| **P4** | Dependency Audit & Updates (13 vulnerabilities) | Planned |
-|| **P4** | Code Warning Cleanup (26 ESLint warnings) | Planned |
+| **P2** | CLI Tool Review (tests, error handling, Markdown authoring commands) | ✅ Done |
+| **P2** | Comments via Giscus (GitHub Discussions) | ✅ Done |
+| **P2** | Reading Time + Table of Contents | ✅ Done |
+| **P2** | Mobile Nav Drawer + Skeleton Loaders + Empty States | ✅ Done |
+| **P2** | Post Series / Collections (ordered, next/prev nav) | ✅ Done |
+| **P2** | Newsletter Integration | ✅ Done |
+| **P3** | Privacy-Friendly Analytics (Plausible/Umami) | Backlog |
+| **P4** | Dependency Audit & Updates (13 vulnerabilities) | Planned |
+| **P4** | Code Warning Cleanup (26 ESLint warnings) | Planned |
 
 ---
 
