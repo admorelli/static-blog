@@ -49,7 +49,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - **SSG Pipeline**: GitHub Actions workflow generates static HTML and deploys to GitHub Pages
 - **CLI Management**: TypeScript registry-based CLI with grouped subcommands (posts, tags, images, series)
 - **Tag Filtering**: Toggleable pill tags on homepage with URL-synced filter state
-- **Search**: Client-side search across post titles and content
+- **Search**: Client-side search page (`/search`) plus homepage search filter across post titles and content
 - **Infinite Scroll**: 10-post batches loaded on scroll respecting current search/filter
 - **RSS/Atom Feeds**: Auto-generated during build
 - **Sitemap**: Auto-generated during build
@@ -74,12 +74,19 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 │   ├── page-client.tsx    # Home page client (search, tags, infinite scroll)
 │   ├── layout.tsx         # Root layout + providers
 │   ├── header.tsx         # Navigation header with theme toggle
+│   ├── providers.tsx      # React Query + Theme providers
+│   ├── search/
+│   │   ├── page.tsx       # Search page (server)
+│   │   └── page-client.tsx # Search client (client-side filtering of posts-index.json)
 │   ├── posts/
 │   │   ├── page.tsx       # Posts list (SSG)
 │   │   └── [slug]/
 │   │       └── page.tsx   # Post detail (SSG)
 │   ├── post/[slug]/       # Legacy post route (kept for compatibility)
-│   ├── providers.tsx      # React Query + Theme providers
+│   ├── series/
+│   │   ├── page.tsx       # Series list
+│   │   └── [slug]/
+│   │       └── page.tsx   # Series detail (SSG)
 │   ├── theme-provider.tsx # Dark/light theme context
 │   ├── theme-toggle.tsx   # Theme toggle button
 │   └── globals.css        # Tailwind v4 + CSS custom properties
@@ -91,11 +98,12 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 │   ├── db.ts              # Drizzle SQLite connection
 │   └── schema.ts          # Posts, tags, post_tags tables
 ├── scripts/
-│   ├── generate-static-data.js  # Generates JSON + TS module for SSG
-│   ├── generate-feed.js         # Generates RSS/Atom feeds
+│   ├── generate-static-data.ts  # Generates JSON + TS module for SSG
+│   ├── generate-feed.ts         # Generates RSS/Atom feeds
 │   └── generate-sitemap.js      # Sitemap generation via next-sitemap
 ├── cli/
-│   └── blog.js            # CLI for post/tag management
+│   ├── index.ts             # Entrypoint: `npm run blog` or `npx tsx cli/index.ts`
+│   ├── commands/            # Subcommands grouped by domain
 ├── public/data/           # Generated JSON files (posts-index, tags, post-tags)
 ├── out/                   # Static export output
 ├── __tests__/             # Unit tests (Vitest)
@@ -111,16 +119,20 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - **M04 – Post Detail** – Implemented `/posts/[slug]` page and `/post/[slug]` page with SSG via `generateStaticParams`.
 - **M05 – CLI Tool** – Full Inquirer-based CLI for post/tag management, static generation, and build. (Web create page removed)
 - **M06 – Pipeline** – CI workflow wired: lint → typecheck → test → build → deploy to GitHub Pages.
-- **M07 – Testing** – 80 unit tests passing (41 regression + 39 existing) + 3 E2E tests.
+- **M07 – Testing** – 110 unit tests passing + 9 E2E tests covering homepage, posts, images, and search.
 - **M08 – Theme & Accessibility** – CSS custom properties for light/dark themes, semantic colors, accessible tag pills.
+- **M09 – Images** – Post-creation image optimization, slug-based storage (`/posts/<slug>/img/<id>/`), E2E verified `<picture>` rendering, optimizer removed from build.
+- **M10 – Search** – Client-side `/search` page with header nav, filters `posts-index.json` by title/content, E2E coverage for homepage + search page.
 
 ## 📝 Roadmap
 
 - [ ] Post editor with markdown preview (CLI-based)
 - [ ] SEO optimization (Open Graph, Twitter Cards)
-- [ ] Comments system
-- [ ] Image optimization pipeline
-- [ ] Full-text search (SQLite FTS5)
+- [ ] Newsletter Integration
+- [ ] Privacy-Friendly Analytics (Plausible/Umami)
+- [ ] Mobile Nav Drawer
+- [ ] Dependency audit & updates
+- [ ] ESLint/code warning cleanup
 
 ## 🤝 Contributing
 

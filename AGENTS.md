@@ -11,14 +11,19 @@ This file contains an up‑to‑date overview of the current project layout, arc
 │   ├── page-client.tsx    # Home client (search, tag pills, infinite scroll)
 │   ├── layout.tsx         # Root layout + providers
 │   ├── header.tsx         # Navigation header with theme toggle
-│   ├── theme-provider.tsx # Dark/light theme context
-│   ├── theme-toggle.tsx   # Theme toggle button
 │   ├── providers.tsx      # React Query + Theme providers
 │   ├── globals.css        # Tailwind v4 + CSS custom properties
+│   ├── search/
+│   │   ├── page.tsx       # Search page (server)
+│   │   └── page-client.tsx # Search client (client-side filtering of posts-index.json)
 │   ├── posts/
 │   │   ├── page.tsx       # Posts list (SSG)
 │   │   └── [slug]/
 │   │       └── page.tsx   # Post detail (SSG)
+│   └── series/
+│       ├── page.tsx       # Series list
+│       └── [slug]/
+│           └── page.tsx   # Series detail (SSG)
 ├── lib/                   # Utilities & API helpers
 │   ├── posts.ts           # Posts CRUD + queries
 │   ├── tags.ts            # Tags queries + pagination
@@ -94,22 +99,21 @@ All primary commands are now exposed through a `Makefile` for quick execution. U
 |----------|------|--------|
 | **P0** | Markdown Authoring + Frontmatter (CLI-based) | ✅ Implemented |
 | **P0** | Homepage Post Previews (~20 lines + "Read more") | ✅ Implemented |
-| **P0** | Image Support (local + markdown + CLI upload) | ✅ Implemented |
-| **P0** | Image Optimization Pipeline (WebP, responsive, blur) | 🔜 Build-gated next step |
-| **P1** | Database Protection (isolate test DB from production) | 🎯 Next |
-| **P1** | Full-Text Search (SQLite FTS5) | Planned |
-| **P1** | SEO: Open Graph + Twitter Cards + JSON-LD | Planned |
-| **P2** | CLI Tool Review (tests, error handling, Markdown authoring commands) | 🎯 Next |
-| **P2** | Comments via Giscus (GitHub Discussions) | Planned |
-| **P2** | Reading Time + Table of Contents | Planned |
-| **P2** | Mobile Nav Drawer + Skeleton Loaders + Empty States | Planned |
-| **P2** | Post Series / Collections (ordered, next/prev nav) | Planned |
-| **P3** | Newsletter Integration | Backlog |
-| **P3** | Privacy-Friendly Analytics (Plausible/Umami) | Backlog |
-| **P4** | Dependency Audit & Updates (13 vulnerabilities) | Planned |
-| **P4** | Code Warning Cleanup (26 ESLint warnings) | Planned |
-
-> **Image Optimization Pipeline note**: image manifests, responsive variants, and placeholder support remain implemented in feature-branch work, but full end-to-end validation is blocked until the image optimizer is made compatible with CI/local sharp/libvips availability. Gating it here prevents merge-blocking test failures while preserving the authoring and preview work already completed.
+|| **P0** | Image Support (local + markdown + CLI upload) | ✅ Implemented |
+|| **P0** | Image Optimization Pipeline (WebP, responsive, blur) | ✅ Done |
+|| **P1** | Database Protection (isolate test DB from production) | ✅ Done |
+|| **P1** | Full-Text Search (SQLite FTS5) | ✅ Done |
+|| **P1** | Search UI Integration | ✅ Done |
+|| **P1** | SEO: Open Graph + Twitter Cards + JSON-LD | Planned |
+|| **P2** | CLI Tool Review (tests, error handling, Markdown authoring commands) | 🎯 Next |
+|| **P2** | Comments via Giscus (GitHub Discussions) | ✅ Done |
+|| **P2** | Reading Time + Table of Contents | ✅ Done |
+|| **P2** | Mobile Nav Drawer + Skeleton Loaders + Empty States | ✅ Done |
+|| **P2** | Post Series / Collections (ordered, next/prev nav) | ✅ Done |
+|| **P3** | Newsletter Integration | Backlog |
+|| **P3** | Privacy-Friendly Analytics (Plausible/Umami) | Backlog |
+|| **P4** | Dependency Audit & Updates (13 vulnerabilities) | Planned |
+|| **P4** | Code Warning Cleanup (26 ESLint warnings) | Planned |
 
 ---
 
@@ -120,9 +124,9 @@ All primary commands are now exposed through a `Makefile` for quick execution. U
 * **Schema** – `db/schema.ts`
 * **Posts API** – `lib/posts.ts`
 * **Tags API** – `lib/tags.ts`
-* **Static Generation** – `scripts/generate-static-data.js`
-* **Feed/Sitemap** – `scripts/generate-feed.js`, `next-sitemap.config.js`
-- **CLI** – `cli/index.ts` + `cli/commands/` modules (`posts`, `tags`, `images`, `series`)
+* **Static Generation** – `scripts/generate-static-data.ts`
+* **Feed/Sitemap** – `scripts/generate-feed.ts`, `next-sitemap.config.js`
+* **CLI** – `cli/index.ts` + `cli/commands/` modules (`posts`, `tags`, `images`, `series`)
 * **Workbench** – `scripts/seed.ts` for sample data
 * **Tests** – `__tests__/` (unit), `e2e/` (e2e)
 * **Docs** – `docs/architecture.md`

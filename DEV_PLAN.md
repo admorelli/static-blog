@@ -1,43 +1,62 @@
 # Development Plan — static_blog
 
-**Generated:** 2026-06-20
-**Branch:** feat/p0-authoring-previews-images
-**Status:** Build and tests pass; image fixtures fixed
+**Generated:** 2026-06-21
+**Branch:** master
+**Status:** Clean build & tests; PR #12 and PR #13 merged
 
 ---
 
 ## ✅ Done (P0 — Core)
 
 | Task | Status | Notes |
-|-------|--------|-------|
-| Markdown authoring (CLI) | ✅ Implemented | `cli/commands/posts/create-from-markdown.ts` parses frontmatter + markdown |
-| Homepage post previews | ✅ Implemented | Paragraph-boundary truncation in `app/page-client.tsx` |
-| Image CLI copy/embed | ✅ Implemented | `cli/commands/images/add.ts` copies image + appends markdown |
-| Image optimization script | ✅ Script exists | `scripts/optimize-images.ts` generates blur placeholders and derivatives |
-| Optimizer wired into build | ✅ Wired | `npm run build` runs `optimize:images` first |
+|------|--------|-------|
+| Markdown authoring (CLI) | ✅ Done | `cli/commands/posts/create-from-markdown.ts` parses frontmatter + markdown |
+| Homepage post previews | ✅ Done | Paragraph-boundary truncation in `app/page-client.tsx` |
+| Image CLI copy/embed + optimization at creation | ✅ Done | `cli/commands/images/add.ts` copies image, runs sharp, writes manifest |
+| Image layout | ✅ Done | `public/posts/<slug>/img/<id>/manifest.json` with variants + blur |
+| Image pipeline E2E | ✅ Done | `e2e/homepage.test.ts` + `e2e/image-support.test.ts` verify `<picture>` rendering |
+| Build no longer runs optimizer | ✅ Done | `optimize:images` removed from `build` script |
 
-## 🟣 In Progress / Blocked
+## ✅ Done (P1)
 
 | Task | Status | Notes |
-|-------|--------|-------|
-| Image optimization viability | ✅ Fixed | PNG fixtures in `public/images/posts/**` replaced with valid binary images; `scripts/optimize-images.ts` now generates blur placeholders without `libpng read error` |
-| Image pipeline coverage | ❌ Missing | No E2E test proving `<img srcset>` generation from markdown on post pages |
+|------|--------|-------|
+| Database protection in tests | ✅ Done | Tests use `global.__TEST_DB__` (`:memory:`) via `__tests__/setup.ts` |
+| Full-text search backend | ✅ Done | FTS5 virtual table + triggers in `scripts/generate-static-data.ts` + `lib/posts.ts` (`searchPostsFTS`) |
+| Search UI integration | ✅ Done | `/search` page + header nav + E2E (`e2e/search.test.ts`) |
 
-## ⚠️ Known Gaps To Resume Next
+## 🟣 Done (P2)
 
-1. Decide exact build-time image strategy (CLI produces PNG/JPG; `optimize-images.ts` should read binaries and write `<img srcset>` markdown)
-2. Add E2E coverage for homepage previews + post detail image rendering
-3. Clean branch before merge: remove `.tmp-monitor-merge.js`, `app/posts/[slug]/page.tsx.rebase-backup`
+| Task | Status | Notes |
+|------|--------|-------|
+| CLI tool review (images) | ✅ Done | `cli/commands/images/add.ts` + `cli/commands/posts/create-from-markdown.ts` updated + tests |
+| Giscus comments | ✅ Done | `app/components/GiscusComments.tsx` mounted on post pages |
+| Reading time | ✅ Done | `calculateReadingTime()` in `app/posts/[slug]/page.tsx` |
+| TOC | ✅ Done | `app/components/TableOfContents.tsx` with scroll spy |
+| Skeleton loaders + empty states | ✅ Done | `app/components/SkeletonLoaders.tsx` wired in client UI |
+| Post series / collections | ✅ Done | Next/prev series nav in `app/posts/[slug]/page.tsx` |
+
+## ⚠️ Still To Do
+
+1. Mobile nav drawer (hamburger/drawer on `<lg` — not implemented yet)
+2. CLI tool review for posts/tags/series commands (error handling + coverage beyond images)
+3. Newsletter integration
+4. Privacy-friendly analytics (Plausible/Umami)
+5. Dependency audit & updates
+6. ESLint/code warning cleanup
 
 ---
 
 ### Resumption Checklist
 
-- [ ] Validate image fixtures are binary decodable (`sharp` can read them)
-- [ ] Run `node scripts/optimize-images.ts` manually and verify output files appear
-- [ ] Confirm build still runs end-to-end after fixture replacement
-- [ ] Add Playwright test: markdown image becomes optimized `<img>` in DOM
-- [ ] Finalize merge from `feat/p0-authoring-previews-images` into `master`
+- [x] Move image optimization to post creation
+- [x] Use slug-based image layout (`/posts/<slug>/img/<id>/`)
+- [x] Wire FTS5 search to UI
+- [ ] Mobile nav drawer
+- [ ] Newsletter integration
+- [ ] Privacy-friendly analytics
+- [ ] Dependency audit & updates
+- [ ] ESLint/code warning cleanup
 
 ---
 
@@ -45,7 +64,7 @@
 
 * Schema — `db/schema.ts`
 * Posts API — `lib/posts.ts`
-* Static Generation — `scripts/generate-static-data.js`
+* Static Generation — `scripts/generate-static-data.ts`
 * Feed/Sitemap — `scripts/generate-feed.js`, `next-sitemap.config.js`
-* CLI — `cli/blog.js`
+* CLI — `cli/index.ts` + `cli/commands/`
 * Tests — `__tests__/` (unit), `e2e/` (e2e)
