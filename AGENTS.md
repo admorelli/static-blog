@@ -100,6 +100,7 @@ All primary commands are now exposed through a `Makefile` for quick execution. U
 10. **Search (M10)** – Full client-side `/search` page, header nav integration, E2E coverage.
 11. **Newsletter (M11)** – Newsletter subscription page + CLI commands (list/add/remove).
 12. **CLI Hardening (M12)** – E2E tests for CLI commands + error handling improvements across posts/tags/images/series/newsletter.
+13. **Privacy Analytics (M13)** – Privacy-oriented analytics via `app/analytics.tsx` supporting Plausible/Umami with DNT respect.
 
 ---
 
@@ -121,7 +122,7 @@ All primary commands are now exposed through a `Makefile` for quick execution. U
 | **P2** | Mobile Nav Drawer + Skeleton Loaders + Empty States | ✅ Done |
 | **P2** | Post Series / Collections (ordered, next/prev nav) | ✅ Done |
 | **P2** | Newsletter Integration | ✅ Done |
-| **P3** | Privacy-Friendly Analytics (Plausible/Umami) | In Progress |
+| **P3** | Privacy-Friendly Analytics (Plausible/Umami) | ✅ Done |
 | **P4** | Dependency Audit & Updates | Planned |
 | **P4** | Code Warning Cleanup (ESLint) | Planned |
 

@@ -29,6 +29,7 @@ This document describes the high-level architecture and design decisions for the
 - **TanStack Query** – Client-side caching and background refetch for infinite scroll
 - **Vitest + Playwright** – Unit and end-to-end test coverage
 - **GitHub Actions** – CI/CD pipeline
+- **Privacy Analytics** – Optional Plausible/Umami injection with DNT respect
 
 ## Directory Roles
 
@@ -49,3 +50,4 @@ This document describes the high-level architecture and design decisions for the
 - **Static export** – Zero hosting cost, simple CDN deployment via GitHub Pages.
 - **Client-side search** – The `/search` page filters `posts-index.json` at runtime for instant results.
 - **CLI over web UI for authoring** – Keeps the runtime surface area small and the developer workflow fast.
+- **Privacy-first analytics** – Analytics are opt-in via environment variables, respect DNT, and support cookie-less providers.

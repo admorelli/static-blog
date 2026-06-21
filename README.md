@@ -58,6 +58,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - **Sitemap**: Auto-generated during build
 - **Newsletter**: Subscription page + CLI commands to manage subscribers
 - **Image Pipeline**: WebP + responsive srcset + blur placeholder, slug-based storage
+- **Privacy Analytics**: Plausible/Umami support with DNT respect and env-based configuration
 - **Comments**: Giscus integration via GitHub Discussions
 - **Reading Time + TOC**: Estimated reading time and scroll-spy table of contents on post pages
 - **Responsive Design**: Mobile-first, accessible design
@@ -143,6 +144,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - **M10 – Search** – Client-side `/search` page with header nav, filters `posts-index.json` by title/content, E2E coverage.
 - **M11 – Newsletter** – Newsletter subscription page + CLI commands (list/add/remove).
 - **M12 – CLI Hardening** – E2E tests for CLI commands + error handling improvements across posts/tags/images/series/newsletter.
+- **M13 – Privacy Analytics** – Privacy-oriented analytics (Plausible/Umami) with DNT respect and env-based configuration.
 
 ## 📝 Roadmap
 
@@ -158,7 +160,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - [x] Skeleton loaders + empty states
 - [x] Post series / collections
 - [x] Newsletter integration
-- [ ] Privacy-Friendly Analytics (Plausible/Umami)
+- [x] Privacy-Friendly Analytics (Plausible/Umami)
 - [ ] Mobile nav drawer (hamburger/drawer on `<lg`)
 - [ ] Dependency audit & updates
 - [ ] ESLint/code warning cleanup
