@@ -1,14 +1,10 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import testDb, { createPost, getPostBySlug, listPosts } from './test-db';
-import fs from 'fs';
-
-import path from 'path';
+import { resetDatabase } from '../utils/cleanup';
 
 // ─── Setup ────────────────────────────────────────────────────────────────────
 beforeEach(() => {
-  testDb.$client.exec('DELETE FROM post_tags');
-  testDb.$client.exec('DELETE FROM posts');
-  testDb.$client.exec('DELETE FROM tags');
+  resetDatabase(testDb);
 });
 
 // ─── Regression: Broken URL / slug handling ──────────────────────────────────
