@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createPost, getPostBySlug, listPosts } from './test-db';
-import { resetDatabase } from '../utils/cleanup';
+import { resetDatabase } from '../tests/utils/cleanup';
 
 const markdownSlug = 'markdown-images-backed-by-static-storage';
 const markdownImageToken = '/posts/test-markdown-post/img/1781684929043/max.webp';

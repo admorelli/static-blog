@@ -1,21 +1,9 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import testDb, {
-  tags,
-  postTags,
-  createPost,
-  updatePost,
-  deletePost,
-  getPostBySlug,
-  listPosts,
-  listAllTags,
-  listTagsForPost,
-  listPostsPaginated
-} from './test-db';
+import { describe, it, expect, beforeEach } from 'vitest';
+import testDb, { listAllTags, listTagsForPost, listPostsPaginated } from './test-db';
+import { resetDatabase } from '../tests/utils/cleanup';
 
-// ─── Setup ────────────────────────────────────────────────────────────────────
-
-beforeAll(async () => {
-  // Tables are created in test-db.ts setup
+beforeEach(() => {
+  resetDatabase(testDb);
 });
 
 afterAll(() => {

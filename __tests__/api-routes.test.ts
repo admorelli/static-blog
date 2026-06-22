@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterAll, beforeAll } from 'vitest';
 import testDb, { createPost, updatePost, deletePost, getPostBySlug } from './test-db';
-import { resetDatabase } from '../utils/cleanup';
+import { resetDatabase } from '../tests/utils/cleanup';
 
 async function setupDatabase() {
   // Tables are created in test-db.ts setup

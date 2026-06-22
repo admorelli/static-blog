@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import testDb, { createPost, getPostBySlug, listPosts } from './test-db';
-import { resetDatabase } from '../utils/cleanup';
+import { resetDatabase } from '../tests/utils/cleanup';
 
 // ─── Setup ────────────────────────────────────────────────────────────────────
 beforeEach(() => {

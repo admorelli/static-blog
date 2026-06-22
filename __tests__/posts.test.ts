@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterAll } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll, beforeAll } from 'vitest';
 import testDb, {
   posts,
   tags,
@@ -8,36 +8,50 @@ import testDb, {
   getPostBySlug,
   updatePost,
   deletePost,
-  listPostsPaginated,
-  listAllTags,
   listTagsForPost,
-  getPostsBySeries,
   getAllSeries,
   getNextInSeries,
   getPrevInSeries,
+  listPostsPaginated,
   searchPostsFTS,
 } from './test-db';
 import { eq } from 'drizzle-orm';
+import { resetDatabase } from '../tests/utils/cleanup';
 
-// Helper functions for series tests
-async function createSeriesPosts(seriesName: string, titles: string[]): Promise<number[]> {
-  const postIds: number[] = [];
-  for (let i = 0; i < titles.length; i++) {
-    const id = await createPost({
-      title: titles[i],
-      slug: `${seriesName.toLowerCase().replace(/\s+/g, '-')}-${i + 1}`,
-      content: `Content for ${titles[i]}`,
-    });
-    await testDb.update(posts).set({ series: seriesName, series_order: i + 1 }).where(eq(posts.id, id));
-    postIds.push(id);
-  }
-  return postIds;
+async function setupDatabase() {
+  // Tables are created in test-db.ts setup
 }
+
+function createSeriesPosts(seriesName: string, titles: string[]): Promise<number[]> {
+  return Promise.all(
+    titles.map(async (title, index) => {
+      const id = await createPost({
+        title,
+        slug: `${seriesName.toLowerCase().replace(/\s+/g, '-')}-${index + 1}`,
+        content: `Content for ${title}`,
+      });
+      await testDb.update(posts).set({ series: seriesName, series_order: index + 1 }).where(eq(posts.id, id));
+      return id;
+    })
+  );
+}
+
+beforeAll(async () => {
+  await setupDatabase();
+});
+
+beforeEach(async () => {
+  await resetDatabase();
+});
+
+afterAll(async () => {
+  await resetDatabase();
+});
 
 describe('listPosts', () => {
   beforeEach(async () => {
     // Clear posts table
-    testDb.$client.exec('DELETE FROM posts');
+    await resetDatabase();
   });
 
   it('returns all posts ordered by created_at descending', async () => {
@@ -65,7 +79,7 @@ describe('listPosts', () => {
 
 describe('getPostBySlug', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM posts');
+    await resetDatabase();
   });
 
   it('returns post when found', async () => {
@@ -84,7 +98,7 @@ describe('getPostBySlug', () => {
 
 describe('createPost', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM posts');
+    await resetDatabase();
   });
 
   it('inserts post with auto-generated slug and timestamp', async () => {
@@ -104,7 +118,7 @@ describe('createPost', () => {
 
 describe('updatePost', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM posts');
+    await resetDatabase();
   });
 
   it('updates post with provided fields', async () => {
@@ -120,7 +134,7 @@ describe('updatePost', () => {
 
 describe('deletePost', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM posts');
+    await resetDatabase();
   });
 
   it('deletes post by id', async () => {
@@ -135,7 +149,7 @@ describe('deletePost', () => {
 
 describe('getPostsBySeries', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM posts');
+    await resetDatabase();
   });
 
   it('returns posts in series ordered by series_order', async () => {
@@ -160,7 +174,7 @@ describe('getPostsBySeries', () => {
 
 describe('getAllSeries', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM posts');
+    await resetDatabase();
   });
 
   it('returns unique series names sorted', async () => {
@@ -183,7 +197,7 @@ describe('getAllSeries', () => {
 
 describe('getNextInSeries', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM posts');
+    await resetDatabase();
   });
 
   it('returns next post in series', async () => {
@@ -209,7 +223,7 @@ describe('getNextInSeries', () => {
 
 describe('getPrevInSeries', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM posts');
+    await resetDatabase();
   });
 
   it('returns previous post in series', async () => {
@@ -235,8 +249,7 @@ describe('getPrevInSeries', () => {
 
 describe('listAllTags', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM tags');
-    testDb.$client.exec('DELETE FROM post_tags');
+    await resetDatabase();
   });
 
   it('returns all tags ordered by name', async () => {
@@ -251,9 +264,7 @@ describe('listAllTags', () => {
 
 describe('listPostsPaginated', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM posts');
-    testDb.$client.exec('DELETE FROM post_tags');
-    testDb.$client.exec('DELETE FROM tags');
+    await resetDatabase();
   });
 
   it('returns paginated posts with total count', async () => {
@@ -315,9 +326,7 @@ describe('listPostsPaginated', () => {
 
 describe('searchPostsFTS', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM posts');
-    testDb.$client.exec('DELETE FROM post_tags');
-    testDb.$client.exec('DELETE FROM tags');
+    await resetDatabase();
     // Recreate FTS table
     testDb.$client.exec(`
       CREATE VIRTUAL TABLE IF NOT EXISTS posts_fts USING fts5(
@@ -345,9 +354,7 @@ describe('searchPostsFTS', () => {
 
 describe('listTagsForPost', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM tags');
-    testDb.$client.exec('DELETE FROM post_tags');
-    testDb.$client.exec('DELETE FROM posts');
+    await resetDatabase();
   });
 
   it('returns tags for a post', async () => {
@@ -379,8 +386,7 @@ describe('listTagsForPost', () => {
 describe('series navigation integration', () => {
   beforeEach(async () => {
     // Delete in correct order: post_tags first (FK), then posts
-    testDb.$client.exec('DELETE FROM post_tags');
-    testDb.$client.exec('DELETE FROM posts');
+    await resetDatabase();
   });
 
   it('provides correct next/prev navigation for middle post', async () => {
@@ -416,16 +422,4 @@ describe('series navigation integration', () => {
     expect(lastPrev).toBeDefined();
     expect(lastPrev!.title).toBe('Middle');
   });
-});
-
-// Helper to reset test DB
-async function resetDatabase() {
-  // Delete in order to respect foreign keys
-  testDb.$client.exec('DELETE FROM post_tags');
-  testDb.$client.exec('DELETE FROM posts');
-  testDb.$client.exec('DELETE FROM tags');
-}
-
-afterAll(async () => {
-  await resetDatabase();
 });
