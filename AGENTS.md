@@ -147,6 +147,47 @@ All primary commands are now exposed through a `Makefile` for quick execution. U
 
 ---
 
+## 🔍 Code Quality & Complexity Analysis
+
+The baseline was measured with **jscpd (50+ token threshold)**:
+- Files analyzed: 57 (app, lib, db, cli)
+- Total lines: 4,292
+- Clones found: 16
+- Duplicated lines: 152 (3.5%)
+- Duplicated tokens: 1,260 (4.9%)
+
+Detailed findings and recommendations are documented in **`CODE_QUALITY_ANALYSIS.md`**.
+
+### Key Issues
+
+1. **Production vs test logic mirror**
+   `__tests__/test-db.ts` reimplements ~80% of `lib/posts.ts` + `lib/tags.ts`. Bug fixes and schema changes must be applied in two places.
+
+2. **Test cleanup repetition**
+   The 3-line SQL cleanup (`DELETE FROM post_tags; DELETE FROM posts; DELETE FROM tags;`) appears ~25 times across test files.
+
+3. **CLI/script duplication**
+   `cli/commands/posts/create-from-markdown.ts` and `scripts/generate-static-data.ts` both contain frontmatter parsing, markdown-to-HTML conversion, tag upsert, and slug/date normalization.
+
+4. **Type escape hatches**
+   `lib/tags.ts listPostsPaginated` uses `any` for query builders while `test-db.ts` avoids it, indicating an abstraction gap.
+
+5. **Component size**
+   `app/page-client.tsx` is ~278 lines mixing search state, tag filtering, infinite scroll, and rendering.
+
+### Priority Actions
+
+| Priority | Action | Target |
+|----------|--------|--------|
+| **P0** | Remove CRUD duplication in `__tests__/test-db.ts` | Import from `lib/` instead of mirroring |
+| **P0** | Add `tests/utils/cleanup.ts` with shared DB cleanup | Replace 25+ inline DELETE blocks |
+| **P1** | Create `lib/post-authoring.ts` | Reuse between CLI & build scripts |
+| **P1** | Unify pagination query builder | Remove `any` types, consistent API |
+| **P2** | Extract hooks from `app/page-client.tsx` | Easier testing, smaller functions |
+| **P2** | Extract post/HTML processing to `lib/render.ts` | Share between page and image enhancement |
+
+---
+
 ## 🔄 Contribution Workflow
 
 When working on a new feature or fix, follow this checklist before pushing to `master` or opening a PR:
