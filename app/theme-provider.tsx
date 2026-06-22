@@ -22,7 +22,6 @@ function getInitialTheme(): Theme {
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => getInitialTheme());
-  const [mounted, setMounted] = useState(false);
 
   const setThemeValue = (newTheme: Theme) => {
     setTheme(newTheme);
@@ -41,7 +40,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const initialTheme = getInitialTheme();
     setTheme(initialTheme);
     document.documentElement.classList.toggle("dark", initialTheme === "dark");
-    setMounted(true);
   }, []);
 
   // Always provide the context, even during SSR/SSG

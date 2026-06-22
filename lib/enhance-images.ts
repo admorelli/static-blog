@@ -5,7 +5,8 @@ import path from 'path';
  * Post-process HTML to enhance images with responsive attributes
  * Finds optimized image versions and adds srcset, sizes, loading="lazy", blur placeholder
  */
-export function enhanceImages(html: string, _baseUrl: string = ''): string {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function enhanceImages(html: string, _baseUrl?: string): string {
   // Match <img> tags and enhance them
   // Pattern: <img src="/images/posts/slug/image.png" ...>
   const imgRegex = /<img\s+([^>]*?)src=["']([^"']+)["']([^>]*?)>/gi;
@@ -83,7 +84,7 @@ export function enhanceImages(html: string, _baseUrl: string = ''): string {
  * Process markdown content with enhanced images
  * Use this after marked.parse() to add responsive image attributes
  */
-export function processMarkdownImages(html: string, _baseUrl: string = ''): string {
+export function processMarkdownImages(html: string, _baseUrl?: string): string {
   if (typeof window !== 'undefined') {
     // Client-side: can only add loading="lazy" if not already present
     return html.replace(/<img\s+([^>]*?)>/gi, (match) => {

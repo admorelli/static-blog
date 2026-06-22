@@ -26,63 +26,12 @@ function parseContent(rawContent: string): string {
   return marked.parse(trimmed, { async: false }) as string;
 }
 
-/**
- * Truncates HTML at a safe boundary (not in the middle of a tag)
- * Preserves valid HTML structure
- */
-function truncateHtml(html: string, maxChars: number): string {
-  if (html.length <= maxChars) return html;
-
-  // Find the last complete tag before maxChars
-  let truncated = html.slice(0, maxChars);
-  
-  // Find the last complete tag end
-  const lastTagEnd = truncated.lastIndexOf('>');
-  const lastTagStart = truncated.lastIndexOf('<');
-  
-  // If we're in the middle of a tag, cut before the tag
-  if (lastTagStart > lastTagEnd) {
-    truncated = truncated.slice(0, lastTagStart);
+function getBasePath(): string {
+  if (typeof window !== "undefined") {
+    const meta = document.querySelector('meta[name="next-base-path"]');
+    if (meta) return meta.getAttribute("content") || "";
   }
-  
-  // Close any unclosed tags by finding open tags and closing them
-  // Simple approach: count opening vs closing tags for common inline elements
-  const openTags = ['<p>', '<div>', '<span>', '<strong>', '<em>', '<b>', '<i>', '<u>', '<a>', '<code>', '<pre>', '<ul>', '<ol>', '<li>'];
-  const closeTags = ['</p>', '</div>', '</span>', '</strong>', '</em>', '</b>', '</i>', '</u>', '</a>', '</code>', '</pre>', '</ul>', '</ol>', '</li>'];
-  
-  let result = truncated;
-  
-  // For each opening tag, count occurrences and close if needed
-  openTags.forEach((openTag, index) => {
-    const openCount = (truncated.match(new RegExp(openTag.replace('<', '\\<').replace('>', '\\>'), 'g')) || []).length;
-    const closeTag = closeTags[index];
-    const closeCount = (truncated.match(new RegExp(closeTag.replace('<', '\\<').replace('/', '\\/').replace('>', '\\>'), 'g')) || []).length;
-    
-    // Add closing tags if needed
-    if (openCount > closeCount) {
-      result += closeTag.repeat(openCount - closeCount);
-    }
-  });
-  
-  return result + '...';
-}
-
-function stripHtml(html: string): string {
-  const withoutTags = html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
-  // Decode common HTML entities
-  return withoutTags
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&mdash;/g, '—')
-    .replace(/&ndash;/g, '–')
-    .replace(/&lsquo;/g, '\u2018')
-    .replace(/&rsquo;/g, '\u2019')
-    .replace(/&ldquo;/g, '\u201c')
-    .replace(/&rdquo;/g, '\u201d');
+  return "";
 }
 
 function getExcerpt(rawContent: string, maxChars: number = 500): string {
@@ -121,14 +70,6 @@ function getExcerpt(rawContent: string, maxChars: number = 500): string {
   }
 
   return selected.join('');
-}
-
-function getBasePath(): string {
-  if (typeof window !== "undefined") {
-    const meta = document.querySelector('meta[name="next-base-path"]');
-    if (meta) return meta.getAttribute("content") || "";
-  }
-  return "";
 }
 
 function TagFilter() {

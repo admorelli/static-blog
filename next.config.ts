@@ -9,13 +9,16 @@ const assetPrefix = repoName ? `/${repoName}/` : '';
 const isDev = process.env.NODE_ENV === 'development';
 
 const nextConfig: NextConfig = {
-  output: isDev ? undefined : 'export',
-  trailingSlash: true,
-  images: {
-    unoptimized: true,
-  },
-  basePath,
-  assetPrefix,
+output: isDev ? undefined : 'export',
+trailingSlash: true,
+images: {
+  unoptimized: true,
+},
+basePath,
+assetPrefix,
+turbopack: {
+  root: __dirname,
+},
 };
 
 export default nextConfig;

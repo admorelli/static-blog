@@ -34,12 +34,6 @@ export function Header() {
   const theme = context?.theme ?? "light";
   const toggleTheme = context?.toggleTheme;
 
-  const handleToggle = () => {
-    if (typeof toggleTheme === "function") {
-      toggleTheme();
-    }
-  };
-
   return (
     <header className="border-b border-card-border bg-card-bg/80 backdrop-blur-sm sticky top-0 z-50">
       <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">

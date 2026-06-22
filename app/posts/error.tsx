@@ -3,7 +3,8 @@
 import React from 'react';
 
 export default function Error({
-  error: _error,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  error,
   reset,
 }: {
   error: Error & { digest?: string };

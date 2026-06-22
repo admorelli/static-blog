@@ -9,7 +9,7 @@ interface TocItem {
 }
 
 export function TableOfContents({ content }: { content: string }) {
-  const [tocItems, setTocItems] = useState<TocItem[]>(() => {
+  const [tocItems] = useState<TocItem[]>(() => {
     if (typeof window === 'undefined') return [];
     const headings: TocItem[] = [];
     const tempDiv = document.createElement('div');

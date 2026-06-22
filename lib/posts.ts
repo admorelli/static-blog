@@ -1,5 +1,5 @@
 import db from '../db/db';
-import { posts, postTags, postsFts } from '../db/schema';
+import { posts, postTags } from '../db/schema';
 import { eq, desc, or, like } from 'drizzle-orm';
 
 export type Post = {

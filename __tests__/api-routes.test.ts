@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, afterAll, beforeAll } from 'vitest';
-import testDb, { createPost, updatePost, deletePost, getPostBySlug, listAllTags, listTagsForPost, listPostsPaginated } from './test-db';
-import { posts, tags, postTags } from '../db/schema';
+import testDb, { createPost, updatePost, deletePost, getPostBySlug } from './test-db';
 
 // Helper to reset test DB before each test suite
 async function setupDatabase() {

@@ -1,17 +1,10 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import testDb, { createPost, getPostBySlug, listPosts } from './test-db';
 import fs from 'fs';
+
 import path from 'path';
 
 // ─── Setup ────────────────────────────────────────────────────────────────────
-beforeAll(() => {
-  // Tables are created in test-db.ts setup
-});
-
-afterAll(() => {
-  // Cleanup handled in test-db.ts
-});
-
 beforeEach(() => {
   testDb.$client.exec('DELETE FROM post_tags');
   testDb.$client.exec('DELETE FROM posts');
@@ -78,7 +71,8 @@ describe('Regression: Broken URL / slug handling', () => {
 // ─── Regression: Header/Navigation on all pages ─────────────────────────────
 describe('Regression: Header navigation present on all pages', () => {
   it('should have posts available for homepage', async () => {
-    const post = await createPost({ title: 'Test', content: 'Content' });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const _post = await createPost({ title: 'Test', content: 'Content' });
     const posts = await listPosts();
     expect(posts.length).toBeGreaterThanOrEqual(1);
     // Header is a React component - existence tested via E2E
