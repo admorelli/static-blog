@@ -4,7 +4,7 @@ import betterSqlite3 from 'better-sqlite3';
 type SQLiteDb = ReturnType<typeof drizzle>;
 
 declare global {
-  // eslint-disable-next-line no-var
+   
   var __DB__: SQLiteDb | undefined;
 }
 

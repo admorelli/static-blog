@@ -25,7 +25,7 @@ module.exports = {
       alternateRefs: config.alternateRefs ?? [],
     };
   },
-  additionalPaths: async (_config) => {
+  additionalPaths: async () => {
     // Read posts from generated static data
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const fs = require('fs');

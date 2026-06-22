@@ -1,8 +1,15 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import testDb, { 
-  posts, tags, postTags, 
-  createPost, updatePost, deletePost, getPostBySlug, 
-  listPosts, listAllTags, listTagsForPost, listPostsPaginated 
+import testDb, {
+  tags,
+  postTags,
+  createPost,
+  updatePost,
+  deletePost,
+  getPostBySlug,
+  listPosts,
+  listAllTags,
+  listTagsForPost,
+  listPostsPaginated
 } from './test-db';
 
 // ─── Setup ────────────────────────────────────────────────────────────────────

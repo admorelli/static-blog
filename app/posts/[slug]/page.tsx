@@ -2,8 +2,7 @@ import { notFound } from 'next/navigation';
 import { Header } from '@/app/header';
 import { TableOfContents } from '@/app/components/TableOfContents';
 import { GiscusComments } from '@/app/components/GiscusComments';
-import { getPostsBySeries, getPostBySlug, getNextInSeries, getPrevInSeries } from '@/lib/posts';
-import { Metadata } from 'next';
+import { getPostsBySeries, getNextInSeries, getPrevInSeries } from '@/lib/posts';
 import Link from 'next/link';
 import postsIndex from '@/public/data/posts-index.json';
 import matter from 'gray-matter';
@@ -57,33 +56,6 @@ type PostImage = {
   height: number | null;
   createdAt: string;
 };
-
-function parseMarkdownImageTokens(html: string, baseDir: string, imageRecords: PostImage[]) {
-  return html.replace(/<img([^>]*?)src="([^"]+)"([^>]*?)>/g, (match, before, rawSrc, after) => {
-    if (!rawSrc.startsWith('/images/posts/')) {
-      return match;
-    }
-
-    const fileFromToken = decodeURIComponent(rawSrc.split('/').pop() || '');
-    const byTokens = imageRecords.filter((item) => item.original === fileFromToken);
-    const candidate = byTokens[0];
-    if (!candidate) {
-      return match;
-    }
-
-    const recordedPath = path.posix.join(baseDir, candidate.src);
-    const finalSrc = rawSrc.endsWith(path.posix.join('posts', candidate.original))
-      ? recordedPath
-      : recordedPath;
-
-    const widthAttr = candidate.width ? ` width="${candidate.width}"` : '';
-    const heightAttr = candidate.height ? ` height="${candidate.height}"` : '';
-    const baseAltMatch = (before + after).match(/alt="([^"]*)"/);
-    const altText = baseAltMatch ? baseAltMatch[1] : '';
-
-    return `<picture><source type="image/webp" srcset="${candidate.srcset}" sizes="${candidate.sizes}"><img${before} src="${finalSrc}"${heightAttr}${widthAttr} alt="${altText}" style="background-image:url('${candidate.blurDataUri}');background-size:cover;background-position:center;" class="blur-up"${after}></picture>`;
-  });
-}
 
 function loadPostImages(slug: string): PostImage[] {
   const imgDir = path.join(process.cwd(), 'public', 'posts', slug, 'img');
@@ -222,7 +194,6 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://your-username.github.io/static_blog';
   const postTitle = title || post.title;
-  const postDescription = description || `Read ${postTitle} on Static Blog`;
 
   const jsonLd = generateJsonLd(post, { title, date, tags, description, content }, baseUrl);
 

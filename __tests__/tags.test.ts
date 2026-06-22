@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import testDb, { posts, tags, postTags, listAllTags, listTagsForPost, listPostsPaginated, createPost } from './test-db';
+import testDb, { posts, tags, postTags, listAllTags, listTagsForPost, listPostsPaginated } from './test-db';
 
 let postId1: number;
 let postId2: number;

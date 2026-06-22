@@ -1,6 +1,4 @@
 // Test database helper - uses the global test database initialized in setup.ts
-import { drizzle } from 'drizzle-orm/better-sqlite3';
-import betterSqlite3 from 'better-sqlite3';
 import { posts, tags, postTags } from '../db/schema';
 import { eq, desc, like, or, and, inArray } from 'drizzle-orm';
 

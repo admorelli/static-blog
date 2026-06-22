@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll } from 'vitest';
 import testDb, {
   posts,
   tags,
@@ -96,7 +96,7 @@ describe('createPost', () => {
   });
 
   it('generates slug from title if not provided', async () => {
-    const id = await createPost({ title: 'Auto Slug Post', content: 'Content' });
+    await createPost({ title: 'Auto Slug Post', content: 'Content' });
     const post = await getPostBySlug('auto-slug-post');
     expect(post).toBeDefined();
   });
@@ -416,4 +416,16 @@ describe('series navigation integration', () => {
     expect(lastPrev).toBeDefined();
     expect(lastPrev!.title).toBe('Middle');
   });
+});
+
+// Helper to reset test DB
+async function resetDatabase() {
+  // Delete in order to respect foreign keys
+  testDb.$client.exec('DELETE FROM post_tags');
+  testDb.$client.exec('DELETE FROM posts');
+  testDb.$client.exec('DELETE FROM tags');
+}
+
+afterAll(async () => {
+  await resetDatabase();
 });
