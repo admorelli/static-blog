@@ -44,16 +44,13 @@ export async function listPostsPaginated({
   search?: string;
   tags?: number[];
 }): Promise<{ posts: PostEntity[]; total: number }> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let query: any = db.select().from(posts);
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let condition: any = undefined;
+  let query = db.select().from(posts);
+  let condition: ReturnType<typeof and> | ReturnType<typeof or> | undefined;
 
   if (search) {
     condition = or(
       like(posts.title, `%${search}%`),
-      like(posts.content, `%${search}%`)
+      like(posts.content, `%${search}%`),
     );
   }
 
@@ -74,8 +71,7 @@ export async function listPostsPaginated({
     .limit(limit)
     .execute();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let countQuery: any = db.select({ count: count(posts.id) }).from(posts);
+  let countQuery = db.select({ count: count(posts.id) }).from(posts);
   if (tagIds && tagIds.length) {
     countQuery = countQuery.innerJoin(postTags, eq(postTags.postId, posts.id));
   }

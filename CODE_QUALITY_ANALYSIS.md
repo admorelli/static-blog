@@ -1,5 +1,29 @@
 # Code Quality & Complexity Analysis
-Generated: 2026-06-21
+Current date from last cleanup pass: 2026-06-23.
+
+## Current State
+
+Completed:
+- Shared cleanup helper added at `tests/utils/cleanup.ts`
+- Cleanup migrated and verified in these test files:
+  - `__tests__/edge-cases.test.ts`
+  - `__tests__/regression.test.ts`
+  - `__tests__/posts.test.ts`
+  - `__tests__/api-routes.test.ts`
+  - `__tests__/authoring-previews-images.test.ts`
+
+Pending / next up:
+- Revisit hook extraction if `page-client.tsx` grows again after shared render helpers land
+
+Notes:
+- `make test-unit` is the current reliable test command; `make test` is not a valid target in the active Makefile.
+- Lint currently has one eslint warning in this cleanup pass: `__tests__/edge-cases.test.ts` reports `posts is defined but never used`.
+
+## Next Steps
+
+1. Resume cleanup-2 coverage, completing any remaining test files.
+2. Review tags pagination + page-client refactor per P1/P2 priorities from the project plan.
+3. Re-run `make test-unit` after each code-quality change and keep `CODE_QUALITY_ANALYSIS.md` current.
 
 ## Executive Summary
 

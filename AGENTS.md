@@ -181,7 +181,8 @@ Detailed findings and recommendations are documented in **`CODE_QUALITY_ANALYSIS
 |----------|--------|--------|
 | **P0** | Remove CRUD duplication in `__tests__/test-db.ts` | Import from `lib/` instead of mirroring |
 | **P0** | Add `tests/utils/cleanup.ts` with shared DB cleanup | Replace 25+ inline DELETE blocks |
-| **P1** | Create `lib/post-authoring.ts` | Reuse between CLI & build scripts |
+| **P1** | Create `lib/post-authoring.ts` | ✅ Done + CLI wired to shared helpers |
+
 | **P1** | Unify pagination query builder | Remove `any` types, consistent API |
 | **P2** | Extract hooks from `app/page-client.tsx` | Easier testing, smaller functions |
 | **P2** | Extract post/HTML processing to `lib/render.ts` | Share between page and image enhancement |

@@ -3,10 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Tag } from "@/lib/tags";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import matter from "gray-matter";
-import { marked } from "marked";
-
-export const dynamic = "force-dynamic";
+import { getExcerpt } from "@/lib/render";
 
 interface Post {
   id: number;
@@ -18,58 +15,12 @@ interface Post {
   series_order: number | null;
 }
 
-function parseContent(rawContent: string): string {
-  const { content: markdownBody } = matter(rawContent);
-  const trimmed = markdownBody.trim();
-  if (!trimmed) return '';
-  if (trimmed.startsWith('<')) return trimmed;
-  return marked.parse(trimmed, { async: false }) as string;
-}
-
 function getBasePath(): string {
   if (typeof window !== "undefined") {
     const meta = document.querySelector('meta[name="next-base-path"]');
     if (meta) return meta.getAttribute("content") || "";
   }
   return "";
-}
-
-function getExcerpt(rawContent: string, maxChars: number = 500): string {
-  const htmlContent = parseContent(rawContent);
-
-  if (htmlContent.length <= maxChars) {
-    return htmlContent;
-  }
-
-  const paragraphs = [...htmlContent.matchAll(/<p[^>]*>([\s\S]*?)<\/p>/g)];
-  const selected: string[] = [];
-  let length = 0;
-
-  for (const [, body] of paragraphs) {
-    const paragraph = `<p>${body}</p>`;
-    const projected = length + paragraph.length;
-
-    if (projected > maxChars) {
-      break;
-    }
-
-    selected.push(paragraph);
-    length = projected;
-  }
-
-  if (!selected.length) {
-    const cut = htmlContent.slice(0, maxChars);
-    const lastStart = cut.lastIndexOf('<');
-    const lastEnd = cut.lastIndexOf('>');
-    const safeCut = lastStart > lastEnd ? cut.slice(0, lastStart) : cut;
-    return safeCut + '...';
-  }
-
-  if (length < htmlContent.length) {
-    selected.push('...');
-  }
-
-  return selected.join('');
 }
 
 function TagFilter() {
