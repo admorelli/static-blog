@@ -2,7 +2,6 @@
 import { posts, tags, postTags } from '../db/schema';
 import { eq, desc, like, or, and, inArray } from 'drizzle-orm';
 import type { Post } from '../lib/posts';
-import type { Tag } from '../lib/tags';
 
 // Get the test database from global setup
 function getTestDb() {
@@ -12,9 +11,8 @@ function getTestDb() {
 
 const testDb = getTestDb();
 
-// Re-export canonical types from production modules so tests stay aligned.
+// Re-export canonical types so tests stay aligned with production modules.
 export type { Post } from '../lib/posts';
-export type { Tag } from '../lib/tags';
 
 // --- Posts functions (mirroring lib/posts.ts) ---
 
@@ -81,19 +79,19 @@ export async function deletePost(id: number): Promise<void> {
 // --- Tags functions (mirroring lib/tags.ts) ---
 
 /** Get all tags ordered by name */
-export async function listAllTags(): Promise<Tag[]> {
+export async function listAllTags(): Promise<{ id: number; name: string }[]> {
   const rows = await testDb.select().from(tags).orderBy(tags.name);
-  return rows as Tag[];
+  return rows as { id: number; name: string }[];
 }
 
 /** Get tags for a post */
-export async function listTagsForPost(postId: number): Promise<Tag[]> {
+export async function listTagsForPost(postId: number): Promise<{ id: number; name: string }[]> {
   const rows = await testDb
     .select({ id: tags.id, name: tags.name })
     .from(postTags)
     .innerJoin(tags, eq(postTags.tagId, tags.id))
     .where(eq(postTags.postId, postId));
-  return rows as Tag[];
+  return rows as { id: number; name: string }[];
 }
 
 export async function listPostsPaginated(options: {
@@ -139,45 +137,9 @@ export async function listPostsPaginated(options: {
   };
 }
 
-/** Full-text search using FTS5 */
-export async function searchPostsFTS(query: string, limit: number = 10): Promise<Post[]> {
-  if (!query.trim()) return [];
-
-  try {
-    const rows = await testDb.$client.prepare(`
-      SELECT p.id, p.title, p.slug, p.content, p.created_at
-      FROM posts p
-      INNER JOIN posts_fts f ON p.id = f.id
-      WHERE posts_fts MATCH ?
-      LIMIT ?
-    `).all(query, limit);
-    return rows as Post[];
-  } catch (e) {
-    console.warn('FTS5 search failed, falling back to LIKE search:', e);
-    return searchPostsFallback(query, limit);
-  }
-}
-
-/** Fallback search using LIKE */
-async function searchPostsFallback(query: string, limit: number = 10): Promise<Post[]> {
-  const searchTerm = `%${query}%`;
-  const rows = await testDb
-    .select()
-    .from(posts)
-    .where(
-      or(
-        like(posts.title, searchTerm),
-        like(posts.content, searchTerm),
-      ),
-    )
-    .orderBy(desc(posts.created_at))
-    .limit(limit);
-  return rows as Post[];
-}
-
 // --- Series functions ---
 
-/** Get all posts in a series ordered by series_order */
+// Get all posts in a series ordered by series_order
 export async function getPostsBySeries(seriesName: string): Promise<Post[]> {
   const rows = await testDb
     .select()
@@ -187,7 +149,7 @@ export async function getPostsBySeries(seriesName: string): Promise<Post[]> {
   return rows as Post[];
 }
 
-/** Get all unique series names */
+// Get all unique series names
 export async function getAllSeries(): Promise<string[]> {
   const rowsAll = await testDb
     .select({ series: posts.series })
@@ -195,12 +157,12 @@ export async function getAllSeries(): Promise<string[]> {
   const series = rowsAll
     .map((r: { series: string | null }) => r.series)
     .filter((s: string | null): s is string => s !== null && s !== undefined && s !== '')
-    .filter((s, i, arr) => arr.indexOf(s) === i)
+    .filter((s: string, i: number, arr: readonly string[]) => arr.indexOf(s) === i)
     .sort();
   return series;
 }
 
-/** Get next post in series */
+// Get next post in series
 export async function getNextInSeries(series: string, currentOrder: number): Promise<Post | undefined> {
   const rows = await testDb
     .select()
@@ -212,7 +174,7 @@ export async function getNextInSeries(series: string, currentOrder: number): Pro
   return next;
 }
 
-/** Get previous post in series */
+// Get previous post in series
 export async function getPrevInSeries(series: string, currentOrder: number): Promise<Post | undefined> {
   const rows = await testDb
     .select()
@@ -228,5 +190,3 @@ export async function getPrevInSeries(series: string, currentOrder: number): Pro
 export { posts, tags, postTags };
 
 export default testDb;
-
-

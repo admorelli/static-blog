@@ -1,5 +1,5 @@
 import db from '../db/db';
-import { tags, postTags, posts } from '../db/schema';
+import { tags, postTags, posts, type Post } from '../db/schema';
 import { count, like, inArray, eq, or, and } from 'drizzle-orm';
 import { desc } from 'drizzle-orm';
 
@@ -8,13 +8,7 @@ export type Tag = {
   name: string;
 };
 
-export type PostEntity = {
-  id: number;
-  title: string;
-  slug: string;
-  content: string;
-  created_at: number;
-};
+export type PostEntity = Pick<Post, 'id' | 'title' | 'slug' | 'content' | 'created_at'>;
 
 export async function listAllTags(): Promise<Tag[]> {
   return await db
