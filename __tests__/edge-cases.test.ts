@@ -12,6 +12,7 @@ import testDb, {
   updatePost,
 } from './test-db';
 import { resetDatabase } from '../tests/utils/cleanup';
+import { insertPost } from '../tests/utils/post-test-utils';
 
 beforeEach(() => {
   resetDatabase(testDb);
@@ -322,11 +323,11 @@ describe('Search and filter edge cases', () => {
   });
 
   it('should handle pagination at boundary', async () => {
-    // Use raw insert with explicit timestamps for predictable ordering
+    // Use ordered deterministic inserts for predictable ordering
     const baseTime = Math.floor(Date.now() / 1000);
-    testDb.$client.exec(`INSERT INTO posts (title, slug, content, created_at) VALUES ('P3', 'pag-3', 'P3', ${baseTime})`);
-    testDb.$client.exec(`INSERT INTO posts (title, slug, content, created_at) VALUES ('P2', 'pag-2', 'P2', ${baseTime - 1})`);
-    testDb.$client.exec(`INSERT INTO posts (title, slug, content, created_at) VALUES ('P1', 'pag-1', 'P1', ${baseTime - 2})`);
+    await insertPost(testDb, { title: 'P3', slug: 'pag-3', content: 'P3', created_at: baseTime });
+    await insertPost(testDb, { title: 'P2', slug: 'pag-2', content: 'P2', created_at: baseTime - 1 });
+    await insertPost(testDb, { title: 'P1', slug: 'pag-1', content: 'P1', created_at: baseTime - 2 });
 
     const first = await listPostsPaginated({ offset: 0, limit: 1 });
     expect(first.posts.length).toBe(1);

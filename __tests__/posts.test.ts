@@ -18,7 +18,8 @@ import testDb, {
   getPostsBySeries,
 } from './test-db';
 import { eq } from 'drizzle-orm';
-import { resetDatabase, recreatePostsFts } from '../tests/utils/cleanup';
+import { resetDatabase } from '../tests/utils/cleanup';
+import { insertPost, recreatePostsFts } from '../tests/utils/post-test-utils';
 
 async function setupDatabase() {
   // Tables are created in test-db.ts setup
@@ -57,10 +58,10 @@ describe('listPosts', () => {
   });
 
   it('returns all posts ordered by created_at descending', async () => {
-    // Use raw inserts with explicit timestamps for predictable ordering
+    // Use ordered deterministic inserts for predictable ordering
     const baseTime = Math.floor(Date.now() / 1000);
-    testDb.$client.exec(`INSERT INTO posts (title, slug, content, created_at) VALUES ('First', 'first-post', 'C1', ${baseTime - 10})`);
-    testDb.$client.exec(`INSERT INTO posts (title, slug, content, created_at) VALUES ('Second', 'second-post', 'C2', ${baseTime})`);
+    await insertPost(testDb, { title: 'Second', slug: 'second-post', content: 'C2', created_at: baseTime });
+    await insertPost(testDb, { title: 'First', slug: 'first-post', content: 'C1', created_at: baseTime - 10 });
 
     const result = await listPosts();
     // Posts are ordered by newest first (desc on created_at)
