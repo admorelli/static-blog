@@ -179,7 +179,7 @@ Detailed findings and recommendations are documented in **`CODE_QUALITY_ANALYSIS
 
 | Priority | Action | Target |
 |----------|--------|--------|
-| **P0** | Remove CRUD duplication in `__tests__/test-db.ts` | Import from `lib/` instead of mirroring |
+| **P0** | Remove CRUD duplication in `__tests__/test-db.ts` | Import canonical data shapes from `lib/` and keep local only |
 | **P0** | Add `tests/utils/cleanup.ts` with shared DB cleanup | Replace 25+ inline DELETE blocks |
 | **P1** | Create `lib/post-authoring.ts` | ✅ Done + CLI wired to shared helpers |
 

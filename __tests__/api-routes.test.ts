@@ -11,11 +11,11 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  await resetDatabase();
+  await resetDatabase(testDb);
 });
 
 afterAll(async () => {
-  await resetDatabase();
+  await resetDatabase(testDb);
 });
 
 describe('Posts library API', () => {

@@ -1,5 +1,16 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import testDb, { listAllTags, listTagsForPost, listPostsPaginated } from './test-db';
+import testDb, {
+  tags,
+  postTags,
+  listAllTags,
+  listTagsForPost,
+  listPostsPaginated,
+  listPosts,
+  createPost,
+  getPostBySlug,
+  deletePost,
+  updatePost,
+} from './test-db';
 import { resetDatabase } from '../tests/utils/cleanup';
 
 beforeEach(() => {
@@ -71,9 +82,7 @@ describe('Unicode and special characters', () => {
     expect(foundTags[0].name).toBe('c++');
 
     // Cleanup in FK order
-    testDb.$client.exec('DELETE FROM post_tags WHERE post_id = ' + postId);
-    await deletePost(postId);
-    testDb.$client.exec(`DELETE FROM tags WHERE id = ${tagId}`);
+    await resetDatabase(testDb);
   });
 });
 
@@ -111,7 +120,7 @@ describe('Empty and minimal values', () => {
 
   it('should handle listAllTags with no tags', async () => {
     // First ensure clean state
-    testDb.$client.exec('DELETE FROM tags');
+    await resetDatabase(testDb);
     const result = await listAllTags();
     expect(result).toEqual([]);
   });
@@ -172,11 +181,7 @@ describe('Long content and slugs', () => {
     expect(tagsResult.length).toBe(20);
 
     // Cleanup in FK order
-    testDb.$client.exec('DELETE FROM post_tags WHERE post_id = ' + postId);
-    await deletePost(postId);
-    for (const tag of tagRes) {
-      testDb.$client.exec(`DELETE FROM tags WHERE id = ${tag.id}`);
-    }
+    await resetDatabase(testDb);
   });
 });
 
@@ -368,7 +373,7 @@ describe('Tag operation edge cases', () => {
     ).rejects.toThrow();
 
     // Cleanup
-    testDb.$client.exec("DELETE FROM tags WHERE name = 'unique-test'");
+    await resetDatabase(testDb);
   });
 
   it('should handle post with multiple tags correctly', async () => {
@@ -401,10 +406,6 @@ describe('Tag operation edge cases', () => {
     expect(tagsResult.length).toBe(3);
 
     // Cleanup in FK order
-    testDb.$client.exec('DELETE FROM post_tags WHERE post_id = ' + postId);
-    await deletePost(postId);
-    for (const tag of tagRes) {
-      testDb.$client.exec(`DELETE FROM tags WHERE id = ${tag.id}`);
-    }
+    await resetDatabase(testDb);
   });
 });

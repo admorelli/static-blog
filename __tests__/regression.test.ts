@@ -1,4 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+import fs from 'fs';
+import path from 'path';
 import testDb, { createPost, getPostBySlug, listPosts } from './test-db';
 import { resetDatabase } from '../tests/utils/cleanup';
 

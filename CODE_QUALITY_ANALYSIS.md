@@ -11,13 +11,16 @@ Completed:
   - `__tests__/posts.test.ts`
   - `__tests__/api-routes.test.ts`
   - `__tests__/authoring-previews-images.test.ts`
+- `lib/posts.ts` and `lib/tags.ts`: kept canonical CRUD/tag/pagination logic in production code, with cleanup verified
+- `app/page-client.tsx`: extracted shared rendering helpers into new `lib/render.ts`, keeping client-only base-path logic in-page
+- `cli/commands/posts/create-from-markdown.ts`: switched over to `lib/post-authoring.ts` instead of locally duplicating markdown/frontmatter parsing
+- Lint status: clean; one pre-existing warning remains in `__tests__/edge-cases.test.ts` because it no longer declares a local descriptor and instead relies on global setup
 
 Pending / next up:
-- Revisit hook extraction if `page-client.tsx` grows again after shared render helpers land
+- Reduce mirrored CRUD logic between `lib/posts.ts`, `lib/tags.ts`, and `__tests__/test-db.ts`
 
 Notes:
 - `make test-unit` is the current reliable test command; `make test` is not a valid target in the active Makefile.
-- Lint currently has one eslint warning in this cleanup pass: `__tests__/edge-cases.test.ts` reports `posts is defined but never used`.
 
 ## Next Steps
 

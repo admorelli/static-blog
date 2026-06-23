@@ -9,14 +9,16 @@ import testDb, {
   updatePost,
   deletePost,
   listTagsForPost,
+  listAllTags,
   getAllSeries,
   getNextInSeries,
   getPrevInSeries,
   listPostsPaginated,
   searchPostsFTS,
+  getPostsBySeries,
 } from './test-db';
 import { eq } from 'drizzle-orm';
-import { resetDatabase } from '../tests/utils/cleanup';
+import { resetDatabase, recreatePostsFts } from '../tests/utils/cleanup';
 
 async function setupDatabase() {
   // Tables are created in test-db.ts setup
@@ -41,17 +43,17 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  await resetDatabase();
+  await resetDatabase(testDb);
 });
 
 afterAll(async () => {
-  await resetDatabase();
+  await resetDatabase(testDb);
 });
 
 describe('listPosts', () => {
   beforeEach(async () => {
     // Clear posts table
-    await resetDatabase();
+    await resetDatabase(testDb);
   });
 
   it('returns all posts ordered by created_at descending', async () => {
@@ -79,7 +81,7 @@ describe('listPosts', () => {
 
 describe('getPostBySlug', () => {
   beforeEach(async () => {
-    await resetDatabase();
+    await resetDatabase(testDb);
   });
 
   it('returns post when found', async () => {
@@ -98,7 +100,7 @@ describe('getPostBySlug', () => {
 
 describe('createPost', () => {
   beforeEach(async () => {
-    await resetDatabase();
+    await resetDatabase(testDb);
   });
 
   it('inserts post with auto-generated slug and timestamp', async () => {
@@ -118,7 +120,7 @@ describe('createPost', () => {
 
 describe('updatePost', () => {
   beforeEach(async () => {
-    await resetDatabase();
+    await resetDatabase(testDb);
   });
 
   it('updates post with provided fields', async () => {
@@ -134,7 +136,7 @@ describe('updatePost', () => {
 
 describe('deletePost', () => {
   beforeEach(async () => {
-    await resetDatabase();
+    await resetDatabase(testDb);
   });
 
   it('deletes post by id', async () => {
@@ -149,7 +151,7 @@ describe('deletePost', () => {
 
 describe('getPostsBySeries', () => {
   beforeEach(async () => {
-    await resetDatabase();
+    await resetDatabase(testDb);
   });
 
   it('returns posts in series ordered by series_order', async () => {
@@ -174,7 +176,7 @@ describe('getPostsBySeries', () => {
 
 describe('getAllSeries', () => {
   beforeEach(async () => {
-    await resetDatabase();
+    await resetDatabase(testDb);
   });
 
   it('returns unique series names sorted', async () => {
@@ -197,7 +199,7 @@ describe('getAllSeries', () => {
 
 describe('getNextInSeries', () => {
   beforeEach(async () => {
-    await resetDatabase();
+    await resetDatabase(testDb);
   });
 
   it('returns next post in series', async () => {
@@ -223,7 +225,7 @@ describe('getNextInSeries', () => {
 
 describe('getPrevInSeries', () => {
   beforeEach(async () => {
-    await resetDatabase();
+    await resetDatabase(testDb);
   });
 
   it('returns previous post in series', async () => {
@@ -249,7 +251,7 @@ describe('getPrevInSeries', () => {
 
 describe('listAllTags', () => {
   beforeEach(async () => {
-    await resetDatabase();
+    await resetDatabase(testDb);
   });
 
   it('returns all tags ordered by name', async () => {
@@ -264,7 +266,7 @@ describe('listAllTags', () => {
 
 describe('listPostsPaginated', () => {
   beforeEach(async () => {
-    await resetDatabase();
+    await resetDatabase(testDb);
   });
 
   it('returns paginated posts with total count', async () => {
@@ -326,13 +328,8 @@ describe('listPostsPaginated', () => {
 
 describe('searchPostsFTS', () => {
   beforeEach(async () => {
-    await resetDatabase();
-    // Recreate FTS table
-    testDb.$client.exec(`
-      CREATE VIRTUAL TABLE IF NOT EXISTS posts_fts USING fts5(
-        id UNINDEXED, title, content, tokenize='porter unicode61'
-      );
-    `);
+    await resetDatabase(testDb);
+    await recreatePostsFts(testDb);
   });
 
   it('returns empty array for empty query', async () => {
@@ -354,7 +351,7 @@ describe('searchPostsFTS', () => {
 
 describe('listTagsForPost', () => {
   beforeEach(async () => {
-    await resetDatabase();
+    await resetDatabase(testDb);
   });
 
   it('returns tags for a post', async () => {
@@ -386,7 +383,7 @@ describe('listTagsForPost', () => {
 describe('series navigation integration', () => {
   beforeEach(async () => {
     // Delete in correct order: post_tags first (FK), then posts
-    await resetDatabase();
+    await resetDatabase(testDb);
   });
 
   it('provides correct next/prev navigation for middle post', async () => {

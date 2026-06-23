@@ -39,6 +39,8 @@ export default defineConfig({
       '**/next.config.ts',
       '**/eslint.config.mjs',
       '**/vitest.config.ts',
+      '/home/allfa/git-projects/static_blog/out/**',
+      '/home/allfa/git-projects/static_blog/coverage/**',
     ],
     thresholds: {
       lines: 10,
