@@ -39,21 +39,7 @@ export async function listPostsPaginated({
   tags?: number[];
 }): Promise<{ posts: PostEntity[]; total: number }> {
   let query = db.select().from(posts);
-  let condition: ReturnType<typeof and> | ReturnType<typeof or> | undefined;
-
-  if (search) {
-    condition = or(
-      like(posts.title, `%${search}%`),
-      like(posts.content, `%${search}%`),
-    );
-  }
-
-  if (tagIds && tagIds.length) {
-    console.log('DEBUG: filtering by tagIds', tagIds);
-    query = query.innerJoin(postTags, eq(postTags.postId, posts.id));
-    const tagCond = inArray(postTags.tagId, tagIds);
-    condition = condition ? and(condition, tagCond) : tagCond;
-  }
+  const condition = buildPostCondition({ search, tagIds });
 
   if (condition) {
     query = query.where(condition);
@@ -73,7 +59,37 @@ export async function listPostsPaginated({
     countQuery = countQuery.where(condition);
   }
   const countResult = await countQuery.execute();
-  const total = countResult[0]?.count ?? 0;
+  const total = Number(countResult[0]?.count ?? 0);
 
   return { posts: rows as PostEntity[], total };
+}
+
+function buildPostCondition(input: {
+  search?: string;
+  tagIds?: number[];
+}) {
+  const conditions: Array<ReturnType<typeof and> | ReturnType<typeof or>> = [];
+
+  if (input.search) {
+    conditions.push(
+      or(
+        like(posts.title, `%${input.search}%`),
+        like(posts.content, `%${input.search}%`),
+      ),
+    );
+  }
+
+  if (input.tagIds && input.tagIds.length) {
+    conditions.push(inArray(postTags.tagId, input.tagIds));
+  }
+
+  if (conditions.length === 1) {
+    return conditions[0];
+  }
+
+  if (conditions.length > 1) {
+    return and(...conditions);
+  }
+
+  return undefined;
 }
