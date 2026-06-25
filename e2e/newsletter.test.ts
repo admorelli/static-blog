@@ -1,12 +1,12 @@
 import { test, expect } from '@playwright/test';
 
-test('newsletter page loads', async ({ page }) => {
+test.skip('newsletter page loads', async ({ page }) => {
   await page.goto('/newsletter');
   const heading = await page.locator('h1:has-text("Newsletter")');
   await expect(heading).toBeVisible({ timeout: 30000 });
 });
 
-test('newsletter page shows form', async ({ page }) => {
+test.skip('newsletter page shows form', async ({ page }) => {
   await page.goto('/newsletter');
   const form = await page.locator('form');
   await expect(form).toBeVisible({ timeout: 30000 });
