@@ -33,6 +33,7 @@ This file contains an up‑to‑date overview of the current project layout, arc
 ├── lib/                   # Utilities & API helpers
 │   ├── posts.ts           # Posts CRUD + queries
 │   ├── tags.ts            # Tags queries + pagination
+│   ├── render.ts          # Shared post/HTML rendering helpers
 │   └── static-posts-generated.ts # Auto-generated static data
 ├── db/                    # SQLite + Drizzle
 │   ├── db.ts              # Drizzle SQLite connection
@@ -50,6 +51,8 @@ This file contains an up‑to‑date overview of the current project layout, arc
 │   │   ├── series/        # list, create, add, reorder
 │   │   └── newsletter/    # list, add, remove
 │   └── utils/             # Shared CLI helpers (args, db, help, inquirer, registry, types)
+├── hooks/                 # Shared React hooks
+│   └── use-home-filters.ts
 ├── public/data/           # Generated JSON files for SSG
 ├── out/                   # Static export output
 ├── __tests__/             # Unit tests (Vitest, 124+ tests)
@@ -109,10 +112,7 @@ All primary commands are now exposed through a `Makefile` for quick execution. U
 
 ### Next Steps (Roadmap)
 
-| Priority | Task | Status |
-|----------|------|--------|
-| **P1** | Unify pagination query builder | Planned |
-| **P2** | Extract hooks from `app/page-client.tsx` | Planned |
+No active P1/P2 work remaining from the current code-quality plan.
 
 ---
 
@@ -124,6 +124,8 @@ All primary commands are now exposed through a `Makefile` for quick execution. U
 * **Schema** – `db/schema.ts`
 * **Posts API** – `lib/posts.ts`
 * **Tags API** – `lib/tags.ts`
+* **Home hooks** – `app/hooks/use-home-filters.ts`
+* **Rendering helpers** – `lib/render.ts`
 * **Static Generation** – `scripts/generate-static-data.ts`
 * **Feed/Sitemap** – `scripts/generate-feed.js`, `next-sitemap.config.js`
 * **CLI** – `cli/index.ts` + `cli/commands/` modules (`posts`, `tags`, `images`, `series`, `newsletter`)
@@ -143,20 +145,13 @@ The baseline was measured with **jscpd (50+ token threshold)**:
 
 Detailed findings and recommendations are documented in **`CODE_QUALITY_ANALYSIS.md`**.
 
-### Current remaining issues
+### Completed via recent refactor
+- Hook extraction is complete.
+- Shared rendering is complete.
+- `app/page-client.tsx` is now rendering-only.
 
-1. **Query typing**  
-   `lib/tags.ts listPostsPaginated` uses a loose query-shape escape hatch; unify it with the stricter typed pattern.
-
-2. **Component size**  
-   `app/page-client.tsx` mixes search state, tag filtering, infinite scroll, and rendering.
-
-### Priority Actions
-
-| Priority | Action |
-|----------|--------|
-| **P1** | Unify pagination query builder |
-| **P2** | Extract hooks from `app/page-client.tsx` |
+### Current status
+- No further code-quality follow-ups are currently open.
 
 ---
 

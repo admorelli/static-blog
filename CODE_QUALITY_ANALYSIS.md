@@ -173,7 +173,7 @@ Replace all inline cleanup blocks.
 | P0 | Add `tests/utils/cleanup.ts` | Removes 25+ repeated DELETE blocks |
 | P1 | Create `lib/post-authoring.ts` | Reuse between CLI & build scripts |
 | P1 | Unify pagination query builder | Remove `any` types, consistent API |
-| P2 | Extract hooks from `page-client.tsx` | Easier testing, smaller functions |
+| P2 | Extract hooks from `page-client.tsx` | Done — moved to `app/hooks/use-home-filters.ts` |
 | P2 | Extract post/HTML processing to `lib/render.ts` | Share between `app/posts/[slug]/page.tsx` and `enhance-images.ts` |
 
 ---

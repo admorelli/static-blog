@@ -1,8 +1,8 @@
 # Development Plan — static_blog
 
 **Generated:** 2026-06-21
-**Branch:** master
-**Status:** Clean build & tests; privacy analytics merged
+**Branch:** feat/code-quality-improvements
+**Status:** P2 hook extraction done; lint + build verified
 
 ---
 
@@ -38,6 +38,7 @@
 | Newsletter integration | ✅ Done | `app/newsletter/page.tsx` + `cli/commands/newsletter/*` |
 | CLI E2E tests + hardening | ✅ Done | Post/tag/series/image/newsletter CLI commands exercised via E2E |
 | Privacy-friendly analytics | ✅ Done | `app/analytics.tsx` with Plausible/Umami support + DNT respect + E2E coverage |
+| Extract hooks from `app/page-client.tsx` | ✅ Done | `useTags`, `useTagFilter`, `useSearchFilter`, `useFilteredPosts` moved to `app/hooks/use-home-filters.ts` |
 
 ## Still To Do
 
@@ -53,6 +54,7 @@
 - [x] Wire FTS5 search to UI
 - [x] Newsletter integration (page + CLI commands)
 - [x] Privacy-friendly analytics (Plausible/Umami)
+- [x] Extract hooks from `app/page-client.tsx`
 - [ ] Dependency audit & updates
 - [ ] ESLint/code warning cleanup
 
@@ -63,6 +65,7 @@
 * Schema — `db/schema.ts`
 * Posts API — `lib/posts.ts`
 * Tags API — `lib/tags.ts`
+* Home hooks — `app/hooks/use-home-filters.ts`
 * Static Generation — `scripts/generate-static-data.ts`
 * Feed/Sitemap — `scripts/generate-feed.js`, `next-sitemap.config.js`
 * CLI — `cli/index.ts` + `cli/commands/`
