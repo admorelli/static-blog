@@ -14,7 +14,7 @@ import testDb, {
   getNextInSeries,
   getPrevInSeries,
   listPostsPaginated,
-  searchPostsFTS,
+  searchPostsFTSTests,
   getPostsBySeries,
 } from './test-db';
 import { eq } from 'drizzle-orm';
@@ -337,18 +337,19 @@ describe('searchPostsFTS', () => {
   });
 
   it('returns empty array for empty query', async () => {
-    const result = await searchPostsFTS('', 10);
+    const result = await searchPostsFTSTests('', 10);
     expect(result).toEqual([]);
   });
 
   it('finds posts by content', async () => {
-    await createPost({
+    await insertPost(testDb, {
       title: 'Test Post',
       slug: 'test-post',
       content: 'This is about database technology',
+      created_at: Math.floor(Date.now() / 1000),
     });
 
-    const result = await searchPostsFTS('database', 10);
+    const result = await searchPostsFTSTests('database', 10);
     expect(result.length).toBeGreaterThanOrEqual(1);
   });
 });

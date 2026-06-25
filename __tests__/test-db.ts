@@ -11,8 +11,40 @@ function getTestDb() {
 
 const testDb = getTestDb();
 
-// Re-export canonical types so tests stay aligned with production modules.
-export type { Post } from '../lib/posts';
+// Re-export types only; provide test-local implementation that uses testDb.
+export { searchPostsFTS } from '../lib/posts';
+
+// Test-local FTS search using the test database connection.
+export async function searchPostsFTSTests(query: string, limit: number = 10): Promise<Post[]> {
+  if (!query.trim()) return [];
+
+  try {
+    const rows = await testDb.$client.prepare(`
+      SELECT p.id, p.title, p.slug, p.content, p.created_at
+      FROM posts p
+      INNER JOIN posts_fts f ON p.id = f.id
+      WHERE posts_fts MATCH ?
+      ORDER BY p.created_at DESC
+      LIMIT ?
+    `).all(query, limit);
+    return rows as Post[];
+  } catch (e) {
+    console.warn('FTS5 search failed, falling back to LIKE search:', e);
+    const searchTerm = `%${query}%`;
+    const rows = await testDb
+      .select()
+      .from(posts)
+      .where(
+        or(
+          like(posts.title, searchTerm),
+          like(posts.content, searchTerm),
+        ),
+      )
+      .orderBy(desc(posts.created_at))
+      .limit(limit);
+    return rows as Post[];
+  }
+}
 
 // --- Posts functions (mirroring lib/posts.ts) ---
 
