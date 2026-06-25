@@ -1,5 +1,6 @@
 import db from '../db/db';
-import { tags, postTags, posts, type Post } from '../db/schema';
+import { tags, postTags, posts } from '../db/schema';
+import type { Post } from './posts';
 import { count, like, inArray, eq, or, and } from 'drizzle-orm';
 import { desc } from 'drizzle-orm';
 
@@ -38,26 +39,20 @@ export async function listPostsPaginated({
   search?: string;
   tags?: number[];
 }): Promise<{ posts: PostEntity[]; total: number }> {
-  let query = db.select().from(posts);
   const condition = buildPostCondition({ search, tagIds });
-
-  if (condition) {
-    query = query.where(condition);
-  }
-
-  const rows = await query
+  const q = db.select().from(posts);
+  const rows = await (condition ? q.where(condition) : q)
     .orderBy(desc(posts.created_at))
     .offset(offset)
     .limit(limit)
     .execute();
 
-  let countQuery = db.select({ count: count(posts.id) }).from(posts);
-  if (tagIds && tagIds.length) {
-    countQuery = countQuery.innerJoin(postTags, eq(postTags.postId, posts.id));
-  }
-  if (condition) {
-    countQuery = countQuery.where(condition);
-  }
+  const baseCountQuery = db.select({ count: count(posts.id).as('count') }).from(posts);
+  const joinedCountQuery =
+    tagIds && tagIds.length
+      ? baseCountQuery.innerJoin(postTags, eq(postTags.postId, posts.id))
+      : baseCountQuery;
+  const countQuery = condition ? joinedCountQuery.where(condition) : joinedCountQuery;
   const countResult = await countQuery.execute();
   const total = Number(countResult[0]?.count ?? 0);
 
