@@ -112,10 +112,6 @@
     "tagId": 6
   },
   {
-    "postId": 7,
-    "tagId": 20
-  },
-  {
     "postId": 9,
     "tagId": 21
   },
@@ -250,5 +246,21 @@
   {
     "postId": 25,
     "tagId": 51
+  },
+  {
+    "postId": 28,
+    "tagId": 43
+  },
+  {
+    "postId": 28,
+    "tagId": 52
+  },
+  {
+    "postId": 28,
+    "tagId": 53
+  },
+  {
+    "postId": 28,
+    "tagId": 21
   }
 ]

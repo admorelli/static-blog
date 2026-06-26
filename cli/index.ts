@@ -38,7 +38,7 @@ async function main(): Promise<void> {
     return;
   }
 
-  const commandParts = (args['__commandParts'] as string[]) || [];
+  const commandParts = args.commandParts || [];
   const input = commandParts.join(' ');
   if (!commandParts.length || input === 'help') {
     showHelp();

@@ -177,6 +177,108 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - [ ] Dependency audit & updates
 - [ ] ESLint/code warning cleanup
 
+## 🖥️ CLI Usage
+
+The blog includes an interactive/skip-prompt CLI. Run help to see the available commands:
+
+```bash
+npm run blog -- help
+```
+
+### Posts
+
+```bash
+blog posts
+blog posts --limit 20
+blog posts --search "Next.js"
+blog posts --tag devlog
+```
+
+```bash
+blog create --title "My Post" --content "<p>Hello</p>" --tags "tech,tutorial"
+blog create
+```
+
+```bash
+blog new posts/my-post.md
+```
+
+```bash
+blog update --id 1 --title "New Title"
+blog update --slug hello-world --content "<p>Updated</p>" --tags "tech,updated"
+blog update --id 3 --series "My Series" --series-order 2
+```
+
+```bash
+blog delete --id 1
+blog delete --slug hello-world --yes
+```
+
+### Tags
+
+```bash
+blog tags
+blog tag-create --name "typescript"
+blog tag-create
+blog tag-delete --name "old-tag"
+blog tag-delete --name "deprecated" --yes
+blog tag-post --post-id 3 --tag "deploy"
+blog untag-post --post-id 3 --tag "deploy"
+```
+
+### Images
+
+```bash
+blog images add --slug hello-world --path ./screenshot.png
+blog images add --slug my-post --path ./photo.jpg --alt "My photo"
+blog images add
+```
+
+### Series
+
+```bash
+blog series
+blog series list
+blog series-create --id 5 --name "Getting Started" --order 1
+blog series-create --post-id 5 --name "Getting Started" --order 1
+blog series-create
+blog series-add --post-id 7 --series "Getting Started" --order 3
+blog series-add
+blog series-reorder --series "Getting Started"
+blog series-reorder
+```
+
+### Newsletter
+
+```bash
+blog newsletter-list
+blog newsletter-list --status confirmed
+blog newsletter-add --email user@example.com
+blog newsletter-add --email user@example.com --status confirmed
+blog newsletter-remove --email user@example.com
+blog newsletter-remove --id 1
+```
+
+### Posting workflow
+
+Use `posts create` or `posts new` depending on the content format. `create` supports HTML content directly; `new` reads a markdown file and converts it.
+
+Common flows:
+
+```bash
+# Quick post with prompts
+blog create
+
+# Post from markdown file
+blog new posts/secure-card-vault-concept.md
+
+# Edit existing post by id
+blog update --id 1 --title "Revised title"
+
+# Edit existing post by slug
+blog update --slug hello-world --content "<p>New body</p>"
+```
+
 ## 🤝 Contributing
 
 Before opening a PR or pushing to `master`, please:

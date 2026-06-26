@@ -56,6 +56,10 @@
     "name": "dup-tag"
   },
   {
+    "id": 52,
+    "name": "e2e"
+  },
+  {
     "id": 35,
     "name": "engagement"
   },
@@ -130,6 +134,10 @@
   {
     "id": 8,
     "name": "pi-agent"
+  },
+  {
+    "id": 53,
+    "name": "playwright"
   },
   {
     "id": 51,
