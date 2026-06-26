@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterAll } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll, beforeAll } from 'vitest';
 import testDb, {
   posts,
   tags,
@@ -8,43 +8,60 @@ import testDb, {
   getPostBySlug,
   updatePost,
   deletePost,
-  listPostsPaginated,
-  listAllTags,
   listTagsForPost,
-  getPostsBySeries,
+  listAllTags,
   getAllSeries,
   getNextInSeries,
   getPrevInSeries,
-  searchPostsFTS,
+  listPostsPaginated,
+  searchPostsFTSTests,
+  getPostsBySeries,
 } from './test-db';
 import { eq } from 'drizzle-orm';
+import { resetDatabase } from '../tests/utils/cleanup';
+import { insertPost, recreatePostsFts } from '../tests/utils/post-test-utils';
 
-// Helper functions for series tests
-async function createSeriesPosts(seriesName: string, titles: string[]): Promise<number[]> {
-  const postIds: number[] = [];
-  for (let i = 0; i < titles.length; i++) {
-    const id = await createPost({
-      title: titles[i],
-      slug: `${seriesName.toLowerCase().replace(/\s+/g, '-')}-${i + 1}`,
-      content: `Content for ${titles[i]}`,
-    });
-    await testDb.update(posts).set({ series: seriesName, series_order: i + 1 }).where(eq(posts.id, id));
-    postIds.push(id);
-  }
-  return postIds;
+async function setupDatabase() {
+  // Tables are created in test-db.ts setup
 }
+
+function createSeriesPosts(seriesName: string, titles: string[]): Promise<number[]> {
+  return Promise.all(
+    titles.map(async (title, index) => {
+      const id = await createPost({
+        title,
+        slug: `${seriesName.toLowerCase().replace(/\s+/g, '-')}-${index + 1}`,
+        content: `Content for ${title}`,
+      });
+      await testDb.update(posts).set({ series: seriesName, series_order: index + 1 }).where(eq(posts.id, id));
+      return id;
+    })
+  );
+}
+
+beforeAll(async () => {
+  await setupDatabase();
+});
+
+beforeEach(async () => {
+  await resetDatabase(testDb);
+});
+
+afterAll(async () => {
+  await resetDatabase(testDb);
+});
 
 describe('listPosts', () => {
   beforeEach(async () => {
     // Clear posts table
-    testDb.$client.exec('DELETE FROM posts');
+    await resetDatabase(testDb);
   });
 
   it('returns all posts ordered by created_at descending', async () => {
-    // Use raw inserts with explicit timestamps for predictable ordering
+    // Use ordered deterministic inserts for predictable ordering
     const baseTime = Math.floor(Date.now() / 1000);
-    testDb.$client.exec(`INSERT INTO posts (title, slug, content, created_at) VALUES ('First', 'first-post', 'C1', ${baseTime - 10})`);
-    testDb.$client.exec(`INSERT INTO posts (title, slug, content, created_at) VALUES ('Second', 'second-post', 'C2', ${baseTime})`);
+    await insertPost(testDb, { title: 'Second', slug: 'second-post', content: 'C2', created_at: baseTime });
+    await insertPost(testDb, { title: 'First', slug: 'first-post', content: 'C1', created_at: baseTime - 10 });
 
     const result = await listPosts();
     // Posts are ordered by newest first (desc on created_at)
@@ -65,7 +82,7 @@ describe('listPosts', () => {
 
 describe('getPostBySlug', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM posts');
+    await resetDatabase(testDb);
   });
 
   it('returns post when found', async () => {
@@ -84,7 +101,7 @@ describe('getPostBySlug', () => {
 
 describe('createPost', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM posts');
+    await resetDatabase(testDb);
   });
 
   it('inserts post with auto-generated slug and timestamp', async () => {
@@ -104,7 +121,7 @@ describe('createPost', () => {
 
 describe('updatePost', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM posts');
+    await resetDatabase(testDb);
   });
 
   it('updates post with provided fields', async () => {
@@ -120,7 +137,7 @@ describe('updatePost', () => {
 
 describe('deletePost', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM posts');
+    await resetDatabase(testDb);
   });
 
   it('deletes post by id', async () => {
@@ -135,7 +152,7 @@ describe('deletePost', () => {
 
 describe('getPostsBySeries', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM posts');
+    await resetDatabase(testDb);
   });
 
   it('returns posts in series ordered by series_order', async () => {
@@ -160,7 +177,7 @@ describe('getPostsBySeries', () => {
 
 describe('getAllSeries', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM posts');
+    await resetDatabase(testDb);
   });
 
   it('returns unique series names sorted', async () => {
@@ -183,7 +200,7 @@ describe('getAllSeries', () => {
 
 describe('getNextInSeries', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM posts');
+    await resetDatabase(testDb);
   });
 
   it('returns next post in series', async () => {
@@ -209,7 +226,7 @@ describe('getNextInSeries', () => {
 
 describe('getPrevInSeries', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM posts');
+    await resetDatabase(testDb);
   });
 
   it('returns previous post in series', async () => {
@@ -235,8 +252,7 @@ describe('getPrevInSeries', () => {
 
 describe('listAllTags', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM tags');
-    testDb.$client.exec('DELETE FROM post_tags');
+    await resetDatabase(testDb);
   });
 
   it('returns all tags ordered by name', async () => {
@@ -251,18 +267,19 @@ describe('listAllTags', () => {
 
 describe('listPostsPaginated', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM posts');
-    testDb.$client.exec('DELETE FROM post_tags');
-    testDb.$client.exec('DELETE FROM tags');
+    await resetDatabase(testDb);
   });
 
   it('returns paginated posts with total count', async () => {
-    // Create 25 posts with decreasing timestamps for predictable ordering
+    // Use the shared insert helper with decreasing timestamps for predictable ordering
     const baseTime = Math.floor(Date.now() / 1000);
     for (let i = 0; i < 25; i++) {
-      testDb.$client.exec(
-        `INSERT INTO posts (title, slug, content, created_at) VALUES ('Post ${i + 1}', 'post-${i + 1}', 'Content ${i + 1}', ${baseTime - i * 100})`
-      );
+      await insertPost(testDb, {
+        title: `Post ${i + 1}`,
+        slug: `post-${i + 1}`,
+        content: `Content ${i + 1}`,
+        created_at: baseTime - i * 100,
+      });
     }
 
     const result = await listPostsPaginated({ offset: 0, limit: 10 });
@@ -283,11 +300,11 @@ describe('listPostsPaginated', () => {
   });
 
   it('handles pagination at boundary', async () => {
-    // Use raw insert with explicit timestamps for predictable ordering
+    // Use ordered deterministic inserts for predictable ordering
     const baseTime = Math.floor(Date.now() / 1000);
-    testDb.$client.exec(`INSERT INTO posts (title, slug, content, created_at) VALUES ('P1', 'pag-1', 'P1', ${baseTime})`);
-    testDb.$client.exec(`INSERT INTO posts (title, slug, content, created_at) VALUES ('P2', 'pag-2', 'P2', ${baseTime - 1})`);
-    testDb.$client.exec(`INSERT INTO posts (title, slug, content, created_at) VALUES ('P3', 'pag-3', 'P3', ${baseTime - 2})`);
+    await insertPost(testDb, { title: 'P1', slug: 'pag-1', content: 'P1', created_at: baseTime });
+    await insertPost(testDb, { title: 'P2', slug: 'pag-2', content: 'P2', created_at: baseTime - 1 });
+    await insertPost(testDb, { title: 'P3', slug: 'pag-3', content: 'P3', created_at: baseTime - 2 });
 
     const first = await listPostsPaginated({ offset: 0, limit: 1 });
     expect(first.posts.length).toBe(1);
@@ -315,39 +332,31 @@ describe('listPostsPaginated', () => {
 
 describe('searchPostsFTS', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM posts');
-    testDb.$client.exec('DELETE FROM post_tags');
-    testDb.$client.exec('DELETE FROM tags');
-    // Recreate FTS table
-    testDb.$client.exec(`
-      CREATE VIRTUAL TABLE IF NOT EXISTS posts_fts USING fts5(
-        id UNINDEXED, title, content, tokenize='porter unicode61'
-      );
-    `);
+    await resetDatabase(testDb);
+    await recreatePostsFts(testDb);
   });
 
   it('returns empty array for empty query', async () => {
-    const result = await searchPostsFTS('', 10);
+    const result = await searchPostsFTSTests('', 10);
     expect(result).toEqual([]);
   });
 
   it('finds posts by content', async () => {
-    await createPost({
+    await insertPost(testDb, {
       title: 'Test Post',
       slug: 'test-post',
       content: 'This is about database technology',
+      created_at: Math.floor(Date.now() / 1000),
     });
 
-    const result = await searchPostsFTS('database', 10);
+    const result = await searchPostsFTSTests('database', 10);
     expect(result.length).toBeGreaterThanOrEqual(1);
   });
 });
 
 describe('listTagsForPost', () => {
   beforeEach(async () => {
-    testDb.$client.exec('DELETE FROM tags');
-    testDb.$client.exec('DELETE FROM post_tags');
-    testDb.$client.exec('DELETE FROM posts');
+    await resetDatabase(testDb);
   });
 
   it('returns tags for a post', async () => {
@@ -379,8 +388,7 @@ describe('listTagsForPost', () => {
 describe('series navigation integration', () => {
   beforeEach(async () => {
     // Delete in correct order: post_tags first (FK), then posts
-    testDb.$client.exec('DELETE FROM post_tags');
-    testDb.$client.exec('DELETE FROM posts');
+    await resetDatabase(testDb);
   });
 
   it('provides correct next/prev navigation for middle post', async () => {
@@ -416,16 +424,4 @@ describe('series navigation integration', () => {
     expect(lastPrev).toBeDefined();
     expect(lastPrev!.title).toBe('Middle');
   });
-});
-
-// Helper to reset test DB
-async function resetDatabase() {
-  // Delete in order to respect foreign keys
-  testDb.$client.exec('DELETE FROM post_tags');
-  testDb.$client.exec('DELETE FROM posts');
-  testDb.$client.exec('DELETE FROM tags');
-}
-
-afterAll(async () => {
-  await resetDatabase();
 });

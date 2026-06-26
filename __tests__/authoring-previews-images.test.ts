@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createPost, getPostBySlug, listPosts } from './test-db';
+import { resetDatabase } from '../tests/utils/cleanup';
 
 const markdownSlug = 'markdown-images-backed-by-static-storage';
 const markdownImageToken = '/posts/test-markdown-post/img/1781684929043/max.webp';
@@ -9,8 +10,7 @@ const inlineImageToken = '/posts/fixture-backing-inline-images/img/sample/max.we
 describe('markdown backing static storage', () => {
   beforeEach(async () => {
     const db = (await import('./test-db')).default;
-    db.$client.exec('DELETE FROM post_tags');
-    db.$client.exec('DELETE FROM posts');
+    resetDatabase(db);
   });
 
   it('retains markdown-formatted images as HTML img tokens', async () => {
@@ -43,8 +43,7 @@ describe('markdown backing static storage', () => {
 describe('inline images backed by fixture', () => {
   beforeEach(async () => {
     const db = (await import('./test-db')).default;
-    db.$client.exec('DELETE FROM post_tags');
-    db.$client.exec('DELETE FROM posts');
+    resetDatabase(db);
   });
 
   it('represents inline images as Markdown-Tokens previews in post body', async () => {

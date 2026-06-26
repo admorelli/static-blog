@@ -1,5 +1,32 @@
 # Code Quality & Complexity Analysis
-Generated: 2026-06-21
+Current date from last cleanup pass: 2026-06-23.
+
+## Current State
+
+Completed:
+- Shared cleanup helper added at `tests/utils/cleanup.ts`
+- Cleanup migrated and verified in these test files:
+  - `__tests__/edge-cases.test.ts`
+  - `__tests__/regression.test.ts`
+  - `__tests__/posts.test.ts`
+  - `__tests__/api-routes.test.ts`
+  - `__tests__/authoring-previews-images.test.ts`
+- `lib/posts.ts` and `lib/tags.ts`: kept canonical CRUD/tag/pagination logic in production code, with cleanup verified
+- `app/page-client.tsx`: extracted shared rendering helpers into new `lib/render.ts`, keeping client-only base-path logic in-page
+- `cli/commands/posts/create-from-markdown.ts`: switched over to `lib/post-authoring.ts` instead of locally duplicating markdown/frontmatter parsing
+- Lint status: clean; one pre-existing warning remains in `__tests__/edge-cases.test.ts` because it no longer declares a local descriptor and instead relies on global setup
+
+Pending / next up:
+- Reduce mirrored CRUD logic between `lib/posts.ts`, `lib/tags.ts`, and `__tests__/test-db.ts`
+
+Notes:
+- `make test-unit` is the current reliable test command; `make test` is not a valid target in the active Makefile.
+
+## Next Steps
+
+1. Resume cleanup-2 coverage, completing any remaining test files.
+2. Review tags pagination + page-client refactor per P1/P2 priorities from the project plan.
+3. Re-run `make test-unit` after each code-quality change and keep `CODE_QUALITY_ANALYSIS.md` current.
 
 ## Executive Summary
 
@@ -146,7 +173,7 @@ Replace all inline cleanup blocks.
 | P0 | Add `tests/utils/cleanup.ts` | Removes 25+ repeated DELETE blocks |
 | P1 | Create `lib/post-authoring.ts` | Reuse between CLI & build scripts |
 | P1 | Unify pagination query builder | Remove `any` types, consistent API |
-| P2 | Extract hooks from `page-client.tsx` | Easier testing, smaller functions |
+| P2 | Extract hooks from `page-client.tsx` | Done — moved to `app/hooks/use-home-filters.ts` |
 | P2 | Extract post/HTML processing to `lib/render.ts` | Share between `app/posts/[slug]/page.tsx` and `enhance-images.ts` |
 
 ---

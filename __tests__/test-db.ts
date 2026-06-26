@@ -1,6 +1,7 @@
 // Test database helper - uses the global test database initialized in setup.ts
 import { posts, tags, postTags } from '../db/schema';
 import { eq, desc, like, or, and, inArray } from 'drizzle-orm';
+import type { Post } from '../lib/posts';
 
 // Get the test database from global setup
 function getTestDb() {
@@ -10,17 +11,42 @@ function getTestDb() {
 
 const testDb = getTestDb();
 
-// --- Posts functions (mirroring lib/posts.ts) ---
+// Re-export types only; provide test-local implementation that uses testDb.
+export { searchPostsFTS } from '../lib/posts';
 
-export type Post = {
-  id: number;
-  title: string;
-  slug: string;
-  content: string;
-  created_at: number;
-  series: string | null;
-  series_order: number | null;
-};
+// Test-local FTS search using the test database connection.
+export async function searchPostsFTSTests(query: string, limit: number = 10): Promise<Post[]> {
+  if (!query.trim()) return [];
+
+  try {
+    const rows = await testDb.$client.prepare(`
+      SELECT p.id, p.title, p.slug, p.content, p.created_at
+      FROM posts p
+      INNER JOIN posts_fts f ON p.id = f.id
+      WHERE posts_fts MATCH ?
+      ORDER BY p.created_at DESC
+      LIMIT ?
+    `).all(query, limit);
+    return rows as Post[];
+  } catch (e) {
+    console.warn('FTS5 search failed, falling back to LIKE search:', e);
+    const searchTerm = `%${query}%`;
+    const rows = await testDb
+      .select()
+      .from(posts)
+      .where(
+        or(
+          like(posts.title, searchTerm),
+          like(posts.content, searchTerm),
+        ),
+      )
+      .orderBy(desc(posts.created_at))
+      .limit(limit);
+    return rows as Post[];
+  }
+}
+
+// --- Posts functions (mirroring lib/posts.ts) ---
 
 /** Get all posts ordered by newest first */
 export async function listPosts(): Promise<Post[]> {
@@ -84,23 +110,20 @@ export async function deletePost(id: number): Promise<void> {
 
 // --- Tags functions (mirroring lib/tags.ts) ---
 
-export type Tag = {
-  id: number;
-  name: string;
-};
-
-export async function listAllTags(): Promise<Tag[]> {
+/** Get all tags ordered by name */
+export async function listAllTags(): Promise<{ id: number; name: string }[]> {
   const rows = await testDb.select().from(tags).orderBy(tags.name);
-  return rows as Tag[];
+  return rows as { id: number; name: string }[];
 }
 
-export async function listTagsForPost(postId: number): Promise<Tag[]> {
+/** Get tags for a post */
+export async function listTagsForPost(postId: number): Promise<{ id: number; name: string }[]> {
   const rows = await testDb
     .select({ id: tags.id, name: tags.name })
     .from(postTags)
     .innerJoin(tags, eq(postTags.tagId, tags.id))
     .where(eq(postTags.postId, postId));
-  return rows as Tag[];
+  return rows as { id: number; name: string }[];
 }
 
 export async function listPostsPaginated(options: {
@@ -115,7 +138,7 @@ export async function listPostsPaginated(options: {
   if (options.search) {
     condition = or(
       like(posts.title, `%${options.search}%`),
-      like(posts.content, `%${options.search}%`)
+      like(posts.content, `%${options.search}%`),
     );
   }
 
@@ -146,47 +169,9 @@ export async function listPostsPaginated(options: {
   };
 }
 
-/** Full-text search using FTS5 (mirrors lib/posts.ts) */
-export async function searchPostsFTS(query: string, limit: number = 10): Promise<Post[]> {
-  if (!query.trim()) return [];
+// --- Series functions ---
 
-  try {
-    // Use raw SQL for FTS5 MATCH query
-    const rows = await testDb.$client.prepare(`
-      SELECT p.id, p.title, p.slug, p.content, p.created_at
-      FROM posts p
-      INNER JOIN posts_fts f ON p.id = f.id
-      WHERE posts_fts MATCH ?
-      LIMIT ?
-    `).all(query, limit);
-    return rows as Post[];
-  } catch (e) {
-    // FTS5 might fail if table doesn't exist or query is invalid
-    console.warn('FTS5 search failed, falling back to LIKE search:', e);
-    return searchPostsFallback(query, limit);
-  }
-}
-
-/** Fallback search using LIKE (used when FTS5 is unavailable) */
-async function searchPostsFallback(query: string, limit: number = 10): Promise<Post[]> {
-  const searchTerm = `%${query}%`;
-  const rows = await testDb
-    .select()
-    .from(posts)
-    .where(
-      or(
-        like(posts.title, searchTerm),
-        like(posts.content, searchTerm)
-      )
-    )
-    .orderBy(desc(posts.created_at))
-    .limit(limit);
-  return rows as Post[];
-}
-
-// --- Series functions (mirroring lib/posts.ts) ---
-
-/** Get all posts in a series ordered by series_order */
+// Get all posts in a series ordered by series_order
 export async function getPostsBySeries(seriesName: string): Promise<Post[]> {
   const rows = await testDb
     .select()
@@ -196,7 +181,7 @@ export async function getPostsBySeries(seriesName: string): Promise<Post[]> {
   return rows as Post[];
 }
 
-/** Get all unique series names */
+// Get all unique series names
 export async function getAllSeries(): Promise<string[]> {
   const rowsAll = await testDb
     .select({ series: posts.series })
@@ -204,12 +189,12 @@ export async function getAllSeries(): Promise<string[]> {
   const series = rowsAll
     .map((r: { series: string | null }) => r.series)
     .filter((s: string | null): s is string => s !== null && s !== undefined && s !== '')
-    .filter((s: string, i: number, arr: string[]) => arr.indexOf(s) === i)
+    .filter((s: string, i: number, arr: readonly string[]) => arr.indexOf(s) === i)
     .sort();
   return series;
 }
 
-/** Get next post in series */
+// Get next post in series
 export async function getNextInSeries(series: string, currentOrder: number): Promise<Post | undefined> {
   const rows = await testDb
     .select()
@@ -221,7 +206,7 @@ export async function getNextInSeries(series: string, currentOrder: number): Pro
   return next;
 }
 
-/** Get previous post in series */
+// Get previous post in series
 export async function getPrevInSeries(series: string, currentOrder: number): Promise<Post | undefined> {
   const rows = await testDb
     .select()

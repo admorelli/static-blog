@@ -1,5 +1,6 @@
 import db from '../db/db';
 import { tags, postTags, posts } from '../db/schema';
+import type { Post } from './posts';
 import { count, like, inArray, eq, or, and } from 'drizzle-orm';
 import { desc } from 'drizzle-orm';
 
@@ -8,13 +9,7 @@ export type Tag = {
   name: string;
 };
 
-export type PostEntity = {
-  id: number;
-  title: string;
-  slug: string;
-  content: string;
-  created_at: number;
-};
+export type PostEntity = Pick<Post, 'id' | 'title' | 'slug' | 'content' | 'created_at'>;
 
 export async function listAllTags(): Promise<Tag[]> {
   return await db
@@ -44,46 +39,52 @@ export async function listPostsPaginated({
   search?: string;
   tags?: number[];
 }): Promise<{ posts: PostEntity[]; total: number }> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let query: any = db.select().from(posts);
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let condition: any = undefined;
-
-  if (search) {
-    condition = or(
-      like(posts.title, `%${search}%`),
-      like(posts.content, `%${search}%`)
-    );
-  }
-
-  if (tagIds && tagIds.length) {
-    console.log('DEBUG: filtering by tagIds', tagIds);
-    query = query.innerJoin(postTags, eq(postTags.postId, posts.id));
-    const tagCond = inArray(postTags.tagId, tagIds);
-    condition = condition ? and(condition, tagCond) : tagCond;
-  }
-
-  if (condition) {
-    query = query.where(condition);
-  }
-
-  const rows = await query
+  const condition = buildPostCondition({ search, tagIds });
+  const q = db.select().from(posts);
+  const rows = await (condition ? q.where(condition) : q)
     .orderBy(desc(posts.created_at))
     .offset(offset)
     .limit(limit)
     .execute();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let countQuery: any = db.select({ count: count(posts.id) }).from(posts);
-  if (tagIds && tagIds.length) {
-    countQuery = countQuery.innerJoin(postTags, eq(postTags.postId, posts.id));
-  }
-  if (condition) {
-    countQuery = countQuery.where(condition);
-  }
+  const baseCountQuery = db.select({ count: count(posts.id).as('count') }).from(posts);
+  const joinedCountQuery =
+    tagIds && tagIds.length
+      ? baseCountQuery.innerJoin(postTags, eq(postTags.postId, posts.id))
+      : baseCountQuery;
+  const countQuery = condition ? joinedCountQuery.where(condition) : joinedCountQuery;
   const countResult = await countQuery.execute();
-  const total = countResult[0]?.count ?? 0;
+  const total = Number(countResult[0]?.count ?? 0);
 
   return { posts: rows as PostEntity[], total };
+}
+
+function buildPostCondition(input: {
+  search?: string;
+  tagIds?: number[];
+}) {
+  const conditions: Array<ReturnType<typeof and> | ReturnType<typeof or>> = [];
+
+  if (input.search) {
+    conditions.push(
+      or(
+        like(posts.title, `%${input.search}%`),
+        like(posts.content, `%${input.search}%`),
+      ),
+    );
+  }
+
+  if (input.tagIds && input.tagIds.length) {
+    conditions.push(inArray(postTags.tagId, input.tagIds));
+  }
+
+  if (conditions.length === 1) {
+    return conditions[0];
+  }
+
+  if (conditions.length > 1) {
+    return and(...conditions);
+  }
+
+  return undefined;
 }

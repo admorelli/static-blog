@@ -1,21 +1,21 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll } from 'vitest';
 import testDb, {
   tags,
   postTags,
-  createPost,
-  updatePost,
-  deletePost,
-  getPostBySlug,
-  listPosts,
   listAllTags,
   listTagsForPost,
-  listPostsPaginated
+  listPostsPaginated,
+  listPosts,
+  createPost,
+  getPostBySlug,
+  deletePost,
+  updatePost,
 } from './test-db';
+import { resetDatabase } from '../tests/utils/cleanup';
+import { insertPost } from '../tests/utils/post-test-utils';
 
-// ─── Setup ────────────────────────────────────────────────────────────────────
-
-beforeAll(async () => {
-  // Tables are created in test-db.ts setup
+beforeEach(() => {
+  resetDatabase(testDb);
 });
 
 afterAll(() => {
@@ -83,9 +83,7 @@ describe('Unicode and special characters', () => {
     expect(foundTags[0].name).toBe('c++');
 
     // Cleanup in FK order
-    testDb.$client.exec('DELETE FROM post_tags WHERE post_id = ' + postId);
-    await deletePost(postId);
-    testDb.$client.exec(`DELETE FROM tags WHERE id = ${tagId}`);
+    await resetDatabase(testDb);
   });
 });
 
@@ -123,7 +121,7 @@ describe('Empty and minimal values', () => {
 
   it('should handle listAllTags with no tags', async () => {
     // First ensure clean state
-    testDb.$client.exec('DELETE FROM tags');
+    await resetDatabase(testDb);
     const result = await listAllTags();
     expect(result).toEqual([]);
   });
@@ -184,11 +182,7 @@ describe('Long content and slugs', () => {
     expect(tagsResult.length).toBe(20);
 
     // Cleanup in FK order
-    testDb.$client.exec('DELETE FROM post_tags WHERE post_id = ' + postId);
-    await deletePost(postId);
-    for (const tag of tagRes) {
-      testDb.$client.exec(`DELETE FROM tags WHERE id = ${tag.id}`);
-    }
+    await resetDatabase(testDb);
   });
 });
 
@@ -329,11 +323,11 @@ describe('Search and filter edge cases', () => {
   });
 
   it('should handle pagination at boundary', async () => {
-    // Use raw insert with explicit timestamps for predictable ordering
+    // Use ordered deterministic inserts for predictable ordering
     const baseTime = Math.floor(Date.now() / 1000);
-    testDb.$client.exec(`INSERT INTO posts (title, slug, content, created_at) VALUES ('P3', 'pag-3', 'P3', ${baseTime})`);
-    testDb.$client.exec(`INSERT INTO posts (title, slug, content, created_at) VALUES ('P2', 'pag-2', 'P2', ${baseTime - 1})`);
-    testDb.$client.exec(`INSERT INTO posts (title, slug, content, created_at) VALUES ('P1', 'pag-1', 'P1', ${baseTime - 2})`);
+    await insertPost(testDb, { title: 'P3', slug: 'pag-3', content: 'P3', created_at: baseTime });
+    await insertPost(testDb, { title: 'P2', slug: 'pag-2', content: 'P2', created_at: baseTime - 1 });
+    await insertPost(testDb, { title: 'P1', slug: 'pag-1', content: 'P1', created_at: baseTime - 2 });
 
     const first = await listPostsPaginated({ offset: 0, limit: 1 });
     expect(first.posts.length).toBe(1);
@@ -380,7 +374,7 @@ describe('Tag operation edge cases', () => {
     ).rejects.toThrow();
 
     // Cleanup
-    testDb.$client.exec("DELETE FROM tags WHERE name = 'unique-test'");
+    await resetDatabase(testDb);
   });
 
   it('should handle post with multiple tags correctly', async () => {
@@ -413,10 +407,6 @@ describe('Tag operation edge cases', () => {
     expect(tagsResult.length).toBe(3);
 
     // Cleanup in FK order
-    testDb.$client.exec('DELETE FROM post_tags WHERE post_id = ' + postId);
-    await deletePost(postId);
-    for (const tag of tagRes) {
-      testDb.$client.exec(`DELETE FROM tags WHERE id = ${tag.id}`);
-    }
+    await resetDatabase(testDb);
   });
 });

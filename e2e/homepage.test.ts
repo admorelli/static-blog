@@ -2,11 +2,9 @@ import { test, expect } from '@playwright/test';
 
 test('homepage loads', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('text=Static Blog')).toBeVisible({ timeout: 30000 });
-  
-  // Wait for client-side hydration to complete
-  await expect(page.locator('input[placeholder="Search posts..."]')).toBeVisible({ timeout: 30000 });
-  
+  await expect(page.getByRole('link', { name: 'Static Blog', exact: true })).toBeVisible({ timeout: 30000 });
+  await expect(page.locator('[placeholder="Search posts..."]')).toBeVisible({ timeout: 30000 });
+
   const tagFilter = await page.locator('text=Filter by tags:');
   await expect(tagFilter).toBeVisible({ timeout: 30000 });
 });
