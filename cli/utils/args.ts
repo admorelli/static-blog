@@ -6,11 +6,11 @@ export function parseArgs(argv: string[]): { cmd: string; args: CliArgs; flags: 
   const cmd = argv[2] || 'help';
   const args: CliArgs = {};
   const flags: CliFlags = {};
+  const commandParts: string[] = [];
 
-  // Start from index 3 (skip node, script, command)
   for (let i = 3; i < argv.length; i++) {
     const arg = argv[i];
-    
+
     if (arg.startsWith('--')) {
       const key = arg.replace(/^--/, '');
       const nextArg = argv[i + 1];
@@ -23,13 +23,17 @@ export function parseArgs(argv: string[]): { cmd: string; args: CliArgs; flags: 
     } else if (arg.startsWith('-')) {
       const key = arg.replace(/^-/, '');
       flags[key] = true;
-    } else if (!args['<file>']) {
-      args['<file>'] = arg;
-    } else if (!args['<slug>']) {
-      args['<slug>'] = arg;
-    } else if (!args['<path>']) {
-      args['<path>'] = arg;
+    } else {
+      commandParts.push(arg);
     }
+  }
+
+  args['__commandParts'] = commandParts;
+  if (!args['<file>'] && commandParts[0]) {
+    args['<file>'] = commandParts[0];
+  }
+  if (!args['<slug>'] && commandParts[1]) {
+    args['<slug>'] = commandParts[1];
   }
 
   return { cmd, args, flags };

@@ -31,40 +31,24 @@ import './commands/newsletter/add.ts';
 import './commands/newsletter/remove.ts';
 
 async function main(): Promise<void> {
-  const { cmd, args, flags } = parseArgs(process.argv);
-
-  let mainCmd = '';
-  let subCmd = '';
-
-  if (cmd && cmd !== 'help') {
-    const parts = cmd.split(' ');
-    mainCmd = parts[0] || '';
-    subCmd = parts[1] || '';
-  }
+  const { args, flags } = parseArgs(process.argv);
 
   if ((args['help'] || flags.h || flags.help)) {
-    const helpTarget = subCmd ? `${mainCmd} ${subCmd}` : mainCmd;
-    showCommandHelp(helpTarget);
+    showCommandHelp(args['<file>'] || '');
     return;
   }
 
-  if (cmd === 'help' || cmd === undefined) {
-    if (args['<file>']) {
-      showCommandHelp(args['<file>']);
-    } else {
-      showHelp();
-    }
+  const commandParts = (args['__commandParts'] as string[]) || [];
+  const input = commandParts.join(' ');
+  if (!commandParts.length || input === 'help') {
+    showHelp();
     return;
   }
 
-  let command = registry.get(mainCmd);
-
-  if (!command && subCmd) {
-    command = registry.get(`${mainCmd}-${subCmd}`);
-  }
+  const command = registry.tryCommandLookup(input);
 
   if (!command) {
-    console.error(`Unknown command: ${cmd}`);
+    console.error(`Unknown command: ${input}`);
     console.log('Run "blog help" for usage.');
     process.exit(1);
   }
