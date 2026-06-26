@@ -28,7 +28,7 @@ export function parseArgs(argv: string[]): { cmd: string; args: CliArgs; flags: 
     }
   }
 
-  args['__commandParts'] = commandParts;
+  args.commandParts = commandParts;
   if (!args['<file>'] && commandParts[0]) {
     args['<file>'] = commandParts[0];
   }

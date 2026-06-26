@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
+import { SocialFloatingFooter } from "./SocialFloatingFooter";
 import { loadAnalytics } from "./analytics";
 
 const geistSans = Geist({
@@ -35,6 +36,7 @@ export default function RootLayout({
         <Providers>
           <AnalyticsInjector />
           <main className="flex-1">{children}</main>
+          <SocialFloatingFooter />
         </Providers>
       </body>
     </html>

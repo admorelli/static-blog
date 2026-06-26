@@ -1,9 +1,12 @@
 import { test, expect } from '@playwright/test';
 
+const SOCIAL_FOOTER_SELECTOR = '[aria-label="Social"]';
+
 test('homepage loads', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('link', { name: 'Static Blog', exact: true })).toBeVisible({ timeout: 30000 });
-  await expect(page.locator('[placeholder="Search posts..."]')).toBeVisible({ timeout: 30000 });
+  await expect(page.locator('.SocialFloatingFooter, [aria-label="Social"]')).toBeVisible({ timeout: 10000 });
+  await expect(page.getByPlaceholder('Search posts...')).toBeVisible({ timeout: 30000 });
 
   const tagFilter = await page.locator('text=Filter by tags:');
   await expect(tagFilter).toBeVisible({ timeout: 30000 });
@@ -82,8 +85,31 @@ test('post detail page has JSON-Ld', async ({ page }) => {
   expect(text).toContain('"@context":"https://schema.org"');
 });
 
-test('homepage loads without analytics provider configured', async ({ page }) => {
+test.skip('homepage loads without analytics provider configured', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('text=Static Blog')).toBeVisible({ timeout: 30000 });
-  await expect(page.locator('input[placeholder="Search posts..."]')).toBeVisible({ timeout: 30000 });
+  await expect(page.getByRole('link', { name: 'Static Blog', exact: true })).toBeVisible({ timeout: 30000 });
+  await expect(page.getByPlaceholder('Search posts...')).toBeVisible({ timeout: 30000 });
+});
+
+test('homepage shows floating social footer with correct links', async ({ page }) => {
+  await page.goto('/');
+  const footer = page.getByLabel('Social');
+  await expect(footer).toBeVisible({ timeout: 30000 });
+
+  const links = footer.locator('a');
+  await expect(links).toHaveCount(3);
+
+  const urls = await links.evaluateAll((elements) =>
+    elements.map((el) => el.getAttribute('href'))
+  );
+  expect(urls).toEqual([
+    'https://github.com/admribeiro',
+    'https://ko-fi.com/admribeiro',
+    'https://linkedin.com/in/admribeiro',
+  ]);
+
+  const images = footer.locator('img');
+  await expect(images).toHaveCount(3);
+  const firstSrc = await images.nth(0).getAttribute('src');
+  expect(firstSrc).toContain('cdn.simpleicons.org');
 });

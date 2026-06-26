@@ -4,13 +4,14 @@ Um blog de tecnologia moderno, profissional e pessoal, com modo de desenvolvimen
 
 ## 🧪 E2E Analytics Config
 
-The following Playwright e2e coverage items require analytics env values to be documented:
+O teste `e2e/analytics.test.ts` requer variáveis de analytics e está pulado temporariamente até a configuração ser documentada.
 
+Variáveis necessárias (Plausible/Umami):
 - `NEXT_PUBLIC_ANALYTICS_PROVIDER`
 - `NEXT_PUBLIC_ANALYTICS_SITE_ID`
 - `NEXT_PUBLIC_ANALYTICS_SCRIPT`
 
-Add these to `.env` or the deployment environment and re-enable `e2e/analytics.test.ts`.
+Adicione esses valores em `.env` ou no ambiente de deploy, ajuste `app/analytics.tsx` conforme o provedor e reative `test.skip(...)` no arquivo `e2e/analytics.test.ts`.
 
 ## 🚀 Getting Started
 

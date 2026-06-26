@@ -4,12 +4,6 @@ import { Fragment, useRef, useEffect, useMemo, createElement } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTags, useTagFilter, useSearchFilter, useFilteredPosts } from "./hooks/use-home-filters";
 
-const BRAND_LINKS = [
-  { label: "GitHub", href: "https://github.com/admribeiro" },
-  { label: "Ko-fi", href: "https://ko-fi.com/admribeiro" },
-  { label: "LinkedIn", href: "https://linkedin.com/in/admribeiro" },
-];
-
 function Excerpt({ html }: { html: string }) {
   const text = useMemo(() => {
     const normalized = html
@@ -106,25 +100,6 @@ export default function HomePageClient() {
             ))}
           </div>
         </div>
-        <p className="text-center text-muted text-sm mt-2">
-          by Youseff Abd El-Noor
-        </p>
-        <nav aria-label="Links">
-          <ul className="list-none m-0 p-0 flex flex-wrap justify-center gap-6 text-sm">
-            {BRAND_LINKS.map(({ label, href }) => (
-              <li key={label}>
-                <a
-                  className="text-accent hover:underline"
-                  href={href}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
       </div>
       <div className="p-4 max-w-2xl mx-auto">
         <ul className="space-y-4">
