@@ -11,9 +11,12 @@ export default defineConfig({
     },
   },
   webServer: {
-    command: 'npm run dev',
+    command: './playwright-serve.sh',
     port: 3001,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    env: {
+      PLAYWRIGHT_STATIC_EXPORT: '1',
+    },
   },
 });

@@ -2,6 +2,16 @@
 
 Um blog de tecnologia moderno, profissional e pessoal, com modo de desenvolvimento via CLI (TUI), persistência SQLite simples, SSG via GitHub Actions, UI moderna com tema escuro e tags de filtro.
 
+## 🧪 E2E Analytics Config
+
+The following Playwright e2e coverage items require analytics env values to be documented:
+
+- `NEXT_PUBLIC_ANALYTICS_PROVIDER`
+- `NEXT_PUBLIC_ANALYTICS_SITE_ID`
+- `NEXT_PUBLIC_ANALYTICS_SCRIPT`
+
+Add these to `.env` or the deployment environment and re-enable `e2e/analytics.test.ts`.
+
 ## 🚀 Getting Started
 
 The project includes a full unit-test suite (Vitest) and end-to-end tests (Playwright) that verify the homepage, posts list, and post detail pages load correctly.
