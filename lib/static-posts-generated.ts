@@ -4,6 +4,7 @@ export interface Post {
   slug: string;
   title: string;
   content: string;
+  excerpt: string;
   created_at: number;
   images: Array<{
     original: string;
@@ -26,6 +27,7 @@ export const POSTS_DATA = [
     "created_at": 1782464674,
     "series": null,
     "series_order": null,
+    "excerpt": "<p>This post covers the latest PR improvements around E2E stability, static export serving for Playwright, and documenting the analytics skip to keep the test suite green.</p>\n",
     "images": []
   },
   {
@@ -36,6 +38,7 @@ export const POSTS_DATA = [
     "created_at": 1781913600,
     "series": null,
     "series_order": null,
+    "excerpt": "<p><strong>TL;DR:</strong> We built an automated image optimization pipeline that generates WebP, resizes for different viewports, and lazy-loads by default. The biggest win was nuking our LCP and reducing total page weight. The hardest part? Losing the Next.js <code>&lt;Image&gt;</code> optimizer mid-project and having to forklift the entire pipeline.</p>...",
     "images": []
   },
   {
@@ -46,6 +49,7 @@ export const POSTS_DATA = [
     "created_at": 1781913600,
     "series": null,
     "series_order": null,
+    "excerpt": "<p>Our navigation stack went through three major iterations. This post covers the final version: client-side search powered by <code>posts-index.json</code>, infinite scroll with TanStack Query, and a sticky header with theme toggle.</p><p>The blog uses <code>output: &#39;export&#39;</code>. No server-side runtime (no Next.js server, no API routes, no server functions). That rules out on-demand search via an API endpoint.</p><p>We could have:</p>...",
     "images": []
   },
   {
@@ -56,6 +60,7 @@ export const POSTS_DATA = [
     "created_at": 1781913600,
     "series": null,
     "series_order": null,
+    "excerpt": "<p>The blog ships with a TypeScript-based CLI under <code>cli/</code>. You run it as <code>npm run blog</code> or <code>npx tsx cli/index.ts</code>. This post walks through every command group and why it exists.</p><p>Top reasons:</p>...",
     "images": []
   },
   {
@@ -66,6 +71,7 @@ export const POSTS_DATA = [
     "created_at": 1781913600,
     "series": null,
     "series_order": null,
+    "excerpt": "<p>Newsletter integration (M11) shipped a subscription form at <code>/newsl</code> plus CLI commands to manage the subscriber list. This post covers how it works and the engineering decisions we made.</p><p><code>app/newsl/page.tsx</code> renders a server-rendered form. The client code (<code>app/newsl/page-client.tsx</code>) handles validation and submission. It follows the same pattern as the rest of the blog: server shell + client interactions.</p>...",
     "images": []
   },
   {
@@ -76,6 +82,7 @@ export const POSTS_DATA = [
     "created_at": 1781913600,
     "series": null,
     "series_order": null,
+    "excerpt": "<p>Privacy Analytics (M13) added optional Plausible and Umami support. This article explains the design, what &quot;respects DNT&quot; actually means in our implementation, and how we test it.</p><p>Under those constraints, using Plausible Cloud (self-hosted or their hosted) or Umami is the right fit. Both accept pageviews via a single script tag.</p><p><code>app/analytics.tsx</code> is our privacy gate. It:</p>...",
     "images": []
   },
   {
@@ -86,6 +93,7 @@ export const POSTS_DATA = [
     "created_at": 1781643569,
     "series": null,
     "series_order": null,
+    "excerpt": "<p>Today I spent the entire day debugging a Next.js 13 static blog deployed to GitHub Pages. What started as a simple &quot;posts not showing&quot; issue turned into a cascade of interconnected problems: broken URLs, 404s on JSON endpoints, post pages showing &quot;Post not found&quot;, dark mode not working, and markdown rendering as garbled text.</p><p>Here&#39;s the full story of what broke, why, and how I fixed each piece.</p>...",
     "images": []
   },
   {
@@ -96,6 +104,7 @@ export const POSTS_DATA = [
     "created_at": 1781539622,
     "series": "getting-started",
     "series_order": 1,
+    "excerpt": "<p>After the OpenRouter free tier experiment, life happened. The project sat quiet for weeks. Last weekend, I came back with a fresh idea: <strong>run everything locally again, but this time with Hermes</strong> — a more sophisticated agent framework.</p><p>I pointed Hermes at my local LLM (Mellum 2-12B-A2.5B Thinking, IQ4_NL quantized, running on llama.cpp/ROCm on my RX 7600).</p><p>It worked. Kind of. Then the familiar trap snapped shut again.</p>...",
     "images": []
   },
   {
@@ -106,6 +115,7 @@ export const POSTS_DATA = [
     "created_at": 1781539622,
     "series": "getting-started",
     "series_order": 2,
+    "excerpt": "<p>After the Hermes local LLM experiment, I needed closure. The project had sat at 90% for weeks. Today, I opened OpenRouter, selected <strong>Nemotron 3 Ultra (free tier)</strong>, pointed Pi agent at it, and said:</p><p>&quot;Finish the base project. All the way to deploy.&quot;</p><p>It took one afternoon.</p>...",
     "images": []
   },
   {
@@ -116,6 +126,7 @@ export const POSTS_DATA = [
     "created_at": 1781539621,
     "series": "advanced-topics",
     "series_order": 1,
+    "excerpt": "<p>I started this project with a simple goal: build a static blog generator using Next.js, SQLite, and a CLI tool. What I didn&#39;t expect was the journey of working with a heavily quantized Qwen 3.5 model running locally on my machine.</p>...",
     "images": []
   },
   {
@@ -126,6 +137,7 @@ export const POSTS_DATA = [
     "created_at": 1781539621,
     "series": "advanced-topics",
     "series_order": 2,
+    "excerpt": "<p>After documenting the chaos of building with a heavily quantized Qwen 3.5, I made a switch that changed everything: I moved from opencode + quantized local Qwen to <strong>Pi agent</strong> with a better model.</p><p>The difference was night and day.</p>...",
     "images": []
   },
   {
@@ -136,6 +148,7 @@ export const POSTS_DATA = [
     "created_at": 1781539587,
     "series": null,
     "series_order": null,
+    "excerpt": "<p>Welcome to my blog built with Next.js, Tailwind and Drizzle ORM.<p><img src=\"/images/posts/hello-world/hello-world.webp\" alt=\"e2e-check\"></p>\n</p>",
     "images": []
   },
   {
@@ -146,6 +159,7 @@ export const POSTS_DATA = [
     "created_at": 1781539587,
     "series": null,
     "series_order": null,
+    "excerpt": "<p>This is another post.</p>",
     "images": []
   },
   {
@@ -156,6 +170,7 @@ export const POSTS_DATA = [
     "created_at": 1750204800,
     "series": null,
     "series_order": null,
+    "excerpt": "<p>This session was a comprehensive implementation of all 6 P2 (Engagement &amp; Polish) tasks from our DEV_PLAN.md, plus several critical bug fixes and infrastructure improvements.</p>...",
     "images": []
   }
 ] as const;

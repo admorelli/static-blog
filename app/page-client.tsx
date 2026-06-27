@@ -4,6 +4,12 @@ import { Fragment, useRef, useEffect, useMemo, createElement } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTags, useTagFilter, useSearchFilter, useFilteredPosts } from "./hooks/use-home-filters";
 
+function getBasePath(): string {
+  if (typeof window === "undefined") return "";
+  const meta = document.querySelector('meta[name="next-base-path"]');
+  return meta?.getAttribute("content") ?? "";
+}
+
 function Excerpt({ html }: { html: string }) {
   const text = useMemo(() => {
     const normalized = html
@@ -27,6 +33,7 @@ export default function HomePageClient() {
   const tags = useTags();
   const { selected, toggleTag } = useTagFilter();
   const { search, setSearch } = useSearchFilter();
+  const basePath = getBasePath();
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useFilteredPosts({ search, tagIds: Array.from(selected) });
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -109,7 +116,7 @@ export default function HomePageClient() {
               className="border p-4 rounded bg-card-bg border-card-border"
             >
               <a
-                href={`/posts/${post.slug}`}
+                href={`${basePath}/posts/${post.slug}`}
                 className="text-foreground hover:text-accent transition-colors"
               >
                 <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
@@ -117,9 +124,9 @@ export default function HomePageClient() {
                   {new Date(post.created_at * 1000).toLocaleDateString()}
                 </p>
               </a>
-              <Excerpt html={post.content} />
+              <Excerpt html={post.excerpt ?? post.content} />
               <a
-                href={`/posts/${post.slug}`}
+                href={`${basePath}/posts/${post.slug}`}
                 className="text-sm font-medium text-accent hover:underline inline-flex items-center gap-1"
               >
                 Read more

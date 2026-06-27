@@ -1,12 +1,14 @@
 import { test, expect } from '@playwright/test';
 
 test('homepage search filters posts by title', async ({ page }) => {
-  await page.goto('/');
-  await expect(page.locator('[placeholder="Search posts..."]')).toBeVisible({ timeout: 30000 });
-
-  await page.locator('[placeholder="Search posts..."]').fill('Hello World');
+  await page.goto('/search');
   await page.waitForLoadState('networkidle');
 
+  const searchInput = page.locator('[placeholder="Search posts..."]');
+  await expect(searchInput).toBeVisible();
+  await searchInput.fill('Hello World');
+
+  await expect(page.locator('h2').first()).toContainText('Hello World', { timeout: 10000 });
   const visibleHeadings = page.locator('h2');
   await expect(visibleHeadings.first()).toContainText('Hello World', { timeout: 10000 });
   const count = await visibleHeadings.count();

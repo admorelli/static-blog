@@ -14,6 +14,7 @@ export interface Post {
   title: string;
   slug: string;
   content: string;
+  excerpt?: string;
   created_at: number;
   series: string | null;
   series_order: number | null;
