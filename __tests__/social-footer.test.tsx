@@ -1,10 +1,11 @@
 import { describe, it, expect } from 'vitest';
+import { createElement } from 'react';
 import { render, screen } from '@testing-library/react';
 import { SocialFloatingFooter } from '../app/SocialFloatingFooter';
 
 describe('SocialFloatingFooter', () => {
   it('renders three social links with correct hrefs', () => {
-    render(<SocialFloatingFooter />);
+    render(createElement(SocialFloatingFooter));
 
     const footer = screen.getByLabelText('Social');
     expect(footer).toBeTruthy();
@@ -21,16 +22,14 @@ describe('SocialFloatingFooter', () => {
     expected.forEach((href, idx) => {
       expect(links[idx].getAttribute('href')).toBe(href);
       expect(links[idx].getAttribute('aria-label')).toBe(
-        expect.stringContaining(
-          ['GitHub', 'Ko-fi', 'LinkedIn'][idx]
-        )
+        expect.stringContaining(['GitHub', 'Ko-fi', 'LinkedIn'][idx])
       );
       expect(links[idx].getAttribute('target')).toBe('_blank');
     });
   });
 
   it('renders social icons from official CDN', () => {
-    render(<SocialFloatingFooter />);
+    render(createElement(SocialFloatingFooter));
 
     const footer = screen.getByLabelText('Social');
     const images = footer.querySelectorAll('img');

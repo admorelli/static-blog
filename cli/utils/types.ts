@@ -38,7 +38,6 @@ export interface CliArgs {
   postId?: string;
   'post-id'?: string;
   tagName?: string;
-  [key: string]: string | boolean | undefined;
   commandParts?: string[];
 }
 

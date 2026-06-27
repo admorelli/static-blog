@@ -1,7 +1,5 @@
 import { test, expect } from '@playwright/test';
 
-const SOCIAL_FOOTER_SELECTOR = '[aria-label="Social"]';
-
 test('homepage loads', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('link', { name: 'Static Blog', exact: true })).toBeVisible({ timeout: 30000 });

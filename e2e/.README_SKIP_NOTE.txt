@@ -1,0 +1,4 @@
+TEMPORARY SKIP RATIONALE
+- File: e2e/analytics.test.ts
+- Reason: configured analytics key is currently missing from the repo environment/README.
+- Outcome: this suite is skipped during E2E runs until the README steps are executed.
