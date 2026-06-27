@@ -51,20 +51,27 @@ export async function fetchFilteredPosts({
   signal?: AbortSignal;
 }): Promise<PagedPosts> {
   const basePath = getBasePath();
-  const url = new URL(`${basePath}/data/posts-index.json`, window.location.origin);
-  const params = url.searchParams;
-
-  if (search) params.set("search", search);
-  if (tagIds.length) params.set("tags", tagIds.join(","));
-  params.set("offset", String(offset));
-  params.set("limit", String(limit));
-
-  const res = await fetch(url.toString(), { signal });
+  const res = await fetch(`${basePath}/data/posts-index.json`, { signal });
   if (!res.ok) {
     throw new Error(`Failed to load posts (${res.status})`);
   }
+  const indexData = (await res.json()) as { posts: Post[] };
 
-  return res.json();
+  const normalizedSearch = search.trim().toLowerCase();
+  const tagIdSet = new Set(tagIds);
+  const filtered = indexData.posts.filter((post) => {
+    const matchesSearch =
+      !normalizedSearch ||
+      post.title.toLowerCase().includes(normalizedSearch) ||
+      post.content.toLowerCase().includes(normalizedSearch);
+    const matchesTags = tagIdSet.size === 0;
+    return matchesSearch && matchesTags;
+  });
+
+  return {
+    posts: filtered.slice(offset, offset + limit),
+    total: filtered.length,
+  };
 }
 
 export function useTags() {

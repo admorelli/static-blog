@@ -31,24 +31,22 @@ import './commands/newsletter/add.ts';
 import './commands/newsletter/remove.ts';
 
 async function main(): Promise<void> {
-  const { args, flags } = parseArgs(process.argv);
+  const { cmd, args, flags } = parseArgs(process.argv);
 
   if ((args['help'] || flags.h || flags.help)) {
     showCommandHelp(args['<file>'] || '');
     return;
   }
 
-  const commandParts = args.commandParts || [];
-  const input = commandParts.join(' ');
-  if (!commandParts.length || input === 'help') {
+  if (!cmd || cmd === 'help') {
     showHelp();
     return;
   }
 
-  const command = registry.tryCommandLookup(input);
+  const command = registry.tryCommandLookup(cmd);
 
   if (!command) {
-    console.error(`Unknown command: ${input}`);
+    console.error(`Unknown command: ${cmd}`);
     console.log('Run "blog help" for usage.');
     process.exit(1);
   }

@@ -1,14 +1,214 @@
 [
   {
-    "id": 2,
-    "name": "life"
+    "id": 19,
+    "name": "agent-architecture"
+  },
+  {
+    "id": 10,
+    "name": "agent-comparison"
+  },
+  {
+    "id": 50,
+    "name": "analytics"
+  },
+  {
+    "id": 28,
+    "name": "basepath"
+  },
+  {
+    "id": 36,
+    "name": "cli"
+  },
+  {
+    "id": 38,
+    "name": "cli-test"
+  },
+  {
+    "id": 40,
+    "name": "cli-test-1"
+  },
+  {
+    "id": 42,
+    "name": "cli-test-tag"
+  },
+  {
+    "id": 23,
+    "name": "debugging"
+  },
+  {
+    "id": 26,
+    "name": "deployment"
+  },
+  {
+    "id": 6,
+    "name": "development"
+  },
+  {
+    "id": 43,
+    "name": "devlog"
+  },
+  {
+    "id": 33,
+    "name": "drizzle"
+  },
+  {
+    "id": 39,
+    "name": "dup-tag"
+  },
+  {
+    "id": 52,
+    "name": "e2e"
+  },
+  {
+    "id": 35,
+    "name": "engagement"
+  },
+  {
+    "id": 13,
+    "name": "free-tier"
+  },
+  {
+    "id": 22,
+    "name": "github-pages"
+  },
+  {
+    "id": 29,
+    "name": "gray-matter"
+  },
+  {
+    "id": 16,
+    "name": "hermes"
+  },
+  {
+    "id": 44,
+    "name": "images"
   },
   {
     "id": 1,
-    "name": "tech"
+    "name": "llm"
+  },
+  {
+    "id": 2,
+    "name": "local-llm"
+  },
+  {
+    "id": 25,
+    "name": "markdown"
+  },
+  {
+    "id": 30,
+    "name": "marked"
+  },
+  {
+    "id": 17,
+    "name": "mellum"
+  },
+  {
+    "id": 11,
+    "name": "nemotron"
+  },
+  {
+    "id": 14,
+    "name": "nemotron-3-ultra"
+  },
+  {
+    "id": 49,
+    "name": "newsletter"
+  },
+  {
+    "id": 21,
+    "name": "nextjs"
+  },
+  {
+    "id": 9,
+    "name": "opencode"
+  },
+  {
+    "id": 12,
+    "name": "openrouter"
+  },
+  {
+    "id": 34,
+    "name": "p2"
+  },
+  {
+    "id": 8,
+    "name": "pi-agent"
+  },
+  {
+    "id": 53,
+    "name": "playwright"
+  },
+  {
+    "id": 51,
+    "name": "privacy"
+  },
+  {
+    "id": 15,
+    "name": "project-completion"
+  },
+  {
+    "id": 5,
+    "name": "prompt-engineering"
+  },
+  {
+    "id": 4,
+    "name": "quantization"
   },
   {
     "id": 3,
-    "name": "tutorial"
+    "name": "qwen"
+  },
+  {
+    "id": 7,
+    "name": "retrospective"
+  },
+  {
+    "id": 46,
+    "name": "search"
+  },
+  {
+    "id": 41,
+    "name": "shared-check"
+  },
+  {
+    "id": 32,
+    "name": "sqlite"
+  },
+  {
+    "id": 24,
+    "name": "static-site"
+  },
+  {
+    "id": 20,
+    "name": "test"
+  },
+  {
+    "id": 48,
+    "name": "tooling"
+  },
+  {
+    "id": 18,
+    "name": "tools"
+  },
+  {
+    "id": 31,
+    "name": "typescript"
+  },
+  {
+    "id": 47,
+    "name": "ui"
+  },
+  {
+    "id": 37,
+    "name": "updated"
+  },
+  {
+    "id": 27,
+    "name": "urls"
+  },
+  {
+    "id": 45,
+    "name": "web performance"
   }
 ]
