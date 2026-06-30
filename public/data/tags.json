@@ -12,6 +12,10 @@
     "name": "analytics"
   },
   {
+    "id": 62,
+    "name": "android"
+  },
+  {
     "id": 28,
     "name": "basepath"
   },
@@ -74,6 +78,10 @@
   {
     "id": 52,
     "name": "e2e"
+  },
+  {
+    "id": 63,
+    "name": "encryption"
   },
   {
     "id": 35,
@@ -164,6 +172,10 @@
     "name": "project-completion"
   },
   {
+    "id": 60,
+    "name": "project-idea"
+  },
+  {
     "id": 5,
     "name": "prompt-engineering"
   },
@@ -186,6 +198,10 @@
   {
     "id": 46,
     "name": "search"
+  },
+  {
+    "id": 61,
+    "name": "security"
   },
   {
     "id": 41,

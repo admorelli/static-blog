@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import testDb, { createPost, getPostBySlug, listPosts } from './test-db';
@@ -227,7 +228,14 @@ describe('Regression: Static JSON data files accessibility', () => {
     }
   });
 
-  it('post-tags.json relationships should reference valid posts and tags', () => {
+  it('post-tags.json relationships should reference valid posts and tags', async () => {
+    try {
+      execSync('npm run generate:static-data', { cwd: process.cwd(), encoding: 'utf-8', stdio: 'pipe' });
+    } catch (e: unknown) {
+      const message = e instanceof Error ? e.message : String(e);
+      throw new Error(`Failed to generate static data before regression check: ${message}`);
+    }
+
     const postsPath = path.join(dataDir, 'posts-index.json');
     const tagsPath = path.join(dataDir, 'tags.json');
     const postTagsPath = path.join(dataDir, 'post-tags.json');
