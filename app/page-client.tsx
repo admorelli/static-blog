@@ -1,8 +1,8 @@
 "use client";
 
-import { Fragment, useRef, useEffect, useMemo, createElement } from "react";
+import { Fragment, useRef, useEffect, useMemo, createElement, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useTags, useTagFilter, useSearchFilter, useFilteredPosts } from "./hooks/use-home-filters";
+import { useTags, useTagFilter, useFilteredPosts } from "./hooks/use-home-filters";
 
 function getBasePath(): string {
   if (typeof window === "undefined") return "";
@@ -32,12 +32,17 @@ function Excerpt({ html }: { html: string }) {
 export default function HomePageClient() {
   const tags = useTags();
   const { selected, toggleTag } = useTagFilter();
-  const { search, setSearch } = useSearchFilter();
-  const basePath = getBasePath();
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useFilteredPosts({ search, tagIds: Array.from(selected) });
-  const sentinelRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
+  const basePath = getBasePath();
+  const urlSearch = searchParams.get("q")?.toLowerCase() ?? "";
+  const [localSearch, setLocalSearch] = useState(urlSearch);
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useFilteredPosts({ search: localSearch, tagIds: Array.from(selected) });
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setLocalSearch(urlSearch);
+  }, [urlSearch]);
 
   const posts = useMemo(() => data?.pages.flatMap((page) => page.posts) ?? [], [data]);
 
@@ -64,10 +69,10 @@ export default function HomePageClient() {
   }
 
   if (posts.length === 0) {
-    if (search) {
+    if (localSearch) {
       return (
         <div className="p-4 text-center text-muted">
-          No results for &quot;{search}&quot;
+          No results for &quot;{localSearch}&quot;
         </div>
       );
     }
@@ -82,9 +87,9 @@ export default function HomePageClient() {
           <input
             type="text"
             placeholder="Search posts..."
-            defaultValue={searchParams.get("q") ?? ""}
+            value={localSearch}
             className="w-full border rounded p-2 bg-card-bg border-card-border text-foreground"
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => setLocalSearch(e.target.value)}
           />
         </div>
         <div className="mb-4">
