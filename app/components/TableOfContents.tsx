@@ -20,7 +20,8 @@ export function TableOfContents({ content }: { content: string }) {
     const items: TocItem[] = [];
 
     headingElements.forEach((heading) => {
-      const id = heading.id || heading.getAttribute("data-toc-id") || "";
+      const id =
+        heading.id || heading.getAttribute("data-toc-id") || "";
       if (!id) return;
       items.push({
         id,
@@ -55,32 +56,34 @@ export function TableOfContents({ content }: { content: string }) {
   if (tocItems.length === 0) return null;
 
   return (
-    <nav className="toc sticky top-24 hidden lg:block" aria-label="Table of Contents">
-      <h3 className="text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">On this page</h3>
-      <ul className="space-y-1 text-sm">
-        {tocItems.map((item) => (
-          <li key={item.id} className={item.level === 3 ? "ml-4" : ""}>
-            <a
-              href={`#${item.id}`}
-              className={`block py-1 px-2 rounded transition-colors ${
-                activeId === item.id
-                  ? "text-blue-600 dark:text-blue-400 font-medium bg-blue-50 dark:bg-blue-900/20"
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-              }`}
-              onClick={(e) => {
-                e.preventDefault();
-                const element = document.getElementById(item.id);
-                if (element) {
-                  element.scrollIntoView({ behavior: "smooth", block: "start" });
-                  history.pushState(null, "", `#${item.id}`);
-                }
-              }}
-            >
-              {item.text}
-            </a>
-          </li>
-        ))}
-      </ul>
+    <nav className="toc max-w-[340px] hidden lg:block" aria-label="Table of Contents">
+      <h3 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">On this page</h3>
+      <div className="w-full rounded-lg border border-card-border bg-background p-3">
+        <ul className="space-y-0.5 text-sm">
+          {tocItems.map((item) => (
+            <li key={item.id} className={item.level === 3 ? "ml-4" : ""}>
+              <a
+                href={`#${item.id}`}
+                className={`block py-1.5 px-2.5 rounded transition-colors leading-snug ${
+                  activeId === item.id
+                    ? "text-blue-600 dark:text-blue-400 font-medium bg-blue-50 dark:bg-blue-900/20"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                }`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  const element = document.getElementById(item.id);
+                  if (element) {
+                    element.scrollIntoView({ behavior: "smooth", block: "start" });
+                    history.pushState(null, "", `#${item.id}`);
+                  }
+                }}
+              >
+                {item.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
     </nav>
   );
 }

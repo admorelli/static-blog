@@ -210,8 +210,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-12 gap-8 items-start">
-          <article className="lg:col-span-8 min-w-0">
+        <div className="grid lg:grid-cols-[1fr_340px] gap-8 items-start">
+          <article className="min-w-0">
             <div className="p-6 bg-background border border-card-border rounded-lg">
               <header className="mb-6">
                 <h1 className="text-3xl font-bold mb-2">{postTitle}</h1>
@@ -225,31 +225,34 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                   ))}
                 </div>
               </header>
+              {description ? (
+                <p className="mb-6 text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {description}
+                </p>
+              ) : null}
               <div className="prose dark:prose-invert" dangerouslySetInnerHTML={{ __html: htmlWithIds }} />
             </div>
           </article>
-          <aside className="lg:block hidden">
-            <div className="lg:sticky lg:top-24">
-              <TableOfContents content={htmlWithIds} />
-              {post.series ? (
-                <nav className="mt-4 p-4 bg-background border border-card-border rounded-lg" aria-label="Series contents">
-                  <h3 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">{post.series}</h3>
-                  <ol className="space-y-1 text-sm" start={1}>
-                    {(await getPostsBySeries(post.series)).map((sp, i) => (
-                      <li key={sp.id} className={sp.slug === post.slug ? 'font-semibold text-accent' : ''}>
-                        {sp.slug === post.slug ? (
-                          <span className="text-sm font-semibold text-accent">{i + 1}. {sp.title}</span>
-                        ) : (
-                          <a href={`/posts/${sp.slug}`} className="text-gray-600 dark:text-gray-400 hover:text-accent transition-colors block py-1 px-2 rounded">
-                            {i + 1}. {sp.title}
-                          </a>
-                        )}
-                      </li>
-                    ))}
-                  </ol>
-                </nav>
-              ) : null}
-            </div>
+          <aside className="hidden lg:block">
+            <TableOfContents content={htmlWithIds} />
+            {post.series ? (
+              <nav className="mt-6 p-4 bg-background border border-card-border rounded-lg" aria-label="Series contents">
+                <h3 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">{post.series}</h3>
+                <ol className="space-y-1 text-sm" start={1}>
+                  {(await getPostsBySeries(post.series)).map((sp, i) => (
+                    <li key={sp.id} className={sp.slug === post.slug ? 'font-semibold text-accent' : ''}>
+                      {sp.slug === post.slug ? (
+                        <span className="text-sm font-semibold text-accent">{i + 1}. {sp.title}</span>
+                      ) : (
+                        <a href={`/posts/${sp.slug}`} className="text-gray-600 dark:text-gray-400 hover:text-accent transition-colors block py-1 px-2 rounded">
+                          {i + 1}. {sp.title}
+                        </a>
+                      )}
+                    </li>
+                  ))}
+                </ol>
+              </nav>
+            ) : null}
           </aside>
         </div>
       </div>
