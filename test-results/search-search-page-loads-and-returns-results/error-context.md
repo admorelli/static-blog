@@ -7,22 +7,23 @@
 # Test info
 
 - Name: search.test.ts >> search page loads and returns results
-- Location: e2e/search.test.ts:13:5
+- Location: e2e/search.test.ts:12:5
 
 # Error details
 
 ```
-Error: expect(locator).toContainText(expected) failed
+Error: expect(locator).toHaveCount(expected) failed
 
-Locator: locator('h2')
-Expected substring: "Hello World"
-Error: strict mode violation: locator('h2') resolved to 2 elements:
-    1) <h2 class="text-xl font-semibold mb-2">Fixing a Static Blog: From Broken URLs to Working…</h2> aka getByRole('link', { name: 'Fixing a Static Blog: From' })
-    2) <h2 class="text-xl font-semibold mb-2">Hello World</h2> aka getByRole('link', { name: 'Hello World' })
+Locator:  locator('h2').filter({ hasText: 'Hello World' })
+Expected: 1
+Received: 0
+Timeout:  30000ms
 
 Call log:
-  - Expect "toContainText" with timeout 5000ms
-  - waiting for locator('h2')
+  - Expect "toHaveCount" with timeout 30000ms
+  - waiting for locator('h2').filter({ hasText: 'Hello World' })
+    63 × locator resolved to 0 elements
+       - unexpected value "0"
 
 ```
 
@@ -34,7 +35,7 @@ Call log:
     - generic [ref=e3]:
       - heading "Search" [level=1] [ref=e4]
       - textbox "Search posts..." [ref=e6]: hello-world
-      - paragraph [ref=e7]: 2 results for "hello-world"
+      - paragraph [ref=e7]: 1 result for "hello-world"
       - list [ref=e8]:
         - listitem [ref=e9]:
           - 'link "Fixing a Static Blog: From Broken URLs to Working Markdown" [ref=e10] [cursor=pointer]':
@@ -42,13 +43,17 @@ Call log:
             - 'heading "Fixing a Static Blog: From Broken URLs to Working Markdown" [level=2] [ref=e11]'
           - paragraph [ref=e12]: 6/16/2026
           - paragraph [ref=e13]: "--- title: \"Fixing a Static Blog: From Broken URLs to Working Markdown\" date: \"2025-06-16\" tags: [\"nextjs\", \"github-pages\", \"static-site\", \"debugging\", \"markdown\", \"deployment\", \"urls\", \"basepath\", \"g..."
-        - listitem [ref=e14]:
-          - link "Hello World" [ref=e15] [cursor=pointer]:
-            - /url: /posts/hello-world
-            - heading "Hello World" [level=2] [ref=e16]
-          - paragraph [ref=e17]: 6/15/2026
-          - paragraph [ref=e18]: Welcome to my blog built with Next.js, Tailwind and Drizzle ORM. ![e2e-check](/images/posts/hello-world/hello-world.webp)...
-  - alert [ref=e19]
+  - generic [ref=e14]:
+    - link "GitHub" [ref=e15] [cursor=pointer]:
+      - /url: https://github.com/admorelli
+      - img "GitHub" [ref=e16]
+    - link "Ko-fi" [ref=e18] [cursor=pointer]:
+      - /url: https://ko-fi.com/admribeiro
+      - img "Ko-fi" [ref=e19]
+    - link "LinkedIn" [ref=e21] [cursor=pointer]:
+      - /url: https://www.linkedin.com/in/allan-ribeiro-4761512b/
+      - img "LinkedIn" [ref=e22]
+  - alert [ref=e24]
 ```
 
 # Test source
@@ -57,22 +62,22 @@ Call log:
   1  | import { test, expect } from '@playwright/test';
   2  | 
   3  | test('homepage search filters posts by title', async ({ page }) => {
-  4  |   await page.goto('/');
-  5  |   await expect(page.locator('[placeholder="Search posts..."]')).toBeVisible({ timeout: 30000 });
+  4  |   await page.goto('/search?q=Hello+World');
+  5  |   await page.waitForLoadState('networkidle');
   6  | 
-  7  |   await page.locator('[placeholder="Search posts..."]').fill('Hello World');
-  8  |   await page.waitForLoadState('networkidle');
-  9  | 
-  10 |   await expect(page.locator('h2').first()).toContainText('Hello World', { timeout: 10000 });
-  11 | });
-  12 | 
-  13 | test('search page loads and returns results', async ({ page }) => {
-  14 |   await page.goto('/search?q=hello-world');
-  15 |   await expect(page.locator('h1')).toContainText('Search', { timeout: 30000 });
-  16 | 
-> 17 |   await expect(page.locator('h2')).toContainText('Hello World');
-     |                                    ^ Error: expect(locator).toContainText(expected) failed
-  18 |   await expect(page.locator('text=1 result')).toBeVisible({ timeout: 30000 });
+  7  |   const matching = page.locator('h2').filter({ hasText: 'Hello World' });
+  8  |   await expect(matching).toHaveCount(1, { timeout: 10000 });
+  9  |   await expect(matching.first()).toContainText('Hello World', { timeout: 10000 });
+  10 | });
+  11 | 
+  12 | test('search page loads and returns results', async ({ page }) => {
+  13 |   await page.goto('/search?q=hello-world');
+  14 |   await expect(page.locator('h1')).toContainText('Search', { timeout: 30000 });
+  15 | 
+  16 |   const matching = page.locator('h2').filter({ hasText: 'Hello World' });
+> 17 |   await expect(matching).toHaveCount(1, { timeout: 30000 });
+     |                          ^ Error: expect(locator).toHaveCount(expected) failed
+  18 |   await expect(page.locator('text=/result/')).toBeVisible({ timeout: 30000 });
   19 | });
   20 | 
   21 | test('search page shows no results for unknown query', async ({ page }) => {
