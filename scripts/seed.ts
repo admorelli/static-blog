@@ -75,8 +75,6 @@ async function main() {
     'from-pi-agent-to-openrouter-free': ['llm', 'nemotron', 'openrouter', 'free-tier', 'nemotron-3-ultra', 'pi-agent', 'free-tier-experiment', 'development'],
     'hermes-local-llm-tool-trap': ['llm', 'hermes', 'local-llm', 'mellum', 'tools', 'agent-architecture', 'development'],
     'nemotron-3-ultra-free-project-complete': ['llm', 'nemotron', 'openrouter', 'free-tier', 'nemotron-3-ultra', 'project-completion', 'development'],
-    'hello-world': ['tech'],
-    'second-post': ['tutorial'],
   };
 
   for (const postRow of postRows) {

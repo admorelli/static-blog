@@ -4,9 +4,22 @@ import { marked } from "marked";
 export function parseContent(rawContent: string): string {
   const { content: markdownBody } = matter(rawContent);
   const trimmed = markdownBody.trim();
-  if (!trimmed) return "";
-  if (trimmed.startsWith("<")) return trimmed;
+  if (!trimmed) return '';
+  if (trimmed.startsWith('<')) return trimmed;
   return marked.parse(trimmed, { async: false }) as string;
+}
+
+export function addHeadingIds(htmlContent: string): string {
+  return htmlContent.replace(/<h([23])([^>]*)>([\s\S]*?)<\/h\1>/g, (_, level, attrs, text) => {
+    const trimmedText = text.replace(/<[^>]*>/g, '').trim();
+    const id = trimmedText
+      .toLowerCase()
+      .trim()
+      .replace(/[\s/]+/g, '-')
+      .replace(/[^a-z0-9-]/g, '')
+      .replace(/-+/g, '-');
+    return `<h${level}${attrs} id="${id}">${text}</h${level}>`;
+  });
 }
 
 export function getExcerpt(rawContent: string, maxChars: number = 500): string {

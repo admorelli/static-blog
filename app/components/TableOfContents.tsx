@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface TocItem {
   id: string;
@@ -9,29 +9,29 @@ interface TocItem {
 }
 
 export function TableOfContents({ content }: { content: string }) {
-  const [tocItems] = useState<TocItem[]>(() => {
-    if (typeof window === 'undefined') return [];
-    const headings: TocItem[] = [];
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = content;
+  const [activeId, setActiveId] = useState<string>("");
 
-    const headingElements = tempDiv.querySelectorAll('h2, h3');
+  const tocItems = useMemo<TocItem[]>(() => {
+    if (typeof window === "undefined") return [];
+    const root = document.createElement("div");
+    root.innerHTML = content;
+
+    const headingElements = root.querySelectorAll("h2, h3");
+    const items: TocItem[] = [];
+
     headingElements.forEach((heading) => {
-      const id = heading.id || heading.textContent?.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '') || '';
-      if (!heading.id) {
-        heading.id = id;
-      }
-      headings.push({
+      const id = heading.id || heading.getAttribute("data-toc-id") || "";
+      if (!id) return;
+      items.push({
         id,
-        text: heading.textContent || '',
-        level: parseInt(heading.tagName.charAt(1)),
+        text: heading.textContent || "",
+        level: parseInt(heading.tagName.charAt(1), 10),
       });
     });
-    return headings;
-  });
-  const [activeId, setActiveId] = useState<string>('');
 
-  // Scroll spy to highlight active section
+    return items;
+  }, [content]);
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -50,16 +50,16 @@ export function TableOfContents({ content }: { content: string }) {
     return () => {
       elements.forEach((el) => observer.unobserve(el));
     };
-  }, []);
+  }, [content]);
 
   if (tocItems.length === 0) return null;
 
   return (
-    <nav className="toc sticky top-24 w-64 hidden lg:block" aria-label="Table of Contents">
+    <nav className="toc sticky top-24 hidden lg:block" aria-label="Table of Contents">
       <h3 className="text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">On this page</h3>
       <ul className="space-y-1 text-sm">
         {tocItems.map((item) => (
-          <li key={item.id} className={`${item.level === 3 ? "ml-4" : ""}`}>
+          <li key={item.id} className={item.level === 3 ? "ml-4" : ""}>
             <a
               href={`#${item.id}`}
               className={`block py-1 px-2 rounded transition-colors ${

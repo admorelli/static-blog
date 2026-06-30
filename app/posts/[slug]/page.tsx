@@ -7,6 +7,7 @@ import Link from 'next/link';
 import postsIndex from '@/public/data/posts-index.json';
 import matter from 'gray-matter';
 import { marked } from 'marked';
+import { addHeadingIds } from '@/lib/render';
 import fs from 'fs';
 import path from 'path';
 
@@ -191,6 +192,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       })
     : content;
   const htmlContent = markdownToHtml(optimizedContent);
+  const htmlWithIds = addHeadingIds(htmlContent);
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://your-username.github.io/static_blog';
   const postTitle = title || post.title;
@@ -208,42 +210,46 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-12 gap-8">
-          <article className="lg:col-span-8 p-6 max-w-2xl mx-auto">
-            <header className="mb-6">
-              <h1 className="text-3xl font-bold mb-2">{postTitle}</h1>
-              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-4">
-                <time dateTime={date}>{new Date(date).toLocaleDateString()}</time>
-                <span className="text-gray-500">{calculateReadingTime(htmlContent)} min read</span>
-                {tags.map((tag) => (
-                  <span key={tag} className="px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded text-xs">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </header>
-            <div className="prose dark:prose-invert flex-1" dangerouslySetInnerHTML={{ __html: htmlContent }} />
+        <div className="grid lg:grid-cols-12 gap-8 items-start">
+          <article className="lg:col-span-8 min-w-0">
+            <div className="p-6 bg-background border border-card-border rounded-lg">
+              <header className="mb-6">
+                <h1 className="text-3xl font-bold mb-2">{postTitle}</h1>
+                <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-4">
+                  <time dateTime={date}>{new Date(date).toLocaleDateString()}</time>
+                  <span className="text-gray-500">{calculateReadingTime(htmlContent)} min read</span>
+                  {tags.map((tag) => (
+                    <span key={tag} className="px-2 py-1 bg-card-bg border border-gray-200 dark:border-gray-800 rounded text-xs">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </header>
+              <div className="prose dark:prose-invert" dangerouslySetInnerHTML={{ __html: htmlWithIds }} />
+            </div>
           </article>
           <aside className="lg:block hidden">
-            <TableOfContents content={htmlContent} />
-            {post.series ? (
-              <nav className="mt-8 pt-8 border-t border-card-border" aria-label="Series contents">
-                <h3 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">{post.series}</h3>
-                <ol className="space-y-1 text-sm" start={1}>
-                  {(await getPostsBySeries(post.series)).map((sp, i) => (
-                    <li key={sp.id} className={sp.slug === post.slug ? 'font-semibold text-accent' : ''}>
-                      {sp.slug === post.slug ? (
-                        <span className="text-sm font-semibold text-accent">{i + 1}. {sp.title}</span>
-                      ) : (
-                        <a href={`/posts/${sp.slug}`} className="text-gray-600 dark:text-gray-400 hover:text-accent transition-colors block py-1 px-2 rounded">
-                          {i + 1}. {sp.title}
-                        </a>
-                      )}
-                    </li>
-                  ))}
-                </ol>
-              </nav>
-            ) : null}
+            <div className="lg:sticky lg:top-24">
+              <TableOfContents content={htmlWithIds} />
+              {post.series ? (
+                <nav className="mt-4 p-4 bg-background border border-card-border rounded-lg" aria-label="Series contents">
+                  <h3 className="text-sm font-semibold mb-3 text-gray-700 dark:text-gray-300">{post.series}</h3>
+                  <ol className="space-y-1 text-sm" start={1}>
+                    {(await getPostsBySeries(post.series)).map((sp, i) => (
+                      <li key={sp.id} className={sp.slug === post.slug ? 'font-semibold text-accent' : ''}>
+                        {sp.slug === post.slug ? (
+                          <span className="text-sm font-semibold text-accent">{i + 1}. {sp.title}</span>
+                        ) : (
+                          <a href={`/posts/${sp.slug}`} className="text-gray-600 dark:text-gray-400 hover:text-accent transition-colors block py-1 px-2 rounded">
+                            {i + 1}. {sp.title}
+                          </a>
+                        )}
+                      </li>
+                    ))}
+                  </ol>
+                </nav>
+              ) : null}
+            </div>
           </aside>
         </div>
       </div>
