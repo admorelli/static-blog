@@ -38,8 +38,10 @@ export default function HomePageClient() {
   const [localSearch, setLocalSearch] = useState(
     () => searchParams.get("q")?.toLowerCase() ?? ""
   );
+  const [searchQuery, setSearchQuery] = useState(() => localSearch);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useFilteredPosts({ search: localSearch, tagIds: Array.from(selected) });
+    useFilteredPosts({ search: searchQuery, tagIds: Array.from(selected) });
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -59,6 +61,32 @@ export default function HomePageClient() {
     observer.observe(sentinel);
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    timerRef.current = setTimeout(() => {
+      setSearchQuery(localSearch);
+      timerRef.current = null;
+    }, 5000);
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [localSearch]);
 
   const posts = useMemo(() => data?.pages.flatMap((page) => page.posts) ?? [], [data]);
 
@@ -85,6 +113,10 @@ export default function HomePageClient() {
     router.replace(next ? `?${next}` : location.pathname);
   };
 
+  const handleChange = (value: string) => {
+    setLocalSearch(value);
+  };
+
   return (
     <Fragment>
       <div className="p-4 max-w-2xl mx-auto">
@@ -95,8 +127,8 @@ export default function HomePageClient() {
             placeholder="Search posts..."
             value={localSearch}
             className="w-full border rounded p-2 bg-card-bg border-card-border text-foreground"
-            onChange={(e) => setLocalSearch(e.target.value)}
-            onBlur={() => updateQuery(localSearch)}
+            onChange={(e) => handleChange(e.target.value)}
+            onBlur={() => updateQuery(searchQuery)}
           />
         </div>
         <div className="mb-4">
