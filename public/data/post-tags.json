@@ -262,5 +262,45 @@
   {
     "postId": 28,
     "tagId": 21
+  },
+  {
+    "postId": 29,
+    "tagId": 43
+  },
+  {
+    "postId": 29,
+    "tagId": 54
+  },
+  {
+    "postId": 29,
+    "tagId": 55
+  },
+  {
+    "postId": 29,
+    "tagId": 56
+  },
+  {
+    "postId": 29,
+    "tagId": 57
+  },
+  {
+    "postId": 30,
+    "tagId": 43
+  },
+  {
+    "postId": 30,
+    "tagId": 58
+  },
+  {
+    "postId": 30,
+    "tagId": 21
+  },
+  {
+    "postId": 30,
+    "tagId": 59
+  },
+  {
+    "postId": 30,
+    "tagId": 54
   }
 ]
