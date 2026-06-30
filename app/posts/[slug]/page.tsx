@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import { Header } from '@/app/header';
 import { TableOfContents } from '@/app/components/TableOfContents';
 import { GiscusComments } from '@/app/components/GiscusComments';
 import { getPostsBySeries, getNextInSeries, getPrevInSeries } from '@/lib/posts';
@@ -204,7 +203,6 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
   return (
     <>
-      <Header />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

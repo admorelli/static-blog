@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { listPosts } from '@/lib/posts';
-import { Header } from '@/app/header';
 
 export async function generateStaticParams() {
   const posts = await listPosts();
@@ -11,7 +10,6 @@ export default async function PostsPage() {
   const posts = await listPosts();
   return (
     <>
-      <Header />
       <main className="p-4 max-w-4xl mx-auto">
         <h1 className="text-2xl font-bold mb-4">Posts</h1>
         <ul className="space-y-3">
