@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useRef, useEffect, useMemo, createElement, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTags, useTagFilter, useFilteredPosts } from "./hooks/use-home-filters";
 
 function getBasePath(): string {
@@ -32,19 +32,15 @@ function Excerpt({ html }: { html: string }) {
 export default function HomePageClient() {
   const tags = useTags();
   const { selected, toggleTag } = useTagFilter();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const basePath = getBasePath();
-  const urlSearch = searchParams.get("q")?.toLowerCase() ?? "";
-  const [localSearch, setLocalSearch] = useState(urlSearch);
+  const [localSearch, setLocalSearch] = useState(
+    () => searchParams.get("q")?.toLowerCase() ?? ""
+  );
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useFilteredPosts({ search: localSearch, tagIds: Array.from(selected) });
   const sentinelRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setLocalSearch(urlSearch);
-  }, [urlSearch]);
-
-  const posts = useMemo(() => data?.pages.flatMap((page) => page.posts) ?? [], [data]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -64,6 +60,8 @@ export default function HomePageClient() {
     return () => observer.disconnect();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
+  const posts = useMemo(() => data?.pages.flatMap((page) => page.posts) ?? [], [data]);
+
   if (isLoading && posts.length === 0) {
     return <div className="p-4 text-center text-muted">Loading posts...</div>;
   }
@@ -79,6 +77,14 @@ export default function HomePageClient() {
     return <p className="p-4 text-center text-muted">No posts found.</p>;
   }
 
+  const updateQuery = (value: string) => {
+    const params = new URLSearchParams(searchParams?.toString() ?? "");
+    if (!value) params.delete("q");
+    else params.set("q", value);
+    const next = params.toString();
+    router.replace(next ? `?${next}` : location.pathname);
+  };
+
   return (
     <Fragment>
       <div className="p-4 max-w-2xl mx-auto">
@@ -90,6 +96,7 @@ export default function HomePageClient() {
             value={localSearch}
             className="w-full border rounded p-2 bg-card-bg border-card-border text-foreground"
             onChange={(e) => setLocalSearch(e.target.value)}
+            onBlur={() => updateQuery(localSearch)}
           />
         </div>
         <div className="mb-4">

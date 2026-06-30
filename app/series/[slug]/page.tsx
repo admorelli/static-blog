@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation';
-import { Header } from '@/app/header';
 import { getPostsBySeries } from '@/lib/posts';
 import { Metadata } from 'next';
 import Link from 'next/link';
