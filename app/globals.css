@@ -59,7 +59,7 @@ body {
 }
 
 .prose pre {
-  @apply bg-gray-900 dark:bg-gray-950;
+  @apply bg-gray-900 dark:bg-gray-950 overflow-x-auto;
 }
 
 .prose pre code {
