@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import { SocialFloatingFooter } from "./SocialFloatingFooter";
 import { loadAnalytics } from "./analytics";
+import { Header } from "./header";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,13 +29,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
       <head>
         {basePath ? <meta name="next-base-path" content={basePath} /> : null}
         <base href={basePath || "/"} />
       </head>
       <body className="min-h-full flex flex-col">
         <Providers>
+          <Header />
           <AnalyticsInjector />
           <main className="flex-1">{children}</main>
           <SocialFloatingFooter />

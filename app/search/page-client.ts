@@ -16,7 +16,7 @@ interface Post {
 function stripHtml(html: string): string {
   return html
     .replace(/<[^>]*>/g, "")
-    .replace(/&quot;/g, '"')
+    .replace(/&quot;/g, "'")
     .replace(/&#39;/g, "'")
     .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
@@ -61,7 +61,10 @@ export default function SearchPageClient() {
           total: filtered.length,
         };
       },
-      getNextPageParam: (lastPage: { posts: Post[]; total: number }, allPages: { posts: Post[] }[]) => {
+      getNextPageParam: (
+        lastPage: { posts: Post[]; total: number },
+        allPages: { posts: Post[] }[]
+      ) => {
         const totalLoaded = allPages.reduce((sum, page) => sum + page.posts.length, 0);
         if (totalLoaded < lastPage.total) {
           return totalLoaded;
@@ -86,57 +89,61 @@ export default function SearchPageClient() {
     router.push(`/search?${params.toString()}`);
   };
 
-  return (
-    <div className="max-w-3xl mx-auto px-4 py-12">
-      <h1 className="text-3xl font-bold mb-6">Search</h1>
-      <form onSubmit={handleSubmit} className="mb-8">
-        <input
-          type="text"
-          name="query"
-          defaultValue={initialQuery}
-          placeholder="Search posts..."
-          className="w-full border rounded p-3 bg-card-bg border-card-border text-foreground"
-        />
-      </form>
-
-      {isLoading && <p className="text-muted">Searching...</p>}
-
-      {!isLoading && initialQuery && (
-        <>
-          <p className="text-sm text-muted mb-4">
-            {allPosts.length} result{allPosts.length === 1 ? "" : "s"} for &quot;{initialQuery}&quot;
-          </p>
-          {allPosts.length === 0 ? (
-            <p className="text-muted">No matching posts found.</p>
-          ) : (
-            <ul className="space-y-4">
-              {allPosts.map((post) => (
-                <li
-                  key={post.id}
-                  className="border p-4 rounded bg-card-bg border-card-border"
-                >
-                  <a
-                    href={`${getBasePath()}/posts/${post.slug}`}
-                    className="text-foreground hover:text-accent transition-colors"
-                  >
-                    <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
-                  </a>
-                  <p className="text-sm text-muted mb-2">
-                    {new Date(post.created_at * 1000).toLocaleDateString()}
-                  </p>
-                  <p className="text-muted text-sm line-clamp-3">
-                    {stripHtml(post.content).slice(0, 200)}...
-                  </p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </>
-      )}
-
-      {!initialQuery && !isLoading && (
-        <p className="text-muted">Enter a query to search posts by title and content.</p>
-      )}
-    </div>
+  return React.createElement(
+    "div",
+    { className: "max-w-3xl mx-auto px-4 py-12" },
+    React.createElement("h1", { className: "text-3xl font-bold mb-6" }, "Search"),
+    React.createElement(
+      "form",
+      { onSubmit: handleSubmit, className: "mb-8" },
+      React.createElement("input", {
+        type: "text",
+        name: "query",
+        defaultValue: initialQuery,
+        placeholder: "Search posts...",
+        className: "w-full border rounded p-3 bg-card-bg border-card-border text-foreground",
+      })
+    ),
+    isLoading &&
+      React.createElement("p", { className: "text-muted" }, "Searching..."),
+    !isLoading &&
+      initialQuery &&
+      React.createElement(
+        React.Fragment,
+        null,
+        React.createElement(
+          "p",
+          { className: "text-sm text-muted mb-4" },
+          `${allPosts.length} result${allPosts.length === 1 ? "" : "s"} for "${initialQuery}"`
+        ),
+        allPosts.length === 0
+          ? React.createElement("p", { className: "text-muted" }, "No matching posts found.")
+          : React.createElement(
+              "ul",
+              { className: "space-y-4" },
+              allPosts.map((post) =>
+                React.createElement(
+                  "li",
+                  {
+                    key: post.id,
+                    className: "border p-4 rounded bg-card-bg border-card-border",
+                  },
+                  React.createElement(
+                    "a",
+                    {
+                      href: `${getBasePath()}/posts/${post.slug}`,
+                      className: "text-foreground hover:text-accent transition-colors",
+                    },
+                    React.createElement("h2", { className: "text-xl font-semibold mb-2" }, post.title)
+                  ),
+                  React.createElement("p", { className: "text-sm text-muted mb-2" }, new Date(post.created_at * 1000).toLocaleDateString()),
+                  React.createElement("p", { className: "text-muted text-sm line-clamp-3" }, `${stripHtml(post.content).slice(0, 200)}...`)
+                )
+              )
+            )
+      ),
+    !initialQuery &&
+      !isLoading &&
+      React.createElement("p", { className: "text-muted" }, "Enter a query to search posts by title and content.")
   );
 }

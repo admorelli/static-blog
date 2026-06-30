@@ -98,13 +98,13 @@ export default async function SeriesPage({ params }: SeriesPageProps) {
 
   return (
     <>
-      <Header />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(generateSeriesJsonLd(slug, seriesPosts, baseUrl)),
         }}
       />
+
       <div className="p-6 max-w-4xl mx-auto">
         <header className="mb-8">
           <nav className="mb-4">
